@@ -50,7 +50,7 @@ public void onGlobalLayout() {
 #### 2)Camera横竖屏时的兼容性问题
 当使用camera.setDisplayOrientation(degrees)，在android高版本不会报错，但是在android低版本(2.3)就会出错，以下方法可以解决：
 ```java
-camera.stopPreview();	//停止预览
-camera.setDisplayOrientation(degrees);	//切换方向
-camera.startPreview();	//开始预览
+	camera.stopPreview();	//停止预览
+	camera.setDisplayOrientation(degrees);	//切换方向
+	camera.startPreview();	//开始预览
 ```
