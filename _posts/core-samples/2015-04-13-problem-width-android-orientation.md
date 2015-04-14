@@ -18,18 +18,21 @@ android横竖切换的时候会带有很多问题，下面就是本人在使用Z
 2.不会发生当前Activity数据丢失的问题。 
 
 缺点： 
-1.使用单一布局文件对横竖屏的布局支持不够灵活，不够方便。需要对布局文件做较多兼容才能实现比较理想的效果。  
-2.在onConfigurationChanged中无法获取一些实际参数，比如布局的横竖切换后的宽高。但是可以使用下面的方法解决： 
 
-	public void onConfigurationChanged(Configuration newConfig) {
-		super.onConfigurationChanged(newConfig);
-		view.getViewTreeObserver().addOnGlobalLayoutListener(this);
-	}
+1. 使用单一布局文件对横竖屏的布局支持不够灵活，不够方便。需要对布局文件做较多兼容才能实现比较理想的效果。  
+2. 在onConfigurationChanged中无法获取一些实际参数，比如布局的横竖切换后的宽高。但是可以使用下面的方法解决： 
 
-	@Override
-	public void onGlobalLayout() {
-		// 获取横竖切换的宽高
-	}
+```java
+public void onConfigurationChanged(Configuration newConfig) {
+	super.onConfigurationChanged(newConfig);
+	view.getViewTreeObserver().addOnGlobalLayoutListener(this);
+}
+
+@Override
+public void onGlobalLayout() {
+	// 获取横竖切换的宽高
+}
+```
 
 
 
@@ -46,8 +49,8 @@ android横竖切换的时候会带有很多问题，下面就是本人在使用Z
 
 #### 2)Camera横竖屏时的兼容性问题
 当使用camera.setDisplayOrientation(degrees)，在android高版本不会报错，但是在android低版本(2.3)就会出错，以下方法可以解决：
-
-	camera.stopPreview();	//停止预览
-	camera.setDisplayOrientation(degrees);	//切换方向
-	camera.startPreview();	//开始预览
-	
+```java
+camera.stopPreview();	//停止预览
+camera.setDisplayOrientation(degrees);	//切换方向
+camera.startPreview();	//开始预览
+```
