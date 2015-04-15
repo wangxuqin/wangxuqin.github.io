@@ -17,10 +17,9 @@ android横竖切换的时候会带有很多问题，下面就是本人在使用Z
 1.不需要重新执行onCreate，onResume等方法，响应速度比较快。   
 2.不会发生当前Activity数据丢失的问题。 
 
-缺点： 
-
-1. 使用单一布局文件对横竖屏的布局支持不够灵活，不够方便。需要对布局文件做较多兼容才能实现比较理想的效果。  
-2. 在onConfigurationChanged中无法获取一些实际参数，比如布局的横竖切换后的宽高。但是可以使用下面的方法解决： 
+缺点：  
+1.使用单一布局文件对横竖屏的布局支持不够灵活，不够方便。需要对布局文件做较多兼容才能实现比较理想的效果。  
+2.在onConfigurationChanged中无法获取一些实际参数，比如布局的横竖切换后的宽高。但是可以使用下面的方法解决： 
 
 ```java
 public void onConfigurationChanged(Configuration newConfig) {
