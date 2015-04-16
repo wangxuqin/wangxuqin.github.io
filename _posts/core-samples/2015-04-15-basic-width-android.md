@@ -19,3 +19,12 @@ Dalvik执行的是特有的DEX文件格式，而JVM运行的是*.class文件格�
 1、在编译时提前优化代码而不是等到运行时  
 2、虚拟机很小，使用的空间也小；被设计来满足可高效运行多种虚拟机实例。  
 3、常量池已被修改为只使用32位的索引，以	简化解释器JVM的字节码主要是零地址形式的，概念上说JVM是基于栈的架构。Google Android平台上的应用程序的主要开发语言是Java，通过其中的Dalvik VM来运行Java程序。为了能正确实现语义，Dalvik VM的许多设计都考虑到与JVM的兼容性；但它却采用了基于寄存器的架构，其字节码主要是二地址/三地址的混合形式。
+
+
+###2.获取android各种目录
+```java
+context.getAssets();	//资产目录
+context.getFilesDir();	//数据目录
+context.getCacheDir();	//缓存目录
+context.getResource();	//资源目录
+```
