@@ -5,15 +5,15 @@ date:   2015-04-15 12:00
 categories: android
 ---
 ###1.两种Java虚拟机的的比较  
-1.编译后文件格式  
- jvm:    .java -> .class-> .jar  
+**1.编译后文件格式**  
+jvm:    .java -> .class-> .jar  
 dalvik: .java -> .class -> .dex -> .odex  
 
-2.基于的架构  
+**2.基于的架构**  
 jvm：	基于栈的架构  
 dalvik: 基于寄存器的架构  
 
-3.文件结构  
+**3.文件结构**  
 Dalvik执行的是特有的DEX文件格式，而JVM运行的是*.class文件格式。  
 优势：  
 1、在编译时提前优化代码而不是等到运行时  
