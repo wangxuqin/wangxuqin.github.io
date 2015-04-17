@@ -28,3 +28,29 @@ context.getFilesDir();	//数据目录
 context.getCacheDir();	//缓存目录
 context.getResource();	//资源目录
 ```
+
+###3.android访问文件权限   
+android下权限跟linux是对应的，一个android应用相当是一个用户，所以一个应用创建的文件就跟一个用户创建的文件后获得访问权限一致。   
+
+```java
+context.openFileOutput("file");                                 //默认   -rw-------
+context.openFileOutput("file", Context.PRIVATE);                //私有   -rw-rw----
+context.openFileOutput("file", Context.MODE_WORLD_READABLE);    //可读   -rw-rw-r--
+context.openFileOutput("file", Context.MODE_WORLD_WRITEABLE);   //可写   -rw-rw--w-
+context.openFileOutput("file", Context.MODE_WORLD_WRITEABLE +   //可读写 -rw-rw-rw-
+Context.MODE_WORLD_READABLE);
+```
+linux系统下的文件权限   
+位置0 -代表文件 d代表目录 
+一般情况下android下的每一个应用都是一个独立的用户，对应一个独立的组  
+位置1~3：当前用户				r可读 w可写 x可执行  
+位置4~6：当前用户所在的组  
+位置7~9：其他的用户的权限  
+
+```
+- --- --- --- 0 000
+- rw- --- --- 0 600
+- rw- rw- rw- 0 600
+```
+
+使用 **chmod** 可改变用户权限。  
