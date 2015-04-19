@@ -54,3 +54,7 @@ linux系统下的文件权限
 ```
 
 使用 **chmod** 可改变用户权限。  
+
+###4.介绍android在github上面相关开源项目  
+  
+  http://www.tuicool.com/articles/2yEBzqM
