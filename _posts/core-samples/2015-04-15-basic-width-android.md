@@ -5,17 +5,16 @@ date:   2015-04-15 12:00
 categories: android
 ---
 ###1.两种Java虚拟机的的比较  
-**1.编译后文件格式**  
+1)编译后文件格式   
 jvm:    .java -> .class-> .jar  
 dalvik: .java -> .class -> .dex -> .odex  
 
-**2.基于的架构**  
+2)基于的架构  
 jvm：	基于栈的架构  
 dalvik: 基于寄存器的架构  
 
-**3.文件结构**  
-Dalvik执行的是特有的DEX文件格式，而JVM运行的是*.class文件格式。  
-优势：  
+3)文件结构  
+Dalvik执行的是特有的DEX文件格式，而JVM运行的是*.class文件格式。优势：    
 1、在编译时提前优化代码而不是等到运行时  
 2、虚拟机很小，使用的空间也小；被设计来满足可高效运行多种虚拟机实例。  
 3、常量池已被修改为只使用32位的索引，以	简化解释器JVM的字节码主要是零地址形式的，概念上说JVM是基于栈的架构。Google Android平台上的应用程序的主要开发语言是Java，通过其中的Dalvik VM来运行Java程序。为了能正确实现语义，Dalvik VM的许多设计都考虑到与JVM的兼容性；但它却采用了基于寄存器的架构，其字节码主要是二地址/三地址的混合形式。
@@ -58,3 +57,67 @@ linux系统下的文件权限
 ###4.介绍android在github上面相关开源项目  
   
   http://www.tuicool.com/articles/2yEBzqM
+
+###5.获取android系统存储空间情况
+
+```java
+//获取ROM空间
+File path = Environment.getDataStorageDirectory();
+StatFs stat = new StatFs(path.getPath());
+long blockSize = stat.getBlockCount();
+long totalBlocks = stat.getBlockCount();
+long availableBlocks = stat.getAvailableBlocks();
+
+long totalSize = blockSize * totalBlocks;
+long availSize = availableBlocks * blocksSize;
+
+String totalStr = Formatter.formatFileSize(this, totalSize);
+String availStr = Formatter.formatFileSize(this, availSize);
+
+//获取SD卡空间
+File path = Environment.getExternalStorageDirectory();
+StatFs stat = new StatFs(path.getPath());
+long blockSize = stat.getBlockCount();
+long totalBlocks = stat.getBlockCount();
+long availableBlocks = stat.getAvailableBlocks();
+
+long totalSize = blockSize * totalBlocks;
+long availSize = availableBlocks * blocksSize;
+
+String totalStr = Formatter.formatFileSize(this, totalSize);
+String availStr = Formatter.formatFileSize(this, availSize);
+```
+
+###6.使用SharedPreferences保存设置信息
+
+```java
+//保存数据
+SharedPreferences sp = context.getSharedPrefernces("config", Context.MODE_PRIVATE);
+Editor editor = sp.editor();
+editor.putString("username", username);
+editor.putString("password", password);
+editor.commit();
+
+//获取设置
+SharedPreferences sp = getSharedPreferences("config", Context.MODE_PRIVATE);
+sp.getString("username", username);
+sp.getString("password", password);
+```
+
+###7.使用xml文件保存数据
+
+```java
+XmlSerializer serializer = Xml.newSerializer();
+File file = wen File(Environment.getExternalStorageDirectory(), "backup.xml");
+FileOutputStream os = new FileOutputStream(file);
+//初始化 序列号器制定xml数据写入到哪个文件，并且制定文件的编码方式
+serializer.setOutput(os, "utf-8");
+serializer.startDocument("utf-8", true);
+serializer.startTag(null, "root");
+serializer.endTag(null, "root");
+serializer.attribute(null, "id", value);
+serializer.startTag(null, "item");
+serializer.startTag(null, "item");
+serializer.endDocument();
+```
+
