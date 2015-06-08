@@ -19,7 +19,7 @@ GLSurfaceView是一个视图，继承至SurfaceView，它内嵌的surface专门�
 通常会继承GLSurfaceView，并重载一些和用户输入事件有关的方法。如果你不需要重载事件方法，GLSurface也可以直接使用，你可以使用set方法来为该类提供自定义的行为。例如，GLSurfaceView的渲染被委托给渲染器在独立的渲染线程里进行，这一点和普通视图不一样，setRenderer(Renderer)设置渲染器。  
 
 **初始化GLSurfaceView**  
-初始化过程起始仅需要你使用<font color='#4472C4'>setRenderer(Renderer)</font>设置指一个渲染器(render)。当然，你也可以修改GLSurfaceView一些默认配置。  
+初始化过程起始仅需要你使用<b><font color='#4472C4'>setRenderer(Renderer)</font></b>设置指一个渲染器(render)。当然，你也可以修改GLSurfaceView一些默认配置。  
 
 ```java
 (1)setDebugFlags(int);  
