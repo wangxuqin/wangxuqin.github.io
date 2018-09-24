@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="zh">
+  <head>
+
+  <meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>android横竖屏切换时的一些问题 | Gitbook theme</title>
+<meta name="description" content="Gitbook is a clean, responsive theme for GitHub Pages.">
+
+<meta itemprop="name" content="">
+<meta itemprop="description" content="Gitbook is a clean, responsive theme for GitHub Pages.">
+<meta itemprop="image" content="">
+
+<meta property="og:url" content="http://localhost:4000/android/2015/04/13/problem-width-android-orientation.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="android横竖屏切换时的一些问题 | Gitbook theme">
+<meta property="og:site_name" content="Gitbook theme">
+<meta property="og:description" content="Gitbook is a clean, responsive theme for GitHub Pages.">
+<meta property="og:image" content="">
+
+<meta name="twitter:url" content="http://localhost:4000/android/2015/04/13/problem-width-android-orientation.html">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="android横竖屏切换时的一些问题 | Gitbook theme">
+<meta name="twitter:site" content="Gitbook theme">
+<meta name="twitter:description" content="Gitbook is a clean, responsive theme for GitHub Pages.">
+
+<meta property="twitter:image" content="">
+
+<link rel="icon" type="image/x-icon" href="/assets/images/favicon.ico">
+
+<!--
+<link rel="stylesheet" href="/assets/css/app.min.css">
+<link rel="alternate" type="application/rss+xml" title="Gitbook theme" href="/feed.xml">
+<link rel="canonical" href="/android/2015/04/13/problem-width-android-orientation.html">
+-->
+<link rel="stylesheet" href="/assets/dist/style.css">
+<link rel="stylesheet" href="/assets/dist/highlight.css">
+<link rel="stylesheet" href="/assets/dist/search.css">
+<link rel="stylesheet" href="/assets/dist/fontsettings.css">
+
+
+
+
+</head>
+
+  <body>
+    <div class="book without-animation with-summary font-size-2 font-family-1">
+    <input type='checkbox' id='sidemenu' checked="true">
+<aside>
+<h3>KimWang's blog</h3>
+<ul id="sideul">
+    <li><a            href="http://localhost:4000/">主页</a></li>
+    <li><a class="active" href="http://localhost:4000/posts.html">文章</a></li>
+    <li><a href="#">工具</a></li>
+    <li><a href="#">关于</a></li>
+</ul> 
+</aside>   
+
+<div class="book-summary">
+  <div id="book-search-input" role="search">
+    <input type="text" placeholder="search">
+  </div>
+  <nav role="navigation">
+  <ul class="summary">
+    
+    
+    <h2>&nbsp;&nbsp;android</h2>
+    
+      <li ><a href="/android/2015/04/15/basic-width-android.html">&nbsp;&nbsp;&nbsp;&nbsp;1.android基础知识</a></li>
+    
+      <li class="active"><a href="/android/2015/04/13/problem-width-android-orientation.html">&nbsp;&nbsp;&nbsp;&nbsp;2.android横竖屏切换时的一些问题</a></li>
+    
+  
+    <li class="divider"></li>
+    <h2>&nbsp;&nbsp;Common</h2>
+    
+      <li ><a href="/common/2015/04/30/linux_system_signal.html">&nbsp;&nbsp;&nbsp;&nbsp;1.Linux信号signal处理机制（转）</a></li>
+    
+      <li ><a href="/common/2015/04/29/timelinefx.html">&nbsp;&nbsp;&nbsp;&nbsp;2.Timelinefx粒子编辑器</a></li>
+    
+      <li ><a href="/common/2015/04/20/common-cmd.html">&nbsp;&nbsp;&nbsp;&nbsp;3.C/C++常用命令</a></li>
+    
+      <li ><a href="/common/2015/04/20/dll-and-so-compare.html">&nbsp;&nbsp;&nbsp;&nbsp;4.Window动态库与Linux共享对象比较（转）</a></li>
+    
+  
+    <li class="divider"></li>
+    <h2>&nbsp;&nbsp;Android</h2>
+    
+      <li ><a href="/android/2015/05/04/question-width-android.html">&nbsp;&nbsp;&nbsp;&nbsp;1.android开发问题集</a></li>
+    
+  
+    <li class="divider"></li>
+    <h2>&nbsp;&nbsp;AS3</h2>
+    
+      <li ><a href="/as3/2015/05/08/filereference.html">&nbsp;&nbsp;&nbsp;&nbsp;1.使用 FileReference 类（转）</a></li>
+    
+  
+    <li class="divider"></li>
+    <h2>&nbsp;&nbsp;common</h2>
+    
+      <li ><a href="/common/2015/06/05/opengl-glsurfaceview.html">&nbsp;&nbsp;&nbsp;&nbsp;1.GLSurfaceView相关（转）</a></li>
+    
+      <li ><a href="/common/2015/06/03/color-calculator.html">&nbsp;&nbsp;&nbsp;&nbsp;2.常用色彩模型转换算法</a></li>
+    
+      <li ><a href="/common/2015/05/26/fragment.html">&nbsp;&nbsp;&nbsp;&nbsp;3.常用代码片段</a></li>
+    
+  
+  </ul>
+</nav>
+</div>
+
+<div id='wrap'>
+    <label id='sideMenuControl' for='sidemenu'>≡</label>
+</div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <div style="display: none">TODO: share icons</div>
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i>
+            <a>android横竖屏切换时的一些问题</a>
+          </h1>
+        </div>
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+            <div id="book-search-results">
+              <div class="search-noresults">
+                <section class="normal markdown-section">
+                  
+<h4 id="前言">前言</h4>
+<p>android横竖切换的时候会带有很多问题，下面就是本人在使用Zxing进行二维码应用二次开发的时候遇到的一些横竖屏切换问题。</p>
+
+<h4 id="1支持横屏竖屏切换布局问题">1)支持横屏竖屏切换布局问题</h4>
+<p>在android中横竖屏布局有两种方案：1.使用单一布局xml文件；2.使用横竖屏xml文件：</p>
+
+<h4 id="11-使用单一布局xml文件">1.1 使用单一布局xml文件</h4>
+<p>将xml文件中布局设置好，当横竖切换回调 <strong>onConfigurationChanged</strong> 同时自动布局UI上的界面。</p>
+
+<p>优点：<br />
+1.不需要重新执行onCreate，onResume等方法，响应速度比较快。 <br />
+2.不会发生当前Activity数据丢失的问题。</p>
+
+<p>缺点：<br />
+1.使用单一布局文件对横竖屏的布局支持不够灵活，不够方便。需要对布局文件做较多兼容才能实现比较理想的效果。<br />
+2.在onConfigurationChanged中无法获取一些实际参数，比如布局的横竖切换后的宽高。但是可以使用下面的方法解决：</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kt">void</span> <span class="nf">onConfigurationChanged</span><span class="o">(</span><span class="n">Configuration</span> <span class="n">newConfig</span><span class="o">)</span> <span class="o">{</span>
+	<span class="kd">super</span><span class="o">.</span><span class="na">onConfigurationChanged</span><span class="o">(</span><span class="n">newConfig</span><span class="o">);</span>
+	<span class="n">view</span><span class="o">.</span><span class="na">getViewTreeObserver</span><span class="o">().</span><span class="na">addOnGlobalLayoutListener</span><span class="o">(</span><span class="k">this</span><span class="o">);</span>
+<span class="o">}</span>
+
+<span class="nd">@Override</span>
+<span class="kd">public</span> <span class="kt">void</span> <span class="nf">onGlobalLayout</span><span class="o">()</span> <span class="o">{</span>
+	<span class="c1">// 获取横竖切换的宽高</span>
+<span class="o">}</span></code></pre></figure>
+
+<h4 id="12-使用横竖屏布局xml文件">1.2 使用横竖屏布局xml文件</h4>
+<p>在res目录下新建layout-port, layout-land文件夹，分别放入竖屏xml文件和横屏xml文件。当横竖切换的时候，就会自动调用对应xml文件进行布局。</p>
+
+<p>优点：<br />
+1.布局比较灵活，切换横屏的时候使用layout-land里面的xml文件，切换竖屏的时候使用layout-port里面的xml文件。</p>
+
+<p>缺点： <br />
+1.布局切换的时候，需要调用onCreate方法重新生成界面，消耗资源比较大，降低响应速度。 <br />
+2.由于需要重新回调一些函数造成数据丢失，但可以使用重写Activity的非生命周期方法 onSaveInstanceState 和 onRestoreInstanceState 解决。
+在 onSaveInstanceState 写入需要保存的数据，在 onRestoreInstanceState 写入还原数据的逻辑。当横竖切换时会先调用 onSaveInstanceState 保存数据，当横竖切换完毕后用 onRestoreInstanceState 恢复数据。</p>
+
+<h4 id="2camera横竖屏时的兼容性问题">2)Camera横竖屏时的兼容性问题</h4>
+<p>当使用camera.setDisplayOrientation(degrees)，在android高版本不会报错，但是在android低版本(2.3)就会出错，以下方法可以解决：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">camera</span><span class="o">.</span><span class="na">stopPreview</span><span class="o">();</span>	<span class="c1">//停止预览</span>
+<span class="n">camera</span><span class="o">.</span><span class="na">setDisplayOrientation</span><span class="o">(</span><span class="n">degrees</span><span class="o">);</span>	<span class="c1">//切换方向</span>
+<span class="n">camera</span><span class="o">.</span><span class="na">startPreview</span><span class="o">();</span>	<span class="c1">//开始预览</span>
+</code></pre></div></div>
+
+                </section>
+
+                <a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a>
+              </div>
+            <div class="search-results">
+              <div class="has-results">
+                <h1 class="search-results-title"><span class="search-results-count"></span> results matching "<span class="search-query"></span>"</h1>
+                <ul class="search-results-list"></ul>
+              </div>
+            <div class="no-results">
+              <h1 class="search-results-title">No results matching "<span class="search-query"></span>"</h1>
+            </div>
+            </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+      <!--<a href="rpi3.html" class="navigation navigation-next navigation-unique" aria-label="Next page: 2016 Raspberry Pi Model 3 B" style="margin-right: 0px;">
+          <i class="fa fa-angle-right"></i>
+      </a>
+    </div> -->
+</div>
+
+    
+  </body>
+</html>
