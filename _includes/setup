@@ -1,3 +1,0 @@
-{% capture jbcache %}
-  {% assign page.bookmeta = site.JG.books %}
-{% endcapture %}{% assign jbcache = nil %}

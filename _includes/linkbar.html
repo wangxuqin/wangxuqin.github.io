@@ -1,7 +1,0 @@
-<h3>KimWang's blog</h3>
-<ul id="sideul">
-    <li><a {%if page.url == "/" %}class="active"{% endif %}           href="{{ '/' | absolute_url }}">主页</a></li>
-    <li><a {%if page.url != "/" %}class="active"{% endif %} href="{{ '/posts.html' | absolute_url }}">文章</a></li>
-    <li><a href="#">工具</a></li>
-    <li><a href="#">关于</a></li>
-</ul>
