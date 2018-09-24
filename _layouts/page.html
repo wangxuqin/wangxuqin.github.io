@@ -1,7 +1,64 @@
----
-theme :
-  name : the-minimum
-layout: default
----
-{% include JB/setup %}
-{% include themes/the-minimum/page.html %}
+<!DOCTYPE html>
+<html lang="{{ site.lang | default: "zh" }}">
+  <head>
+
+  {% include head.html %}
+
+</head>
+
+  <body>
+    <div class="book without-animation with-summary font-size-2 font-family-1">
+    {% include sidebar.html %}
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <div style="display: none">TODO: share icons</div>
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i>
+            <a>{{ page.title }}</a>
+          </h1>
+        </div>
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+            <div id="book-search-results">
+              <div class="search-noresults">
+                <section class="normal markdown-section">
+                  {{ content }}
+                </section>
+
+                <a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a>
+              </div>
+            <div class="search-results">
+              <div class="has-results">
+                <h1 class="search-results-title"><span class="search-results-count"></span> results matching "<span class="search-query"></span>"</h1>
+                <ul class="search-results-list"></ul>
+              </div>
+            <div class="no-results">
+              <h1 class="search-results-title">No results matching "<span class="search-query"></span>"</h1>
+            </div>
+            </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+      <!--<a href="rpi3.html" class="navigation navigation-next navigation-unique" aria-label="Next page: 2016 Raspberry Pi Model 3 B" style="margin-right: 0px;">
+          <i class="fa fa-angle-right"></i>
+      </a>
+    </div> -->
+</div>
+
+    {% if site.google_analytics %}
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+      ga('create', '{{ site.google_analytics }}', 'auto');
+      ga('send', 'pageview');
+    </script>
+    {% endif %}
+  </body>
+</html>
