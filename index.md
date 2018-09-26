@@ -1,6 +1,6 @@
 ---
 layout: index
-title: example
+title: home
 ---
 ### 文件列表  
 <ul class="posts">
