@@ -1,5 +1,5 @@
 ---
-layout: base64
+layout: tool_base64
 title: example
 ---
 <!-- layout: index
