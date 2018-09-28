@@ -1,5 +1,5 @@
  //将字符串转换成UTF8数组
- function stringToByte(str) {
+ var stringToByte = function(str) {
 	var bytes = new Array();
 	var len, c;
 	len = str.length;
@@ -25,7 +25,7 @@
 }
  
 //将数组转换成UTF16格式字符串
-function byteToString(arr) {
+var byteToString = function(arr) {
 	if(typeof arr === 'string') {
 		return arr;
 	}
@@ -60,6 +60,15 @@ var base64Table = {
    56:'4', 57:'5', 58:'6', 59:'7', 60:'8', 61:'9', 62:'+', 63:'/'
 }
 
+var base64ReverseTable = {};
+Object.keys(base64Table).forEach(function(key){
+	if(!isNaN(key)){
+		var newKey   = base64Table[key].toString();
+		var newValue =  parseInt(key);
+		base64ReverseTable[newKey] = newValue;
+	}
+});
+
 function base64Encode(str)
 {
 	var arr = new Array();
@@ -93,4 +102,68 @@ function base64Encode(str)
 		}
 	}
 	return arr.join('');
+}
+
+var decodeErrorTip = function(){
+	alert("解码失败!请检查输入字符串是否合法!");
+}
+function base64Decode(str){
+	var arr = new Array();
+	var bytes = stringToByte(str);
+	if(bytes.length > 0 && (bytes.length % 4) != 0){
+		decodeErrorTip();
+		return "";
+	}
+
+	var index = 0;
+	while(index < bytes.length){
+		var idxArr = [-1, -1, -1, -1];
+		for(var i = 0; i < 4; i++){
+			var b = bytes[index + i];
+			if(b >= 128){
+				decodeErrorTip();
+				return "";
+			}
+			if(b == 61){ //ascii码对应为=
+				idxArr[i] = -1;
+			}
+			else{
+				idxArr[i] = base64ReverseTable[String.fromCharCode(b)];
+				if(idxArr[i] == undefined){
+					decodeErrorTip();
+					return "";
+				}
+			}
+		}
+
+		var byteArr = [-1, -1, -1];
+		if(idxArr[0] != -1 && idxArr[1] != -1 && idxArr[2] != -1 && idxArr[3] != -1){
+			byteArr[0] = idxArr[0] << 2 | (idxArr[1] & 0xf0) >> 4;
+			byteArr[1] = (idxArr[1] & 0x0f) << 4 | (idxArr[2] & 0x3c) >> 2;
+			byteArr[2] = (idxArr[2] & 0x03) << 6 | idxArr[3];
+		}
+		else if(idxArr[0] != -1 && idxArr[1] != -1 && idxArr[2] != -1){
+			byteArr[0] = idxArr[0] << 2 | (idxArr[1] & 0xf0) >> 4;
+			byteArr[1] = (idxArr[1] & 0x0f) << 4 | (idxArr[2] & 0x3c) >> 2;
+		}
+		else if(idxArr[0] != -1 && idxArr[1] != -1){
+			byteArr[0] = idxArr[0] << 2 | (idxArr[1] & 0xf0) >> 4;
+		}
+
+		if(byteArr[0] == -1){
+			decodeErrorTip();
+			return "";
+		}
+		else{
+			for(var i = 0; i < byteArr.length; i++){
+				if(byteArr[i] != -1){
+					arr.push(byteArr[i])
+				}
+			}
+		}
+
+		index = index + 4;
+	}
+
+	return byteToString(arr);
 }
