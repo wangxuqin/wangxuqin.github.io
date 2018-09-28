@@ -2,6 +2,8 @@
 layout: base64
 title: example
 ---
+<!-- layout: index
+title: home -->
 ### 文件列表  
 <!-- <ul class="posts">
   {% for post in site.posts %}

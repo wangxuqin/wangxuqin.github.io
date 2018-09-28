@@ -2499,7 +2499,7 @@ table{
     color:#364149;
     background:#fafafa;
     border-right:1px solid rgba(0,0,0,.07);
-    transition: 0.2s ease-out;
+    /*transition: 0.2s ease-out;*/
 }
 .book-summary ul.summary{
     list-style:none;
@@ -2623,10 +2623,10 @@ table{
     color:#000;
     background:#fff;
 
-    -webkit-transition: 0.2s ease-out;
+    /*-webkit-transition: 0.2s ease-out;
     -moz-transition: 0.2s ease-out;
     -o-transition: 0.2s ease-out;
-    transition: 0.2s ease-out;
+    transition: 0.2s ease-out;*/
 }
 .book-body .body-inner{
     position:absolute;
@@ -2638,10 +2638,10 @@ table{
 }
 @media (max-width:1240px){
     .book-body{
-        -webkit-transition:-webkit-transform 250ms ease;
+        /*-webkit-transition:-webkit-transform 250ms ease;
         -moz-transition:-moz-transform 250ms ease;
         -o-transition:-o-transform 250ms ease;
-        transition:transform 250ms ease;
+        transition:transform 250ms ease;*/
         padding-bottom:20px
     }
     .book-body .body-inner{
@@ -2911,10 +2911,10 @@ table{
     font-size:40px;
     color:#ccc;
     text-align:center;
-    -webkit-transition: 0.2s ease-out;
+   /* -webkit-transition: 0.2s ease-out;
     -moz-transition: 0.2s ease-out;
     -o-transition: 0.2s ease-out;
-    transition: 0.2s ease-out;
+    transition: 0.2s ease-out;*/
 }
 .navigation:hover{
     text-decoration:none;
@@ -2943,10 +2943,10 @@ table{
 #book-search-input{
     padding:6px;
     background:0 0;
-    -webkit-transition: 0.2s ease-out;
+   /* -webkit-transition: 0.2s ease-out;
     -moz-transition: 0.2s ease-out;
     -o-transition: 0.2s ease-out;
-    transition: 0.2s ease-out;
+    transition: 0.2s ease-out;*/
     background:#fff;
     border-bottom:1px solid rgba(0,0,0,.07);
     border-top:1px solid rgba(0,0,0,.07);
@@ -3239,20 +3239,35 @@ body{
 #sidemenu:checked + aside {
     /*为被选中的sidemenu后的aside设置属性（紧邻）*/
     left: 0;
-    /*点击按钮即选中checked后,侧边栏位置变为贴着左边,配合ease-out使用,有渐变滑出的效果*/
+    /*-webkit-transition: 0.2s ease-out;
+    -moz-transition: 0.2s ease-out;
+    -o-transition: 0.2s ease-out;
+    transition: 0.2s ease-out;*/
 }
 
 #sidemenu:checked ~ .book-summary {
     margin-left: var(--book-summary-margin-left);
+   /* -webkit-transition: 0.2s ease-out;
+    -moz-transition: 0.2s ease-out;
+    -o-transition: 0.2s ease-out;
+    transition: 0.2s ease-out;*/
 }
 
 #sidemenu:checked ~.book-body{
     margin-left: var(--book-body-margin-left);
+   /* -webkit-transition: 0.2s ease-out;
+    -moz-transition: 0.2s ease-out;
+    -o-transition: 0.2s ease-out;
+    transition: 0.2s ease-out;*/
 }
 
 #sidemenu:checked ~ #wrap {
     /*为被选中的sidemenu后的wrap设置属性（非紧邻）*/
     margin-left: var(--warp-margin-left);
+   /* -webkit-transition: 0.2s ease-out;
+    -moz-transition: 0.2s ease-out;
+    -o-transition: 0.2s ease-out;
+    transition: 0.2s ease-out;*/
 }
 
 .default-layout-aside-left{
@@ -3272,10 +3287,10 @@ aside {
     width: var(--sidemenu-width);
     z-index: 2;
     background: #f7f7f7;
-    -webkit-transition: 0.2s ease-out;
+    /*-webkit-transition: 0.2s ease-out;
     -moz-transition: 0.2s ease-out;
     -o-transition: 0.2s ease-out;
-    transition: 0.2s ease-out;/*动画效果的执行方式是ease-out，即侧边栏滑动效果为渐变式，而不是生硬的突然变化*/
+    transition: 0.2s ease-out;/*动画效果的执行方式是ease-out，即侧边栏滑动效果为渐变式，而不是生硬的突然变化*/*/
     box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
 }
 
@@ -3313,7 +3328,7 @@ label:hover {
     z-index:5;
     width:auto;
     height:auto;
-    transition: all 0.1s ease-in-out;
+    /*transition: all 0.1s ease-in-out;*/
     margin:0px;
     padding:0px;
 }
@@ -3332,7 +3347,7 @@ label:hover {
   position: relative;
   font-family:verdana;
   border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-  transition: background 0.1s ease-in-out;
+  /*transition: background 0.1s ease-in-out;*/
   box-shadow: 1px 0 5px rgba(0, 0, 0, 0.01);
 }
 
@@ -3351,10 +3366,10 @@ label:hover {
     z-index: 1;
     margin-left: 300px;
     padding: 10px;
-    -webkit-transition: 0.2s ease-out;
+    /*-webkit-transition: 0.2s ease-out;
     -moz-transition: 0.2s ease-out;
     -o-transition: 0.2s ease-out;
-    transition: 0.2s ease-out;
+    transition: 0.2s ease-out;*/
 }
 
 
@@ -3425,4 +3440,3 @@ label:hover {
     color:rgba(255,255,255,0.75);
     font-size: 4.0em;
 }
-
