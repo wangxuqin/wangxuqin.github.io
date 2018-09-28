@@ -1,0 +1,15 @@
+.tool-input-textarea{
+	width:800px;
+	max-width: 800px;
+	height:200px;
+	padding: 10px;
+	resize: none;
+}
+
+.tool-output-textarea{
+	width:800px;
+	max-width: 800px;
+	height:200px;
+	padding: 10px;
+	resize: none;
+}
