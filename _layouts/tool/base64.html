@@ -27,19 +27,30 @@
 </head>
 
   <body>
-    <aside class="default-layout-aside-left">
-      {% include linkbar.html %}
-    </aside>
-    
-    <div>
-      <textarea id="input_textarea" placeholder="请输入待解码或编码的字符串" class="tool-input-textarea" spellcheck="false"></textarea>
-      <div class="tool-button-group">
-        <button id="decode" class="tool-button" onClick="doBase64Decode()">解码</button>
-        <button id="encode" class="tool-button" onClick="doBase64Encode()">编码</button>
+    <div class="book without-animation with-summary font-size-2 font-family-1">
+      {% include sidebar.html param="toollist" %}
+      
+      <div class="book-body">
+        <div class="body-inner">
+          <div class="book-header" role="navigation">
+            <div style="display: none">TODO: share icons</div>
+            <h1>
+              <i class="fa fa-circle-o-notch fa-spin"></i>
+              <a>{{ page.title }}</a>
+            </h1>
+          </div>
+        
+          <div>
+            <textarea id="input_textarea" placeholder="请输入待解码或编码的字符串" class="tool-input-textarea" spellcheck="false"></textarea>
+            <div class="tool-button-group">
+              <button id="decode" class="tool-button" onClick="doBase64Decode()">解码</button>
+              <button id="encode" class="tool-button" onClick="doBase64Encode()">编码</button>
+            </div>
+            <textarea id="output_textarea"class="tool-output-textarea" readonly="readonly" spellcheck="false"></textarea>
+          </div>
+        </div>
       </div>
-      <textarea id="output_textarea"class="tool-output-textarea" readonly="readonly" spellcheck="false"></textarea>
-    </div>
-
+  </div>
 
     {% if site.google_analytics %}
     <script>

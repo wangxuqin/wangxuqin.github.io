@@ -4,10 +4,11 @@
 </aside>   
 
 <div class="book-summary">
-  <div id="book-search-input" role="search">
-    <input type="text" placeholder="search">
-  </div>
-  {% include catalog.html %}
+	{%if include.param == "toollist" %}
+		{% include toollist.html %}
+	{% else %}
+  		{% include catalog.html %}
+  	{% endif %}
 </div>
 
 <div id='wrap'>

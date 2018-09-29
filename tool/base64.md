@@ -1,5 +1,5 @@
 ---
 layout: tool/base64
-title: base64编解码
+title: base64编/解码
 tag: tool
 ---

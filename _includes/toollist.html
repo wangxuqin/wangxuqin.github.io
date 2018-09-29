@@ -1,0 +1,10 @@
+<nav role="navigation">
+  <ul class="summary">
+  	<h2>&nbsp;&nbsp;解码编码工具</h2>
+    {% for p in site.pages %}
+      {%if p.tag == "tool" %}
+      <li {%if p != page %}class="active"{% endif %}><a href="{{ p.url }}">&nbsp;&nbsp;&nbsp;&nbsp;{{ p.title }}</a></li>
+      {% endif %}
+    {% endfor %}
+  </ul>
+</nav>

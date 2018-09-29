@@ -3290,7 +3290,7 @@ aside {
     /*-webkit-transition: 0.2s ease-out;
     -moz-transition: 0.2s ease-out;
     -o-transition: 0.2s ease-out;
-    transition: 0.2s ease-out;/*动画效果的执行方式是ease-out，即侧边栏滑动效果为渐变式，而不是生硬的突然变化*/*/
+    transition: 0.2s ease-out;/*动画效果的执行方式是ease-out，即侧边栏滑动效果为渐变式，而不是生硬的突然变化*/
     box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
 }
 

@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<title>base64编解码 | KimWang's blog</title>
+<title>base64编/解码 | KimWang's blog</title>
 <meta name="description" content="KimWang's blog">
 
 <meta itemprop="name" content="">
@@ -15,14 +15,14 @@
 
 <meta property="og:url" content="http://localhost:4000/tool/base64.html">
 <meta property="og:type" content="website">
-<meta property="og:title" content="base64编解码 | KimWang's blog">
+<meta property="og:title" content="base64编/解码 | KimWang's blog">
 <meta property="og:site_name" content="KimWang's blog">
 <meta property="og:description" content="KimWang's blog">
 <meta property="og:image" content="">
 
 <meta name="twitter:url" content="http://localhost:4000/tool/base64.html">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="base64编解码 | KimWang's blog">
+<meta name="twitter:title" content="base64编/解码 | KimWang's blog">
 <meta name="twitter:site" content="KimWang's blog">
 <meta name="twitter:description" content="KimWang's blog">
 
@@ -68,25 +68,64 @@
 </head>
 
   <body>
-    <aside class="default-layout-aside-left">
-      <h3>KimWang's blog</h3>
+    <div class="book without-animation with-summary font-size-2 font-family-1">
+      <input type='checkbox' id='sidemenu' checked="true">
+<aside>
+<h3>KimWang's blog</h3>
 <ul id="sideul">
     <li><a            href="http://localhost:4000/">主页</a></li>
     <li><a class="active" href="http://localhost:4000/posts.html">文章</a></li>
     <li><a  href="http://localhost:4000/tools.html">工具</a></li>
     <li><a href="#">关于</a></li>
-</ul>
-    </aside>
-    
-    <div>
-      <textarea id="input_textarea" placeholder="请输入待解码或编码的字符串" class="tool-input-textarea" spellcheck="false"></textarea>
-      <div class="tool-button-group">
-        <button id="decode" class="tool-button" onClick="doBase64Decode()">解码</button>
-        <button id="encode" class="tool-button" onClick="doBase64Encode()">编码</button>
-      </div>
-      <textarea id="output_textarea"class="tool-output-textarea" readonly="readonly" spellcheck="false"></textarea>
-    </div>
+</ul> 
+</aside>   
 
+<div class="book-summary">
+	
+		<nav role="navigation">
+  <ul class="summary">
+  	<h2>&nbsp;&nbsp;解码编码工具</h2>
+    
+      
+      <li class="active"><a href="/tool/base64.html">&nbsp;&nbsp;&nbsp;&nbsp;base64编/解码</a></li>
+      
+    
+      
+    
+      
+    
+      
+    
+  </ul>
+</nav>
+	
+</div>
+
+<div id='wrap'>
+    <label id='sideMenuControl' for='sidemenu'>≡</label>
+</div>
+      
+      <div class="book-body">
+        <div class="body-inner">
+          <div class="book-header" role="navigation">
+            <div style="display: none">TODO: share icons</div>
+            <h1>
+              <i class="fa fa-circle-o-notch fa-spin"></i>
+              <a>base64编/解码</a>
+            </h1>
+          </div>
+        
+          <div>
+            <textarea id="input_textarea" placeholder="请输入待解码或编码的字符串" class="tool-input-textarea" spellcheck="false"></textarea>
+            <div class="tool-button-group">
+              <button id="decode" class="tool-button" onClick="doBase64Decode()">解码</button>
+              <button id="encode" class="tool-button" onClick="doBase64Encode()">编码</button>
+            </div>
+            <textarea id="output_textarea"class="tool-output-textarea" readonly="readonly" spellcheck="false"></textarea>
+          </div>
+        </div>
+      </div>
+  </div>
 
     
   </body>
