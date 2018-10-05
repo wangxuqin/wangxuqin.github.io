@@ -3,6 +3,7 @@
   <head>
 
   {% include head.html %}
+  <link rel="stylesheet" href="{{ '/assets/dist/sheet.css' | relative_url }}">
   <script src="{{ '/assets/dist/js/tool/base64.js' | relative_url }}"></script>
   <script>
     //Base64解码
@@ -47,10 +48,12 @@
               <button id="encode" class="tool-button" onClick="doBase64Encode()">编码</button>
             </div>
             <textarea id="output_textarea"class="tool-output-textarea" readonly="readonly" spellcheck="false"></textarea>
+             {% include base64table.html %}
           </div>
         </div>
       </div>
   </div>
+ 
 
     {% if site.google_analytics %}
     <script>

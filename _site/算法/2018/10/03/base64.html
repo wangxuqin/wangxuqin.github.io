@@ -6,23 +6,23 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<title>android开发问题集 | KimWang's blog</title>
+<title>base64算法简介 | KimWang's blog</title>
 <meta name="description" content="KimWang's blog">
 
 <meta itemprop="name" content="">
 <meta itemprop="description" content="KimWang's blog">
 <meta itemprop="image" content="">
 
-<meta property="og:url" content="http://localhost:4000/android/2015/05/04/question-width-android.html">
+<meta property="og:url" content="http://localhost:4000/%E7%AE%97%E6%B3%95/2018/10/03/base64.html">
 <meta property="og:type" content="website">
-<meta property="og:title" content="android开发问题集 | KimWang's blog">
+<meta property="og:title" content="base64算法简介 | KimWang's blog">
 <meta property="og:site_name" content="KimWang's blog">
 <meta property="og:description" content="KimWang's blog">
 <meta property="og:image" content="">
 
-<meta name="twitter:url" content="http://localhost:4000/android/2015/05/04/question-width-android.html">
+<meta name="twitter:url" content="http://localhost:4000/%E7%AE%97%E6%B3%95/2018/10/03/base64.html">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="android开发问题集 | KimWang's blog">
+<meta name="twitter:title" content="base64算法简介 | KimWang's blog">
 <meta name="twitter:site" content="KimWang's blog">
 <meta name="twitter:description" content="KimWang's blog">
 
@@ -33,7 +33,7 @@
 <!--
 <link rel="stylesheet" href="/assets/css/app.min.css">
 <link rel="alternate" type="application/rss+xml" title="KimWang's blog" href="/feed.xml">
-<link rel="canonical" href="/android/2015/05/04/question-width-android.html">
+<link rel="canonical" href="/%E7%AE%97%E6%B3%95/2018/10/03/base64.html">
 -->
 
 <link rel="stylesheet" href="/assets/dist/style.css">
@@ -66,45 +66,9 @@
   <ul class="summary">
     
     
-    <h2>&nbsp;&nbsp;android</h2>
+    <h2>&nbsp;&nbsp;算法</h2>
     
-      <li ><a href="/android/2015/04/15/basic-width-android.html">&nbsp;&nbsp;&nbsp;&nbsp;1.android基础知识</a></li>
-    
-      <li ><a href="/android/2015/04/13/problem-width-android-orientation.html">&nbsp;&nbsp;&nbsp;&nbsp;2.android横竖屏切换时的一些问题</a></li>
-    
-  
-    <li class="divider"></li>
-    <h2>&nbsp;&nbsp;Common</h2>
-    
-      <li ><a href="/common/2015/04/30/linux_system_signal.html">&nbsp;&nbsp;&nbsp;&nbsp;1.Linux信号signal处理机制（转）</a></li>
-    
-      <li ><a href="/common/2015/04/29/timelinefx.html">&nbsp;&nbsp;&nbsp;&nbsp;2.Timelinefx粒子编辑器</a></li>
-    
-      <li ><a href="/common/2015/04/20/common-cmd.html">&nbsp;&nbsp;&nbsp;&nbsp;3.C/C++常用命令</a></li>
-    
-      <li ><a href="/common/2015/04/20/dll-and-so-compare.html">&nbsp;&nbsp;&nbsp;&nbsp;4.Window动态库与Linux共享对象比较（转）</a></li>
-    
-  
-    <li class="divider"></li>
-    <h2>&nbsp;&nbsp;Android</h2>
-    
-      <li class="active"><a href="/android/2015/05/04/question-width-android.html">&nbsp;&nbsp;&nbsp;&nbsp;1.android开发问题集</a></li>
-    
-  
-    <li class="divider"></li>
-    <h2>&nbsp;&nbsp;AS3</h2>
-    
-      <li ><a href="/as3/2015/05/08/filereference.html">&nbsp;&nbsp;&nbsp;&nbsp;1.使用 FileReference 类（转）</a></li>
-    
-  
-    <li class="divider"></li>
-    <h2>&nbsp;&nbsp;common</h2>
-    
-      <li ><a href="/common/2015/06/05/opengl-glsurfaceview.html">&nbsp;&nbsp;&nbsp;&nbsp;1.GLSurfaceView相关（转）</a></li>
-    
-      <li ><a href="/common/2015/06/03/color-calculator.html">&nbsp;&nbsp;&nbsp;&nbsp;2.常用色彩模型转换算法</a></li>
-    
-      <li ><a href="/common/2015/05/26/fragment.html">&nbsp;&nbsp;&nbsp;&nbsp;3.常用代码片段</a></li>
+      <li class="active"><a href="/%E7%AE%97%E6%B3%95/2018/10/03/base64.html">&nbsp;&nbsp;&nbsp;&nbsp;1.base64算法简介</a></li>
     
   
   </ul>
@@ -122,7 +86,7 @@
           <div style="display: none">TODO: share icons</div>
           <h1>
             <i class="fa fa-circle-o-notch fa-spin"></i>
-            <a>android开发问题集</a>
+            <a>base64算法简介</a>
           </h1>
         </div>
         <div class="page-wrapper" tabindex="-1" role="main">
@@ -130,20 +94,15 @@
             <div id="book-search-results">
               <div class="search-noresults">
                 <section class="normal markdown-section">
-                  <p><strong>1.android 的 assets 目录中不要包含中文名字的文件，否则会出现文件【resources.ap_ does not exist】的错误。</strong></p>
+                  <h4 id="定义">定义</h4>
+<p>Base64是一种基于64个可打印字符来表示二进制数据的表示方法。</p>
 
-<p><strong>2.android sdk manager 列表中没有google api选项</strong></p>
-<font color="#009900">
-方法1: 更新到最新的SDK R18版本（若你用eclipse开发，要注意ADT的版本）  
-方法2: 寻找Google API包，下载后，添加到add-ons目录下。  
-</font>
+<h4 id="历史">历史</h4>
+<p>对于电子邮件网络的最初几十年（1971年至1990年代早期），大多数电子邮件消息都是7位US-ASCII字符集中的纯文本。二进制文件（比如图片）不能通过电子邮件进行传输，为此便设计出Base64这边编码，目的就是为将二进制数据转换为7位的ascii字符，从而顺利进行传输。<br />
+出于相同目的，还诞生了很多类似的编码：uuencoding，Ascii85，SREC，BinHex，kermit等。<br /></p>
 
-<font color="#AAAAAA">
-<i>
-add-ons：存放Android的扩展库，例如google map、USB驱动等。  
-Google API包：包含 google map API、media effects API、USB连接。
-</i>
-</font>
+<h4 id="base64变种汇总表">Base64变种汇总表</h4>
+<p><img src="/assets/dist/img/base64_summary_table.png" alt="base64_summary_table" /></p>
 
                 </section>
 
