@@ -165,6 +165,51 @@
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">encoded</span> <span class="o">=</span> <span class="n">base64</span><span class="o">.</span><span class="n">b64encode</span><span class="p">(</span><span class="n">original</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s">'ascii'</span><span class="p">)</span>
 </code></pre></div></div>
 
+<p>2)javascript base64</p>
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="c1">//编码</span>
+<span class="kd">function</span> <span class="nx">b64EncodeUnicode</span><span class="p">(</span><span class="nx">str</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">btoa</span><span class="p">(</span><span class="nb">encodeURIComponent</span><span class="p">(</span><span class="nx">str</span><span class="p">).</span><span class="nx">replace</span><span class="p">(</span><span class="sr">/%</span><span class="se">([</span><span class="sr">0-9A-F</span><span class="se">]{2})</span><span class="sr">/g</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">match</span><span class="p">,</span> <span class="nx">p1</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nb">String</span><span class="p">.</span><span class="nx">fromCharCode</span><span class="p">(</span><span class="s1">'0x'</span> <span class="o">+</span> <span class="nx">p1</span><span class="p">);</span>
+    <span class="p">}));</span>
+
+<span class="nx">b64EncodeUnicode</span><span class="p">(</span><span class="s1">'✓ à la mode'</span><span class="p">);</span> <span class="c1">// "4pyTIMOgIGxhIG1vZGU="</span>
+
+
+<span class="c1">//解码</span>
+<span class="kd">function</span> <span class="nx">b64DecodeUnicode</span><span class="p">(</span><span class="nx">str</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nb">decodeURIComponent</span><span class="p">(</span><span class="nx">atob</span><span class="p">(</span><span class="nx">str</span><span class="p">).</span><span class="nx">split</span><span class="p">(</span><span class="s1">''</span><span class="p">).</span><span class="nx">map</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">c</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="s1">'%'</span> <span class="o">+</span> <span class="p">(</span><span class="s1">'00'</span> <span class="o">+</span> <span class="nx">c</span><span class="p">.</span><span class="nx">charCodeAt</span><span class="p">(</span><span class="mi">0</span><span class="p">).</span><span class="nx">toString</span><span class="p">(</span><span class="mi">16</span><span class="p">)).</span><span class="nx">slice</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">);</span>
+    <span class="p">}).</span><span class="nx">join</span><span class="p">(</span><span class="s1">''</span><span class="p">));</span>
+<span class="p">}</span>
+
+<span class="nx">b64DecodeUnicode</span><span class="p">(</span><span class="s1">'4pyTIMOgIGxhIG1vZGU='</span><span class="p">);</span> <span class="c1">// "✓ à la mode"</span>
+<span class="nx">b64DecodeUnicode</span><span class="p">(</span><span class="s1">'Cg=='</span><span class="p">);</span> <span class="c1">// "\n"</span>
+</code></pre></div></div>
+<p>说明：函数btoa和atob是javascript原生base64编解码接口，由于 DOMString 是16位编码的字符串，所以如果有字符超出了8位ASCII编码的字符范围时，在大多数的浏览器中对Unicode字符串调用 window.btoa 将会造成一个 Character Out Of Range 的异常。所以需要使用encodeURIComponent/decodeURIComponent进行处理。</p>
+
+<p>3)objective-c base64</p>
+
+<div class="language-objc highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">//编码</span>
+<span class="k">-</span> <span class="p">(</span><span class="n">NSString</span><span class="o">*</span><span class="p">)</span><span class="nf">base64Encode</span><span class="p">:(</span><span class="n">NSString</span><span class="o">*</span><span class="p">)</span><span class="nv">string</span>
+<span class="p">{</span>
+    <span class="n">NSData</span><span class="o">*</span> <span class="n">data</span> <span class="o">=</span> <span class="p">[</span><span class="n">string</span> <span class="nf">dataUsingEncoding</span><span class="p">:</span><span class="n">NSUTF8StringEncoding</span><span class="p">];</span>
+    <span class="c1">// option选项：</span>
+    <span class="c1">// 默认为0，不换行，结尾为回车换行符</span>
+    <span class="c1">// NSDataBase64Encoding64CharacterLineLength 编码行长度限制为64</span>
+    <span class="c1">// NSDataBase64Encoding76CharacterLineLength 编码行长度限制为76</span>
+    <span class="c1">// NSDataBase64EncodingEndLineWithCarriageReturn 结尾为回车符</span>
+    <span class="c1">// NSDataBase64EncodingEndLineWithLineFeed    结尾为换行符</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">data</span> <span class="nf">base64EncodedStringWithOptions</span><span class="p">:</span><span class="mi">0</span><span class="p">];</span>
+<span class="p">}</span>
+
+<span class="c1">//解码</span>
+<span class="k">-</span> <span class="p">(</span><span class="n">NSString</span><span class="o">*</span><span class="p">)</span><span class="nf">base64Decode</span><span class="p">:(</span><span class="n">NSString</span><span class="o">*</span><span class="p">)</span><span class="nv">string</span>
+<span class="p">{</span>
+    <span class="n">NSData</span><span class="o">*</span> <span class="n">data</span> <span class="o">=</span> <span class="p">[[</span><span class="n">NSData</span> <span class="nf">alloc</span><span class="p">]</span><span class="nf">initWithBase64EncodedString</span><span class="p">:</span><span class="n">string</span> <span class="nf">options</span><span class="p">:</span><span class="mi">0</span><span class="p">];</span>
+    <span class="k">return</span> <span class="p">[[</span><span class="n">NSString</span> <span class="nf">alloc</span><span class="p">]</span><span class="nf">initWithData</span><span class="p">:</span><span class="n">data</span> <span class="nf">encoding</span><span class="p">:</span><span class="n">NSUTF8StringEncoding</span><span class="p">];</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
                 </section>
 
                 <a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a>
