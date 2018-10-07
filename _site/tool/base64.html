@@ -44,6 +44,94 @@
 
 
 
+  <style>
+      .unselectable {
+          -webkit-touch-callout: none;
+          -webkit-user-select: none;
+          -khtml-user-select: none;
+          -moz-user-select: none;
+          -ms-user-select: none;
+          user-select: none;
+      }
+
+      ul {
+          margin: 0;
+          padding: 0;
+
+      }
+      .clearfloat {
+          zoom: 1;
+      }
+      .clearfloat::after {
+          display: block;
+          clear: both;
+          content: "";
+          visibility: hidden;
+          height: 0;
+      }
+
+      .tab-list {
+          position: relative;
+      }
+
+      .tab-list .tab-itom {
+          float: left;
+          list-style: none;
+          margin-right: 4px;
+      }
+
+      .tab-itom .test-label {
+          position: relative;
+          display: block;
+          font-size: 1.5em;
+          width: 120px;
+          height: 27px;
+          border: 1px solid transparent;
+          border-top-left-radius: 0px;
+          border-top-right-radius: 0px;
+          border-bottom-left-radius: 0px;
+          border-bottom-right-radius: 0px;
+          line-height: 27px;
+          text-align: center;
+          background: #e7e8eb;
+      }
+
+      .tab-itom .tab-box {
+          /* 设置绝对定位方便定位相对于tab-list栏的位置，同时为了可以使用z-index属性 */
+          position: absolute;
+          left: 0;
+          top: 28px;
+          width: 95%;
+          height: 520px;
+          border-radius: 5px;
+          border-top-left-radius: 0px;
+          background: #fff;
+          /* 设置层级最低方便选中状态遮挡 */
+          z-index: 0;
+      }
+      /* 用绝对定位使按钮脱离文档流，透明度设置为0将其隐藏 */
+      input[type="radio"] {
+          position: absolute;
+          opacity: 0;
+      }
+      /* 利用选择器实现  tab切换 */
+
+      /* 当radio为选中状态时设置它的test-label兄弟元素的属性 */
+      input[type="radio"]:checked + .test-label {
+          color:#fff;
+          /* 为了修饰存在的边框背景属性 */
+          border-color: #2e6da4;
+          background: #2e6da4;
+          /* 为了修饰存在的层级使下边框遮挡下方div的上边框 */
+          z-index: 10;
+      }
+      /* 当radio为选中状态时设置与它同级的tab-box元素的显示层级 */
+      input[type="radio"]:checked ~ .tab-box {
+          /* 选中时提升层级，遮挡其他tab页达到选中切换的效果 */
+          z-index: 5;
+      }
+  </style>
+
   <link rel="stylesheet" href="/assets/dist/sheet.css">
   <script src="/assets/dist/js/tool/base64.js"></script>
   <script>
@@ -62,6 +150,24 @@
       var input = document.getElementById("input_textarea");
       var output = document.getElementById("output_textarea");
       output.value = base64Encode(input.value);;
+    }
+
+
+    //Base16解码
+    function doBase16Decode()
+    {
+      var input = document.getElementById("input_textarea_base16");
+      var output = document.getElementById("output_textarea_base16");
+      var input_value = input.value;
+      output.value = base16Decode(input_value);
+    }
+
+    //Base16解码
+    function doBase16Encode()
+    {
+      var input = document.getElementById("input_textarea_base16");
+      var output = document.getElementById("output_textarea_base16");
+      output.value = base16Encode(input.value);;
     }
 
   </script>
@@ -115,15 +221,75 @@
               <a>base64编/解码</a>
             </h1>
           </div>
-        
+  
           <div>
-            <textarea id="input_textarea" placeholder="请输入待解码或编码的字符串" class="tool-input-textarea" spellcheck="false"></textarea>
-            <div class="tool-button-group">
-              <button id="decode" class="tool-button" onClick="doBase64Decode()">解码</button>
-              <button id="encode" class="tool-button" onClick="doBase64Encode()">编码</button>
-            </div>
-            <textarea id="output_textarea"class="tool-output-textarea" readonly="readonly" spellcheck="false"></textarea>
-          </div>
+            <ul class="tab-list clearfloat">
+              <li class="tab-itom">
+                  <input type="radio" id="testTabRadio1" class="test-radio" name="tab" checked="checked">
+                  <label class="test-label unselectable" for="testTabRadio1">Base64</label>
+                  <div class="tab-box">
+                      <textarea id="input_textarea" placeholder="请输入待解码或编码的字符串" class="tool-input-textarea" spellcheck="false"></textarea>
+                      <div class="tool-button-group">
+                        <button id="decode" class="tool-button" onClick="doBase64Decode()">解码</button>
+                        <button id="encode" class="tool-button" onClick="doBase64Encode()">编码</button>
+                      </div>
+                      <textarea id="output_textarea"class="tool-output-textarea" readonly="readonly" spellcheck="false"></textarea>
+                  </div>
+              </li>
+              <li class="tab-itom">
+                  <input type="radio" id="testTabRadio2" class="test-radio" name="tab">
+                  <label class="test-label unselectable" for="testTabRadio2">Base85</label>
+                  <div class="tab-box">
+                      <textarea id="input_textarea" placeholder="请输入待解码或编码的字符串" class="tool-input-textarea" spellcheck="false"></textarea>
+                      <div class="tool-button-group">
+                        <button id="decode" class="tool-button" onClick="doBase64Decode()">解码</button>
+                        <button id="encode" class="tool-button" onClick="doBase64Encode()">编码</button>
+                      </div>
+                      <textarea id="output_textarea"class="tool-output-textarea" readonly="readonly" spellcheck="false"></textarea>
+                  </div>
+              </li>
+
+              <li class="tab-itom">
+                  <input type="radio" id="testTabRadio3" class="test-radio" name="tab">
+                  <label class="test-label unselectable" for="testTabRadio3">Base58</label>
+                  <div class="tab-box">
+                      <textarea id="input_textarea" placeholder="请输入待解码或编码的字符串" class="tool-input-textarea" spellcheck="false"></textarea>
+                      <div class="tool-button-group">
+                        <button id="decode" class="tool-button" onClick="doBase64Decode()">解码</button>
+                        <button id="encode" class="tool-button" onClick="doBase64Encode()">编码</button>
+                      </div>
+                      <textarea id="output_textarea"class="tool-output-textarea" readonly="readonly" spellcheck="false"></textarea>
+                  </div>
+              </li>
+
+              <li class="tab-itom">
+                  <input type="radio" id="testTabRadio4" class="test-radio" name="tab">
+                  <label class="test-label unselectable" for="testTabRadio4">Base32</label>
+                  <div class="tab-box">
+                      <textarea id="input_textarea" placeholder="请输入待解码或编码的字符串" class="tool-input-textarea" spellcheck="false"></textarea>
+                      <div class="tool-button-group">
+                        <button id="decode" class="tool-button" onClick="doBase64Decode()">解码</button>
+                        <button id="encode" class="tool-button" onClick="doBase64Encode()">编码</button>
+                      </div>
+                      <textarea id="output_textarea"class="tool-output-textarea" readonly="readonly" spellcheck="false"></textarea>
+                  </div>
+              </li>
+
+              <li class="tab-itom">
+                  <input type="radio" id="testTabRadio5" class="test-radio" name="tab">
+                  <label class="test-label unselectable" for="testTabRadio5">Base16</label>
+                  <div class="tab-box">
+                      <textarea id="input_textarea_base16" placeholder="请输入待解码或编码的字符串" class="tool-input-textarea" spellcheck="false"></textarea>
+                      <div class="tool-button-group">
+                        <button id="decode" class="tool-button" onClick="doBase16Decode()">解码</button>
+                        <button id="encode" class="tool-button" onClick="doBase16Encode()">编码</button>
+                      </div>
+                      <textarea id="output_textarea_base16"class="tool-output-textarea" readonly="readonly" spellcheck="false"></textarea>
+                  </div>
+              </li>
+          </ul>
+        <div/>
+
         </div>
       </div>
   </div>

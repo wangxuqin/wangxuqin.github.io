@@ -167,3 +167,58 @@ function base64Decode(str){
 
 	return byteToString(arr);
 }
+
+//base16编码
+function base16Encode(str)
+{
+	var base16String = '0123456789ABCDEF'
+	var arr = new Array();
+	var bytes = stringToByte(str);
+	for(var i = 0; i < bytes.length; i++){
+		var high = bytes[i] >> 4;
+		var low  = bytes[i] & 0x0f;
+		arr.push(base16String[high]);
+		arr.push(base16String[low]);
+	}
+	return arr.join('');
+}
+
+var base16Convert = function(byteValue)
+{
+	var value = -1;
+	if(byteValue != undefined){
+		if(48 <= byteValue && byteValue <= 59){
+			value = byteValue - 48;
+		}
+		else if(65 <= byteValue && byteValue <= 70){
+			value = byteValue - 65 + 10;
+		}
+	}
+	return value;
+}
+
+//base16解码
+function base16Decode(str)
+{
+	var arr   = new Array();
+	var bytes = stringToByte(str);
+	if(bytes.length % 2 != 0){
+		decodeErrorTip();
+		return "";
+	}
+	var index = 0;
+	while(index < bytes.length)
+	{
+		var high = bytes[index++];
+		var low  = bytes[index++];
+		var highValue = base16Convert(high);
+		var lowValue  = base16Convert(low);
+		if(highValue == -1 || lowValue == -1){
+			decodeErrorTip();
+			return "";
+		}
+		var value = highValue << 4 | lowValue
+		arr.push(value);
+	}
+	return byteToString(arr);
+}
