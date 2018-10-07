@@ -130,8 +130,40 @@
 <p>标准Base64映射表<br />
 <img src="/assets/dist/img/base64_table.png" alt="base64_table" /></p>
 
-<h4 id="base64变种汇总表">Base64变种汇总表</h4>
-<p><img src="/assets/dist/img/base64_summary_table.png" alt="base64_summary_table" /></p>
+<h4 id="base64变种">Base64变种</h4>
+<p>Base64其实不单单只有一种，为适应更多场景使用，它产生了很多变种，其中第0到第61个映射字符是一样的，不同主要集中在第62、63字符，没有填充字符，是否需要换行以及行长度限制。下面是Base64变种部分汇总表:<br />
+<img src="/assets/dist/img/base64_summary_table.png" height="420px" /></p>
+
+<p>说明:</p>
+
+<p>1)目前网上在线Base64编解码绝大多数采用的是RFC4648 Base64，它的特点是第62、63映射字符为’+’， ‘/’，没有行长度限制，不会加入回车换行符。<br /></p>
+
+<p>2)有些编程语言采用MIME Base64方式，这样当编码字符串长度大于76时，就会加上回车换行符，从而该编码字符串被应用到其它地方可能会引发些问题。<br /></p>
+
+<p>3)当URL参数使用Base64进行编码，这时映射字符’+’，’/’， 填充字符’=’，会被转换成”%XX”形式，而这些’%’在存入数据库前还需要进行转换，因为ANSI SQL中已将’%’字符作为通配符。这时可以选择使用Base64url，这种Base64将’+’ ,  ‘/’使用’-‘, ‘_’ 替代，并且不再强制使用填充字符”=”。 <br /></p>
+
+<p>4)在XML中应用Base64可以使用”XML 名称标记(Nmtoken) Base64 “和”XML 标识符(name) Base64”。<br /></p>
+
+<h4 id="常用编程语言">常用编程语言</h4>
+
+<p>1)python3 base64模块</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#导入base64模块</span>
+<span class="kn">import</span> <span class="nn">base64</span>
+<span class="n">original</span> <span class="o">=</span> <span class="n">b</span><span class="s">'python3 base64 demo'</span>
+<span class="c">#编码</span>
+<span class="n">encoded</span> <span class="o">=</span> <span class="n">base64</span><span class="o">.</span><span class="n">b64encode</span><span class="p">(</span><span class="n">original</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">encoded</span><span class="p">)</span>
+<span class="c">#解码</span>
+<span class="n">decoded</span> <span class="o">=</span> <span class="n">base64</span><span class="o">.</span><span class="n">b64decode</span><span class="p">(</span><span class="n">encoded</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">decoded</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>注意：在Python3中，Base64编码仅仅用于面向字节的数据比如字节字符串和字节数组。 此外，编码处理的输出结果总是一个字节字符串。当解码Base64的时候，字节字符串和Unicode文本都可以作为参数。 但是，Unicode字符串只能包含ASCII字符。</p>
+
+<p>如果你想混合使用Base64编码的数据和Unicode文本，你必须添加一个额外的解码步骤。</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">encoded</span> <span class="o">=</span> <span class="n">base64</span><span class="o">.</span><span class="n">b64encode</span><span class="p">(</span><span class="n">original</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s">'ascii'</span><span class="p">)</span>
+</code></pre></div></div>
 
                 </section>
 
