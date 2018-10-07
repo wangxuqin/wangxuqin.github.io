@@ -104,9 +104,7 @@ function base64Encode(str)
 	return arr.join('');
 }
 
-var decodeErrorTip = function(){
-	alert("解码失败!请检查输入字符串是否合法!");
-}
+
 function base64Decode(str){
 	var arr = new Array();
 	var bytes = stringToByte(str);
@@ -185,7 +183,7 @@ Object.keys(base32Table).forEach(function(key){
 	}
 });
 
-var toConvertBase32Bytes = function(input_bytes)
+var binBytesToBase32Bytes = function(input_bytes)
 {
 	var output_bytes = new Array();
 	if(input_bytes.length == 0){
@@ -234,22 +232,95 @@ var toConvertBase32Bytes = function(input_bytes)
 	return output_bytes;
 }
 
+var base32BytesToBinBytes = function(input_bytes)
+{
+	var output_bytes = new Array();
+	var bytes = new Array();
+	var len = 0;
+	for(i = 0; i < input_bytes.length; i++){
+		var b = input_bytes[i];
+		if(base32ReverseTable[String.fromCharCode(b)] != undefined){
+			bytes.push(base32ReverseTable[String.fromCharCode(b)]);
+			len = len + 1;
+		}
+		else if(b == 61){
+			bytes.push(0x00);
+		}
+	}
+
+	while(bytes.length < 8){
+		bytes.push(0x00);
+	}
+
+	var count = 0;
+	console.log(len);
+	switch(len){
+		case 2: count = 8 * 1; break;
+		case 4: count = 8 * 2; break;
+		case 5: count = 8 * 3; break;
+		case 7: count = 8 * 4; break;
+		case 8: count = 8 * 5; break;
+	}
+
+	var split_count = 0;
+	var split_total = 8;
+	var tmp = 0;
+	for(var i = 0; i < count; i++){
+		var bit = (bytes[0] & 0x10) >> 4;
+		bytes[0] = (bytes[0] << 1) & 0x1f;
+		var index = 0;
+		while(index < bytes.length - 1)
+		{
+			bytes[index] = bytes[index] | ((bytes[index] & 0x01) | ((bytes[index + 1] & 0x10) >> 4));
+			bytes[index + 1] = (bytes[index + 1] << 1) & 0x1f;
+			index = index + 1;
+		}
+		tmp = (tmp << 1 | bit);
+		split_count = split_count + 1;
+		if(!(split_count < split_total)){
+			output_bytes.push(tmp);
+			split_count = 0;
+			tmp = 0;
+		}
+	}
+	return output_bytes;
+}
+
 //base32编码
 function base32Encode(str)
 {
 	var arr = new Array();
 	var bytes = stringToByte(str);
-	console.log(bytes);
 	var index = 0;
 	while(index < bytes.length)
 	{
 		var input_bytes = bytes.slice(index, index+5);
-		var output_bytes = toConvertBase32Bytes(input_bytes);
+		var output_bytes = binBytesToBase32Bytes(input_bytes);
 		arr = arr.concat(output_bytes);
-		console.log(output_bytes);
 		index = index + 5;
 	}
 	return arr.join('');
+}
+
+//base32解码
+function base32Decode(str)
+{
+	var arr = new Array();
+	var bytes = stringToByte(str.toUpperCase());
+	var index = 0;
+	while(index < bytes.length)
+	{
+		var input_bytes = bytes.slice(index, index+8);
+		if(input_bytes.length != 8){
+			decodeErrorTip();
+			return "";
+		}
+		var output_bytes = base32BytesToBinBytes(input_bytes);
+		console.log(output_bytes);
+		arr = arr.concat(output_bytes);
+		index = index + 8;
+	}
+	return byteToString(arr);
 }
 
 
