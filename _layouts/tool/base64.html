@@ -112,6 +112,23 @@
     }
 
 
+    //Base32解码
+    function doBase32Decode()
+    {
+      var input = document.getElementById("input_textarea_base32");
+      var output = document.getElementById("output_textarea_base32");
+      var input_value = input.value;
+      output.value = base32Decode(input_value);
+    }
+
+    //Base32解码
+    function doBase32Encode()
+    {
+      var input = document.getElementById("input_textarea_base32");
+      var output = document.getElementById("output_textarea_base32");
+      output.value = base32Encode(input.value);;
+    }
+
     //Base16解码
     function doBase16Decode()
     {
@@ -191,12 +208,12 @@
                   <input type="radio" id="testTabRadio4" class="test-radio" name="tab">
                   <label class="test-label unselectable" for="testTabRadio4">Base32</label>
                   <div class="tab-box">
-                      <textarea id="input_textarea" placeholder="请输入待解码或编码的字符串" class="tool-input-textarea" spellcheck="false"></textarea>
+                      <textarea id="input_textarea_base32" placeholder="请输入待解码或编码的字符串" class="tool-input-textarea" spellcheck="false"></textarea>
                       <div class="tool-button-group">
-                        <button id="decode" class="tool-button" onClick="doBase64Decode()">解码</button>
-                        <button id="encode" class="tool-button" onClick="doBase64Encode()">编码</button>
+                        <button id="decode_base32" class="tool-button" onClick="doBase32Decode()">解码</button>
+                        <button id="encode_base32" class="tool-button" onClick="doBase32Encode()">编码</button>
                       </div>
-                      <textarea id="output_textarea"class="tool-output-textarea" readonly="readonly" spellcheck="false"></textarea>
+                      <textarea id="output_textarea_base32"class="tool-output-textarea" readonly="readonly" spellcheck="false"></textarea>
                   </div>
               </li>
 
@@ -206,8 +223,8 @@
                   <div class="tab-box">
                       <textarea id="input_textarea_base16" placeholder="请输入待解码或编码的字符串" class="tool-input-textarea" spellcheck="false"></textarea>
                       <div class="tool-button-group">
-                        <button id="decode" class="tool-button" onClick="doBase16Decode()">解码</button>
-                        <button id="encode" class="tool-button" onClick="doBase16Encode()">编码</button>
+                        <button id="decode_base16" class="tool-button" onClick="doBase16Decode()">解码</button>
+                        <button id="encode_base16" class="tool-button" onClick="doBase16Encode()">编码</button>
                       </div>
                       <textarea id="output_textarea_base16"class="tool-output-textarea" readonly="readonly" spellcheck="false"></textarea>
                   </div>

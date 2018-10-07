@@ -168,6 +168,93 @@ function base64Decode(str){
 	return byteToString(arr);
 }
 
+
+var base32Table = {
+    0:'A',  1:'B',  2:'C',  3:'D',  4:'E',  5:'F',  6:'G',  7:'H',
+    8:'I',  9:'J', 10:'K', 11:'L', 12:'M', 13:'N', 14:'O', 15:'P',
+   16:'Q', 17:'R', 18:'S', 19:'T', 20:'U', 21:'V', 22:'W', 23:'X',
+   24:'Y', 25:'Z', 26:'2', 27:'3', 28:'4', 29:'5', 30:'6', 31:'7'
+}
+
+var base32ReverseTable = {};
+Object.keys(base32Table).forEach(function(key){
+	if(!isNaN(key)){
+		var newKey   = base32Table[key].toString();
+		var newValue =  parseInt(key);
+		base32ReverseTable[newKey] = newValue;
+	}
+});
+
+var toConvertBase32Bytes = function(input_bytes)
+{
+	var output_bytes = new Array();
+	if(input_bytes.length == 0){
+		return output_bytes;
+	}
+
+	var count = 0;
+	var input_len = input_bytes.length;
+	switch(input_len){
+		case 5: count = 5 * 8; break;
+		case 4: count = 5 * 7; break;
+		case 3: count = 5 * 5; break;
+		case 2: count = 5 * 4; break;
+		case 1: count = 5 * 2; break;
+	}
+
+	var split_count = 0;
+	var split_total = 5;
+	var tmp = 0;
+	var bytes = input_bytes.slice();
+	for(var i = 0; i < count; i++){
+		var bit = (bytes[0] & 0x80) >> 7;
+		bytes[0] = bytes[0] << 1;
+		var index = 0;
+		while(index < bytes.length - 1)
+		{
+			bytes[index] = bytes[index] | ((bytes[index] & 0x01) | ((bytes[index + 1] & 0x80) >> 7));
+			bytes[index + 1] = bytes[index + 1] << 1;
+			index = index + 1;
+		}
+		tmp = (tmp << 1 | bit);
+		split_count = split_count + 1;
+		if(!(split_count < split_total)){
+			output_bytes.push(base32Table[tmp]);
+			split_count = 0;
+			tmp = 0;
+		}
+	}
+
+	while(output_bytes.length < 8){
+		output_bytes.push('=');
+	}
+
+	console.log(output_bytes);
+
+	return output_bytes;
+}
+
+//base32编码
+function base32Encode(str)
+{
+	var arr = new Array();
+	var bytes = stringToByte(str);
+	console.log(bytes);
+	var index = 0;
+	while(index < bytes.length)
+	{
+		var input_bytes = bytes.slice(index, index+5);
+		var output_bytes = toConvertBase32Bytes(input_bytes);
+		arr = arr.concat(output_bytes);
+		console.log(output_bytes);
+		index = index + 5;
+	}
+	return arr.join('');
+}
+
+
+
+
 //base16编码
 function base16Encode(str)
 {
@@ -193,6 +280,9 @@ var base16Convert = function(byteValue)
 		else if(65 <= byteValue && byteValue <= 70){
 			value = byteValue - 65 + 10;
 		}
+		else if(97 <= byteValue && byteValue <= 102){
+			value = byteValue - 97 + 10;
+		}
 	}
 	return value;
 }
@@ -202,10 +292,6 @@ function base16Decode(str)
 {
 	var arr   = new Array();
 	var bytes = stringToByte(str);
-	if(bytes.length % 2 != 0){
-		decodeErrorTip();
-		return "";
-	}
 	var index = 0;
 	while(index < bytes.length)
 	{
@@ -213,12 +299,10 @@ function base16Decode(str)
 		var low  = bytes[index++];
 		var highValue = base16Convert(high);
 		var lowValue  = base16Convert(low);
-		if(highValue == -1 || lowValue == -1){
-			decodeErrorTip();
-			return "";
+		if(highValue != -1 && lowValue != -1){
+			var value = highValue << 4 | lowValue
+			arr.push(value);
 		}
-		var value = highValue << 4 | lowValue
-		arr.push(value);
 	}
 	return byteToString(arr);
 }
