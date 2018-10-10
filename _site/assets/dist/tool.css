@@ -15,6 +15,14 @@
 	outline: none;
 }
 
+.tool-output-textarea-2{
+    width:360px;
+    height:30px;
+    padding: 5px;
+    resize: none;
+    outline: none;
+}
+
 .tool-button{
 	display: inline-block;
 	width: 80px;
