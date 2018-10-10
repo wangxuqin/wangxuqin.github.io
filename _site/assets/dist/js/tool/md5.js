@@ -69,8 +69,6 @@ var group = function(bytes, index)
 			}
 		}
 	}
-	console.log("group");
-	console.log(m);
 	return m;
 }
 
@@ -83,16 +81,6 @@ var safeAdd = function(x, y) {
     var msw = (x >> 16) + (y >> 16) + (lsw >> 16)
     return (msw << 16) | (lsw & 0xffff)
 }
-
-var binl2rstr = function(input) {
-    var i
-    var output = ''
-    var length32 = input.length * 32
-    for (i = 0; i < length32; i += 8) {
-      output += String.fromCharCode((input[i >> 5] >>> (i % 32)) & 0xff)
-    }
-    return output
- }
 
 function md5(str){
 	var arr = new Array();
@@ -109,17 +97,18 @@ function md5(str){
 		}
 	}
 
-	var bLen = len * 8;
-	bytes.push(bLen & 0x000000ff);
-	bytes.push((bLen & 0x0000ff00) >> 8);
-	bytes.push((bLen & 0x00ff0000) >> 16);
-	bytes.push((bLen & 0xff000000) >> 24);
+	//len最大值为Math.pow(2, 53) - 1
+	var lLen = len * 8;
+	bytes.push(lLen & 0xff);
+	bytes.push((lLen >>  8) & 0xff);
+	bytes.push((lLen >> 16) & 0xff);
+	bytes.push((lLen >> 24) & 0xff);
 
-	var lLen = len >> 29;
-	bytes.push(lLen & 0x000000ff);
-	bytes.push((lLen & 0x0000ff00) >> 8);
-	bytes.push((lLen & 0x00ff0000) >> 16);
-	bytes.push((lLen & 0xff000000) >> 24);
+	var hLen = len >> 29;//直接替代了len * 8 >> 32，因为len * 8有溢出的风险
+	bytes.push(hLen & 0xff);
+	bytes.push((hLen >> 8)  & 0xff);
+	bytes.push((hLen >> 16) & 0xff);
+	bytes.push((hLen >> 24) & 0xff);
 
 
 	console.log(bytes);
@@ -131,7 +120,15 @@ function md5(str){
 				6, 10, 15, 21,  6, 10, 15, 21,  6, 10, 15, 21,  6, 10, 15, 21
 			];
 
-	// var K = [
+	
+
+	var K = new Array();
+	for(var i = 0; i < 64; i++){
+		K[i] = Math.floor(Math.pow(2, 32) * Math.abs(Math.sin(i + 1)));
+		console.log(K[i].toString(16));
+	}
+
+ // var K = [
  //    0xd76aa478, 0xe8c7b756, 0x242070db, 0xc1bdceee ,
  //    0xf57c0faf, 0x4787c62a, 0xa8304613, 0xfd469501 ,
  //    0x698098d8, 0x8b44f7af, 0xffff5bb1, 0x895cd7be ,
@@ -149,14 +146,6 @@ function md5(str){
  //    0x6fa87e4f, 0xfe2ce6e0, 0xa3014314, 0x4e0811a1 ,
  //    0xf7537e82, 0xbd3af235, 0x2ad7d2bb, 0xeb86d391 ];
 
- var K = new Array();
-	for(var i = 0; i < 64; i++){
-		K[i] = Math.floor(Math.pow(2, 32) * Math.abs(Math.sin(i + 1)));
-		console.log(K[i].toString(16));
-	}
-
-
-
 	var  a0 = 0x67452301; //A
 	var  b0 = 0xefcdab89; //B
 	var  c0 = 0x98badcfe; //C
@@ -173,7 +162,6 @@ function md5(str){
 		var F = 0;
 		var g = 0;
 
-		console.log("[a0, b0, c0, d0] =", [A, B, C, D]);
 		for(n = 0; n < 64; n++){
 			if(0 <= n && n <= 15){
 				F = (B & C) | (~B & D);
@@ -192,9 +180,7 @@ function md5(str){
 				g = (n * 7) % 16;
 			}
 
-			console.log("[F, A, K[n], M[g]] = ", [F, A, K[n], M[g]]);
 			F = safeAdd(safeAdd(F, A), safeAdd(K[n],M[g]));
-
 			A = D;
 			D = C;
 			C = B;
@@ -206,9 +192,7 @@ function md5(str){
 		c0 = safeAdd(c0, C);
 		d0 = safeAdd(d0, D);
 	}
-
 	var tmp = [a0, b0, c0, d0];
-	console.log(tmp);
 
 	var hex_char = '0123456789abcdef'.split('');
 	for(var i = 0; i < tmp.length; i++)
