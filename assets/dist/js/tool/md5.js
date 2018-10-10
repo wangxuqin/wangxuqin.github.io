@@ -194,7 +194,7 @@ function md5(str){
 	}
 	var tmp = [a0, b0, c0, d0];
 
-	var hex_char = '0123456789abcdef'.split('');
+	var hex_char = '0123456789ABCDEF'.split('');
 	for(var i = 0; i < tmp.length; i++)
 	{
 		var n = tmp[i];

@@ -16,11 +16,23 @@
 }
 
 .tool-output-textarea-2{
+    font-family:monospace;
     width:360px;
     height:30px;
     padding: 5px;
     resize: none;
     outline: none;
+    border-color: #CCC;
+}
+
+.tool-output-label{
+    font-size: 1.2em;
+    text-align: center;
+}
+
+.tool-output-area{
+    height: 40px;
+    padding: 5px;
 }
 
 .tool-button{

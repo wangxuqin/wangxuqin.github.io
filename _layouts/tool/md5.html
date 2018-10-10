@@ -99,8 +99,18 @@
     {
       var input = document.getElementById("input_textarea");
       var output = document.getElementById("output_textarea");
+      var output1 = document.getElementById("output_textarea_1");
+      var output2 = document.getElementById("output_textarea_2");
+      var output3 = document.getElementById("output_textarea_3");
       var input_value = input.value;
-      output.value = md5(input_value);
+      var result = md5(input_value)
+
+      if(result.length == 32){
+        output.value = result;
+        output1.value = result.toLowerCase();
+        output2.value = result.substring(8, 24);
+        output3.value = result.substring(8, 24).toLowerCase();
+      }
     }
 
   </script>
@@ -131,7 +141,26 @@
                       <div class="tool-button-group">
                         <button id="encode" class="tool-button" onClick="doMD5Encode()">编码</button>
                       </div>
-                      <textarea id="output_textarea"class="tool-output-textarea-2" readonly="readonly" spellcheck="false"></textarea>
+                      
+                      <div class="tool-output-area">
+                        <span class="tool-output-label">32位大写</span>
+                        <textarea id="output_textarea"class="tool-output-textarea-2" readonly="readonly" spellcheck="false"></textarea>
+                      </div>
+                      
+                      <div class="tool-output-area">
+                        <span class="tool-output-label">32位小写</span>
+                        <textarea id="output_textarea_1"class="tool-output-textarea-2" readonly="readonly" spellcheck="false"></textarea>
+                      </div>
+
+                      <div class="tool-output-area">
+                        <span class="tool-output-label">16位大写</span>
+                        <textarea id="output_textarea_2"class="tool-output-textarea-2" readonly="readonly" spellcheck="false"></textarea>
+                      </div>
+
+                      <div class="tool-output-area">
+                        <span class="tool-output-label">16位小写</span>
+                        <textarea id="output_textarea_3"class="tool-output-textarea-2" readonly="readonly" spellcheck="false"></textarea>
+                      </div>
                   </div>
               </li>
             </ul>
