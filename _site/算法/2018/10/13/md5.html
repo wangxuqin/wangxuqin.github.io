@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="zh">
+  <head>
+
+  <meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>MD5算法简介 | KimWang's blog</title>
+<meta name="description" content="KimWang's blog">
+
+<meta itemprop="name" content="">
+<meta itemprop="description" content="KimWang's blog">
+<meta itemprop="image" content="">
+
+<meta property="og:url" content="http://localhost:4000/%E7%AE%97%E6%B3%95/2018/10/13/md5.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="MD5算法简介 | KimWang's blog">
+<meta property="og:site_name" content="KimWang's blog">
+<meta property="og:description" content="KimWang's blog">
+<meta property="og:image" content="">
+
+<meta name="twitter:url" content="http://localhost:4000/%E7%AE%97%E6%B3%95/2018/10/13/md5.html">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="MD5算法简介 | KimWang's blog">
+<meta name="twitter:site" content="KimWang's blog">
+<meta name="twitter:description" content="KimWang's blog">
+
+<meta property="twitter:image" content="">
+
+<link rel="icon" type="image/x-icon" href="/assets/images/favicon.ico">
+
+<!--
+<link rel="stylesheet" href="/assets/css/app.min.css">
+<link rel="alternate" type="application/rss+xml" title="KimWang's blog" href="/feed.xml">
+<link rel="canonical" href="/%E7%AE%97%E6%B3%95/2018/10/13/md5.html">
+-->
+
+<link rel="stylesheet" href="/assets/dist/style.css">
+<link rel="stylesheet" href="/assets/dist/highlight.css">
+<link rel="stylesheet" href="/assets/dist/search.css">
+<link rel="stylesheet" href="/assets/dist/fontsettings.css">
+<link rel="stylesheet" href="/assets/dist/tool.css">
+
+
+
+
+</head>
+
+  <body>
+    <div class="book without-animation with-summary font-size-2 font-family-1">
+    <input type='checkbox' id='sidemenu' checked="true">
+<aside>
+<h3>KimWang's blog</h3>
+<ul id="sideul">
+    <li><a            href="http://localhost:4000/">主页</a></li>
+    <li><a class="active" href="http://localhost:4000/posts.html">文章</a></li>
+    <li><a  href="http://localhost:4000/tools.html">工具</a></li>
+    <li><a href="#">关于</a></li>
+</ul> 
+</aside>   
+
+<div class="book-summary">
+	
+  		<nav role="navigation">
+  <ul class="summary">
+    
+    
+    <h2>&nbsp;&nbsp;算法</h2>
+    
+      <li class="active"><a href="/%E7%AE%97%E6%B3%95/2018/10/13/md5.html">&nbsp;&nbsp;&nbsp;&nbsp;1.MD5算法简介</a></li>
+    
+      <li ><a href="/%E7%AE%97%E6%B3%95/2018/10/03/base64.html">&nbsp;&nbsp;&nbsp;&nbsp;2.base64算法简介</a></li>
+    
+  
+  </ul>
+</nav>
+  	
+</div>
+
+<div id='wrap'>
+    <label id='sideMenuControl' for='sidemenu'>≡</label>
+</div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <div style="display: none">TODO: share icons</div>
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i>
+            <a>MD5算法简介</a>
+          </h1>
+        </div>
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+            <div id="book-search-results">
+              <div class="search-noresults">
+                <section class="normal markdown-section">
+                  <h4 id="定义">定义</h4>
+<p>MD5信息摘要算法（<strong>M</strong>essage-<strong>D</strong>igest Algorithm <strong>5</strong>）是一种哈希算法，可以将任意长的数据转化成一个128位（即16字节）的散列值。</p>
+
+<h4 id="历史">历史</h4>
+<p>MD5算法是美国密码学家罗纳德.李维斯特(Roland Linn Reivest)设计，于1992年公开，用于替代MD4，这套算法的程序在RFC 1321中被加以规范。<br /></p>
+
+<p>1996年后，被真实存在弱点，可以被加以破解。对于需要高度安全性的数据，专家建议改用更高安全性的算法，如SHA-2。<br /></p>
+
+<p>2004年，王小云教授证明MD5数字签名算法可以产生碰撞。<br /></p>
+
+<p>2007年，Marc Stevens，Arjen K. Lenstra和Benne de Weger进一步指出通过伪造软件签名，可重复性攻击MD5算法。研究者使用前缀碰撞法（chosen-prefix collision），使程序前端包含恶意程序，利用后面的空间添上垃圾代码凑出同样的MD5 Hash值。荷兰埃因霍芬技术大学科学家成功把2个可执行文件进行了MD5碰撞，使得这两个运行结果不同的程序被计算出同一个MD5。2008年12月科研人员通过MD5碰撞成功生成了伪造的SSL证书，这使得在https协议中服务器可以伪造一些根CA的签名。<br /></p>
+
+<p>2008年，MD5被攻破后，在Crypto2008上， Rivest提出了MD6算法，该算法的Block size为512 bytes(MD5的Block Size是512 bits), Chaining value长度为1024 bits, 算法增加了并行 机制，适合于多核CPU。 在安全性上，Rivest宣称该算法能够抵抗截至目前已知的所有的 攻击（包括差分攻击）。<br /></p>
+
+<p>2009年，中国科学院的谢涛和冯登国仅用了2^20.96的碰撞算法复杂度，破解了MD5的碰撞抵抗，该攻击在普通计算机上运行只需要数秒钟。<br /></p>
+
+<h4 id="特征">特征</h4>
+<p>和其它哈希算法(md4、sha-1、sha-2…)的特征一样，md5具有以下特征：<br />
+1.产生散列值跟数据长度无关，不过数据长度如何，md5产生的数据都为128位。<br />
+2.相同的输入，必定由相同的输出。<br />
+3.即使输入数据十分相似，但输出值存在非常大的差异。<br />
+4.完全不同的数据，会有极低概率产生相同的散列值，这种情况称为”碰撞”。<br />
+5.不能通过散列值获得原数据。</p>
+
+<h4 id="用途">用途</h4>
+<p>MD5的常用用途：<br /></p>
+
+<p><strong>1.防篡改</strong><br />
+通常网站在提供下载软件的同时，还提供该软件的MD5值。当用户下载该软件后，可以去计算下载后的软件的MD5值，然后与网站提供的MD5值做对比，如果不一致，那么下载的软件很有可能被篡改过。</p>
+
+<p><strong>2.登录密码</strong><br />
+现在很多网站都不会明文存储注册用户的登录帐号，而是通过对用户名和密码加盐，之后再使用MD5处理才存储到数据库中。当用户进行登录操作时，网站系统将帐号和密码进行相同的处理再跟数据库存储的加密字符串进行对比。（ps：这样有一个方法可以知道网站是否存储的明文，点击网站的”找回密码”，假如网站提示让你重新输入一个新的密码，而不是直接把原密码发给你，则表示该网站存储不是明文。）<br /></p>
+
+<p><strong>3.文件去重</strong><br />
+比如一些去重软件，扫描主机上面的各种文件并计算它们的MD5值，然后通过查找相同MD5值，从而找到重复的文件。<br />
+还有各种网盘，通过相同原理找到并移除用户之间的重复文件，从而大大减少存储开支成本。<br />
+与此同时还有一种秒传功能，当用户向网盘上传文件时，网盘先计算该文件的MD5值，然后使用该MD5值去网盘数据查找是否已经有相同的记录，如果存在，则表明网盘线上已经存在相同的文件，这个时候只需要将线上文件做一个链接到用户目录中，而不用再上传本地文件，从而达到秒传的目的。</p>
+
+<h4 id="算法">算法</h4>
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">//Note: All variables are unsigned 32 bit and wrap modulo 2^32 when calculating</span>
+<span class="n">var</span> <span class="kt">int</span><span class="p">[</span><span class="mi">64</span><span class="p">]</span> <span class="n">s</span><span class="p">,</span> <span class="n">K</span>
+<span class="n">var</span> <span class="kt">int</span> <span class="n">i</span>
+
+<span class="c1">//s specifies the per-round shift amounts</span>
+<span class="n">s</span><span class="p">[</span> <span class="mi">0</span><span class="p">..</span><span class="mi">15</span><span class="p">]</span> <span class="o">:=</span> <span class="p">{</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">17</span><span class="p">,</span> <span class="mi">22</span><span class="p">,</span>  <span class="mi">7</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">17</span><span class="p">,</span> <span class="mi">22</span><span class="p">,</span>  <span class="mi">7</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">17</span><span class="p">,</span> <span class="mi">22</span><span class="p">,</span>  <span class="mi">7</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">17</span><span class="p">,</span> <span class="mi">22</span> <span class="p">}</span>
+<span class="n">s</span><span class="p">[</span><span class="mi">16</span><span class="p">..</span><span class="mi">31</span><span class="p">]</span> <span class="o">:=</span> <span class="p">{</span> <span class="mi">5</span><span class="p">,</span>  <span class="mi">9</span><span class="p">,</span> <span class="mi">14</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span>  <span class="mi">5</span><span class="p">,</span>  <span class="mi">9</span><span class="p">,</span> <span class="mi">14</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span>  <span class="mi">5</span><span class="p">,</span>  <span class="mi">9</span><span class="p">,</span> <span class="mi">14</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span>  <span class="mi">5</span><span class="p">,</span>  <span class="mi">9</span><span class="p">,</span> <span class="mi">14</span><span class="p">,</span> <span class="mi">20</span> <span class="p">}</span>
+<span class="n">s</span><span class="p">[</span><span class="mi">32</span><span class="p">..</span><span class="mi">47</span><span class="p">]</span> <span class="o">:=</span> <span class="p">{</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">23</span><span class="p">,</span>  <span class="mi">4</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">23</span><span class="p">,</span>  <span class="mi">4</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">23</span><span class="p">,</span>  <span class="mi">4</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">23</span> <span class="p">}</span>
+<span class="n">s</span><span class="p">[</span><span class="mi">48</span><span class="p">..</span><span class="mi">63</span><span class="p">]</span> <span class="o">:=</span> <span class="p">{</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">21</span><span class="p">,</span>  <span class="mi">6</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">21</span><span class="p">,</span>  <span class="mi">6</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">21</span><span class="p">,</span>  <span class="mi">6</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">21</span> <span class="p">}</span>
+
+<span class="c1">//Use binary integer part of the sines of integers (Radians) as constants:</span>
+<span class="k">for</span> <span class="n">i</span> <span class="n">from</span> <span class="mi">0</span> <span class="n">to</span> <span class="mi">63</span>
+    <span class="n">K</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">:=</span> <span class="n">floor</span><span class="p">(</span><span class="mi">232</span> <span class="err">×</span> <span class="n">abs</span><span class="p">(</span><span class="n">sin</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)))</span>
+<span class="n">end</span> <span class="k">for</span>
+<span class="c1">//(Or just use the following precomputed table):</span>
+<span class="n">K</span><span class="p">[</span> <span class="mi">0</span><span class="p">..</span> <span class="mi">3</span><span class="p">]</span> <span class="o">:=</span> <span class="p">{</span> <span class="mh">0xd76aa478</span><span class="p">,</span> <span class="mh">0xe8c7b756</span><span class="p">,</span> <span class="mh">0x242070db</span><span class="p">,</span> <span class="mh">0xc1bdceee</span> <span class="p">}</span>
+<span class="n">K</span><span class="p">[</span> <span class="mi">4</span><span class="p">..</span> <span class="mi">7</span><span class="p">]</span> <span class="o">:=</span> <span class="p">{</span> <span class="mh">0xf57c0faf</span><span class="p">,</span> <span class="mh">0x4787c62a</span><span class="p">,</span> <span class="mh">0xa8304613</span><span class="p">,</span> <span class="mh">0xfd469501</span> <span class="p">}</span>
+<span class="n">K</span><span class="p">[</span> <span class="mi">8</span><span class="p">..</span><span class="mi">11</span><span class="p">]</span> <span class="o">:=</span> <span class="p">{</span> <span class="mh">0x698098d8</span><span class="p">,</span> <span class="mh">0x8b44f7af</span><span class="p">,</span> <span class="mh">0xffff5bb1</span><span class="p">,</span> <span class="mh">0x895cd7be</span> <span class="p">}</span>
+<span class="n">K</span><span class="p">[</span><span class="mi">12</span><span class="p">..</span><span class="mi">15</span><span class="p">]</span> <span class="o">:=</span> <span class="p">{</span> <span class="mh">0x6b901122</span><span class="p">,</span> <span class="mh">0xfd987193</span><span class="p">,</span> <span class="mh">0xa679438e</span><span class="p">,</span> <span class="mh">0x49b40821</span> <span class="p">}</span>
+<span class="n">K</span><span class="p">[</span><span class="mi">16</span><span class="p">..</span><span class="mi">19</span><span class="p">]</span> <span class="o">:=</span> <span class="p">{</span> <span class="mh">0xf61e2562</span><span class="p">,</span> <span class="mh">0xc040b340</span><span class="p">,</span> <span class="mh">0x265e5a51</span><span class="p">,</span> <span class="mh">0xe9b6c7aa</span> <span class="p">}</span>
+<span class="n">K</span><span class="p">[</span><span class="mi">20</span><span class="p">..</span><span class="mi">23</span><span class="p">]</span> <span class="o">:=</span> <span class="p">{</span> <span class="mh">0xd62f105d</span><span class="p">,</span> <span class="mh">0x02441453</span><span class="p">,</span> <span class="mh">0xd8a1e681</span><span class="p">,</span> <span class="mh">0xe7d3fbc8</span> <span class="p">}</span>
+<span class="n">K</span><span class="p">[</span><span class="mi">24</span><span class="p">..</span><span class="mi">27</span><span class="p">]</span> <span class="o">:=</span> <span class="p">{</span> <span class="mh">0x21e1cde6</span><span class="p">,</span> <span class="mh">0xc33707d6</span><span class="p">,</span> <span class="mh">0xf4d50d87</span><span class="p">,</span> <span class="mh">0x455a14ed</span> <span class="p">}</span>
+<span class="n">K</span><span class="p">[</span><span class="mi">28</span><span class="p">..</span><span class="mi">31</span><span class="p">]</span> <span class="o">:=</span> <span class="p">{</span> <span class="mh">0xa9e3e905</span><span class="p">,</span> <span class="mh">0xfcefa3f8</span><span class="p">,</span> <span class="mh">0x676f02d9</span><span class="p">,</span> <span class="mh">0x8d2a4c8a</span> <span class="p">}</span>
+<span class="n">K</span><span class="p">[</span><span class="mi">32</span><span class="p">..</span><span class="mi">35</span><span class="p">]</span> <span class="o">:=</span> <span class="p">{</span> <span class="mh">0xfffa3942</span><span class="p">,</span> <span class="mh">0x8771f681</span><span class="p">,</span> <span class="mh">0x6d9d6122</span><span class="p">,</span> <span class="mh">0xfde5380c</span> <span class="p">}</span>
+<span class="n">K</span><span class="p">[</span><span class="mi">36</span><span class="p">..</span><span class="mi">39</span><span class="p">]</span> <span class="o">:=</span> <span class="p">{</span> <span class="mh">0xa4beea44</span><span class="p">,</span> <span class="mh">0x4bdecfa9</span><span class="p">,</span> <span class="mh">0xf6bb4b60</span><span class="p">,</span> <span class="mh">0xbebfbc70</span> <span class="p">}</span>
+<span class="n">K</span><span class="p">[</span><span class="mi">40</span><span class="p">..</span><span class="mi">43</span><span class="p">]</span> <span class="o">:=</span> <span class="p">{</span> <span class="mh">0x289b7ec6</span><span class="p">,</span> <span class="mh">0xeaa127fa</span><span class="p">,</span> <span class="mh">0xd4ef3085</span><span class="p">,</span> <span class="mh">0x04881d05</span> <span class="p">}</span>
+<span class="n">K</span><span class="p">[</span><span class="mi">44</span><span class="p">..</span><span class="mi">47</span><span class="p">]</span> <span class="o">:=</span> <span class="p">{</span> <span class="mh">0xd9d4d039</span><span class="p">,</span> <span class="mh">0xe6db99e5</span><span class="p">,</span> <span class="mh">0x1fa27cf8</span><span class="p">,</span> <span class="mh">0xc4ac5665</span> <span class="p">}</span>
+<span class="n">K</span><span class="p">[</span><span class="mi">48</span><span class="p">..</span><span class="mi">51</span><span class="p">]</span> <span class="o">:=</span> <span class="p">{</span> <span class="mh">0xf4292244</span><span class="p">,</span> <span class="mh">0x432aff97</span><span class="p">,</span> <span class="mh">0xab9423a7</span><span class="p">,</span> <span class="mh">0xfc93a039</span> <span class="p">}</span>
+<span class="n">K</span><span class="p">[</span><span class="mi">52</span><span class="p">..</span><span class="mi">55</span><span class="p">]</span> <span class="o">:=</span> <span class="p">{</span> <span class="mh">0x655b59c3</span><span class="p">,</span> <span class="mh">0x8f0ccc92</span><span class="p">,</span> <span class="mh">0xffeff47d</span><span class="p">,</span> <span class="mh">0x85845dd1</span> <span class="p">}</span>
+<span class="n">K</span><span class="p">[</span><span class="mi">56</span><span class="p">..</span><span class="mi">59</span><span class="p">]</span> <span class="o">:=</span> <span class="p">{</span> <span class="mh">0x6fa87e4f</span><span class="p">,</span> <span class="mh">0xfe2ce6e0</span><span class="p">,</span> <span class="mh">0xa3014314</span><span class="p">,</span> <span class="mh">0x4e0811a1</span> <span class="p">}</span>
+<span class="n">K</span><span class="p">[</span><span class="mi">60</span><span class="p">..</span><span class="mi">63</span><span class="p">]</span> <span class="o">:=</span> <span class="p">{</span> <span class="mh">0xf7537e82</span><span class="p">,</span> <span class="mh">0xbd3af235</span><span class="p">,</span> <span class="mh">0x2ad7d2bb</span><span class="p">,</span> <span class="mh">0xeb86d391</span> <span class="p">}</span>
+
+<span class="c1">//Initialize variables:</span>
+<span class="n">var</span> <span class="kt">int</span> <span class="n">a0</span> <span class="o">:=</span> <span class="mh">0x67452301</span>   <span class="c1">//A</span>
+<span class="n">var</span> <span class="kt">int</span> <span class="n">b0</span> <span class="o">:=</span> <span class="mh">0xefcdab89</span>   <span class="c1">//B</span>
+<span class="n">var</span> <span class="kt">int</span> <span class="n">c0</span> <span class="o">:=</span> <span class="mh">0x98badcfe</span>   <span class="c1">//C</span>
+<span class="n">var</span> <span class="kt">int</span> <span class="n">d0</span> <span class="o">:=</span> <span class="mh">0x10325476</span>   <span class="c1">//D</span>
+
+<span class="c1">//Pre-processing: adding a single 1 bit</span>
+<span class="n">append</span> <span class="s">"1"</span> <span class="n">bit</span> <span class="n">to</span> <span class="n">message</span>    
+<span class="c1">// Notice: the input bytes are considered as bits strings,</span>
+<span class="c1">//  where the first bit is the most significant bit of the byte.[48]</span>
+
+<span class="c1">//Pre-processing: padding with zeros</span>
+<span class="n">append</span> <span class="s">"0"</span> <span class="n">bit</span> <span class="n">until</span> <span class="n">message</span> <span class="n">length</span> <span class="n">in</span> <span class="n">bits</span> <span class="err">≡</span> <span class="mi">448</span> <span class="p">(</span><span class="n">mod</span> <span class="mi">512</span><span class="p">)</span>
+<span class="n">append</span> <span class="n">original</span> <span class="n">length</span> <span class="n">in</span> <span class="n">bits</span> <span class="n">mod</span> <span class="mi">264</span> <span class="n">to</span> <span class="n">message</span>
+
+<span class="c1">//Process the message in successive 512-bit chunks:</span>
+<span class="k">for</span> <span class="n">each</span> <span class="mi">512</span><span class="o">-</span><span class="n">bit</span> <span class="n">chunk</span> <span class="n">of</span> <span class="n">padded</span> <span class="n">message</span>
+    <span class="k">break</span> <span class="n">chunk</span> <span class="n">into</span> <span class="n">sixteen</span> <span class="mi">32</span><span class="o">-</span><span class="n">bit</span> <span class="n">words</span> <span class="n">M</span><span class="p">[</span><span class="n">j</span><span class="p">],</span> <span class="mi">0</span> <span class="err">≤</span> <span class="n">j</span> <span class="err">≤</span> <span class="mi">15</span>
+    <span class="c1">//Initialize hash value for this chunk:</span>
+    <span class="n">var</span> <span class="kt">int</span> <span class="n">A</span> <span class="o">:=</span> <span class="n">a0</span>
+    <span class="n">var</span> <span class="kt">int</span> <span class="n">B</span> <span class="o">:=</span> <span class="n">b0</span>
+    <span class="n">var</span> <span class="kt">int</span> <span class="n">C</span> <span class="o">:=</span> <span class="n">c0</span>
+    <span class="n">var</span> <span class="kt">int</span> <span class="n">D</span> <span class="o">:=</span> <span class="n">d0</span>
+    <span class="c1">//Main loop:</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="n">from</span> <span class="mi">0</span> <span class="n">to</span> <span class="mi">63</span>
+        <span class="n">var</span> <span class="kt">int</span> <span class="n">F</span><span class="p">,</span> <span class="n">g</span>
+        <span class="k">if</span> <span class="mi">0</span> <span class="err">≤</span> <span class="n">i</span> <span class="err">≤</span> <span class="mi">15</span> <span class="n">then</span>
+            <span class="n">F</span> <span class="o">:=</span> <span class="p">(</span><span class="n">B</span> <span class="n">and</span> <span class="n">C</span><span class="p">)</span> <span class="n">or</span> <span class="p">((</span><span class="n">not</span> <span class="n">B</span><span class="p">)</span> <span class="n">and</span> <span class="n">D</span><span class="p">)</span>
+            <span class="n">g</span> <span class="o">:=</span> <span class="n">i</span>
+        <span class="k">else</span> <span class="k">if</span> <span class="mi">16</span> <span class="err">≤</span> <span class="n">i</span> <span class="err">≤</span> <span class="mi">31</span> <span class="n">then</span>
+            <span class="n">F</span> <span class="o">:=</span> <span class="p">(</span><span class="n">D</span> <span class="n">and</span> <span class="n">B</span><span class="p">)</span> <span class="n">or</span> <span class="p">((</span><span class="n">not</span> <span class="n">D</span><span class="p">)</span> <span class="n">and</span> <span class="n">C</span><span class="p">)</span>
+            <span class="n">g</span> <span class="o">:=</span> <span class="p">(</span><span class="mi">5</span><span class="err">×</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="n">mod</span> <span class="mi">16</span>
+        <span class="k">else</span> <span class="k">if</span> <span class="mi">32</span> <span class="err">≤</span> <span class="n">i</span> <span class="err">≤</span> <span class="mi">47</span> <span class="n">then</span>
+            <span class="n">F</span> <span class="o">:=</span> <span class="n">B</span> <span class="n">xor</span> <span class="n">C</span> <span class="n">xor</span> <span class="n">D</span>
+            <span class="n">g</span> <span class="o">:=</span> <span class="p">(</span><span class="mi">3</span><span class="err">×</span><span class="n">i</span> <span class="o">+</span> <span class="mi">5</span><span class="p">)</span> <span class="n">mod</span> <span class="mi">16</span>
+        <span class="k">else</span> <span class="k">if</span> <span class="mi">48</span> <span class="err">≤</span> <span class="n">i</span> <span class="err">≤</span> <span class="mi">63</span> <span class="n">then</span>
+            <span class="n">F</span> <span class="o">:=</span> <span class="n">C</span> <span class="n">xor</span> <span class="p">(</span><span class="n">B</span> <span class="n">or</span> <span class="p">(</span><span class="n">not</span> <span class="n">D</span><span class="p">))</span>
+            <span class="n">g</span> <span class="o">:=</span> <span class="p">(</span><span class="mi">7</span><span class="err">×</span><span class="n">i</span><span class="p">)</span> <span class="n">mod</span> <span class="mi">16</span>
+        <span class="c1">//Be wary of the below definitions of a,b,c,d</span>
+        <span class="n">F</span> <span class="o">:=</span> <span class="n">F</span> <span class="o">+</span> <span class="n">A</span> <span class="o">+</span> <span class="n">K</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">M</span><span class="p">[</span><span class="n">g</span><span class="p">]</span>
+        <span class="n">A</span> <span class="o">:=</span> <span class="n">D</span>
+        <span class="n">D</span> <span class="o">:=</span> <span class="n">C</span>
+        <span class="n">C</span> <span class="o">:=</span> <span class="n">B</span>
+        <span class="n">B</span> <span class="o">:=</span> <span class="n">B</span> <span class="o">+</span> <span class="n">leftrotate</span><span class="p">(</span><span class="n">F</span><span class="p">,</span> <span class="n">s</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+    <span class="n">end</span> <span class="k">for</span>
+    <span class="c1">//Add this chunk's hash to result so far:</span>
+    <span class="n">a0</span> <span class="o">:=</span> <span class="n">a0</span> <span class="o">+</span> <span class="n">A</span>
+    <span class="n">b0</span> <span class="o">:=</span> <span class="n">b0</span> <span class="o">+</span> <span class="n">B</span>
+    <span class="n">c0</span> <span class="o">:=</span> <span class="n">c0</span> <span class="o">+</span> <span class="n">C</span>
+    <span class="n">d0</span> <span class="o">:=</span> <span class="n">d0</span> <span class="o">+</span> <span class="n">D</span>
+<span class="n">end</span> <span class="k">for</span>
+
+<span class="n">var</span> <span class="kt">char</span> <span class="n">digest</span><span class="p">[</span><span class="mi">16</span><span class="p">]</span> <span class="o">:=</span> <span class="n">a0</span> <span class="n">append</span> <span class="n">b0</span> <span class="n">append</span> <span class="n">c0</span> <span class="n">append</span> <span class="n">d0</span> <span class="c1">//(Output is in little-endian)</span>
+
+<span class="c1">//leftrotate function definition</span>
+<span class="n">leftrotate</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">x</span> <span class="o">&lt;&lt;</span> <span class="n">c</span><span class="p">)</span> <span class="n">binary</span> <span class="n">or</span> <span class="p">(</span><span class="n">x</span> <span class="o">&gt;&gt;</span> <span class="p">(</span><span class="mi">32</span><span class="o">-</span><span class="n">c</span><span class="p">));</span>
+</code></pre></div></div>
+
+<h4 id="各种编程语言">各种编程语言</h4>
+
+<p><strong>1.python</strong><br />
+在python3的标准库中，已经移除了md5，而关于hash加密算法都放在hashlib这个标准库中，如SHA1、SHA224、SHA256、SHA384、SHA512和MD5算法等。</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">hashlib</span>
+<span class="nb">hash</span> <span class="o">=</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">md5</span><span class="p">()</span>
+<span class="nb">hash</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="s">'original'</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s">'utf-8'</span><span class="p">))</span>
+<span class="nb">hash</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">();</span>
+</code></pre></div></div>
+
+<p><strong>2.javascript</strong><br /></p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;script </span><span class="na">src=</span><span class="s">"http://cdn.bootcss.com/blueimp-md5/1.1.0/js/md5.js"</span><span class="nt">&gt;&lt;/script&gt;</span>
+</code></pre></div></div>
+
+<pre><code class="language-javasctipt">var hash = md5("original");
+</code></pre>
+
+<p><strong>3.objective-c</strong><br /></p>
+
+<p>在MyAdditions.h头文件中：</p>
+<div class="language-objc highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">@interface</span> <span class="nc">NSString</span> <span class="p">(</span><span class="nl">MyAdditions</span><span class="p">)</span>
+<span class="k">-</span> <span class="p">(</span><span class="n">NSString</span> <span class="o">*</span><span class="p">)</span><span class="n">md5</span><span class="p">;</span>
+<span class="k">@end</span>
+
+<span class="k">@interface</span> <span class="nc">NSData</span> <span class="p">(</span><span class="nl">MyAdditions</span><span class="p">)</span>
+<span class="k">-</span> <span class="p">(</span><span class="n">NSString</span><span class="o">*</span><span class="p">)</span><span class="n">md5</span><span class="p">;</span>
+<span class="k">@end</span>
+</code></pre></div></div>
+
+<p>在MyAdditions.m文件中：</p>
+<div class="language-objc highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#import "MyAdditions.h"
+#import &lt;CommonCrypto/CommonDigest.h&gt; // Need to import for CC_MD5 access
+</span>
+<span class="k">@implementation</span> <span class="nc">NSString</span> <span class="p">(</span><span class="nl">MyAdditions</span><span class="p">)</span>
+<span class="k">-</span> <span class="p">(</span><span class="n">NSString</span> <span class="o">*</span><span class="p">)</span><span class="n">md5</span>
+<span class="p">{</span>
+    <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">cStr</span> <span class="o">=</span> <span class="p">[</span><span class="n">self</span> <span class="nf">UTF8String</span><span class="p">];</span>
+    <span class="kt">unsigned</span> <span class="kt">char</span> <span class="n">result</span><span class="p">[</span><span class="nf">CC_MD5_DIGEST_LENGTH</span><span class="p">];</span>
+    <span class="n">CC_MD5</span><span class="p">(</span> <span class="n">cStr</span><span class="p">,</span> <span class="p">(</span><span class="kt">int</span><span class="p">)</span><span class="n">strlen</span><span class="p">(</span><span class="n">cStr</span><span class="p">),</span> <span class="n">result</span> <span class="p">);</span> <span class="c1">// This is the md5 call</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">NSString</span> <span class="nf">stringWithFormat</span><span class="p">:</span>
+        <span class="s">@"%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x"</span><span class="p">,</span>
+        <span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">result</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">result</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">result</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> 
+        <span class="n">result</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span> <span class="n">result</span><span class="p">[</span><span class="mi">5</span><span class="p">],</span> <span class="n">result</span><span class="p">[</span><span class="mi">6</span><span class="p">],</span> <span class="n">result</span><span class="p">[</span><span class="mi">7</span><span class="p">],</span>
+        <span class="n">result</span><span class="p">[</span><span class="mi">8</span><span class="p">],</span> <span class="n">result</span><span class="p">[</span><span class="mi">9</span><span class="p">],</span> <span class="n">result</span><span class="p">[</span><span class="mi">10</span><span class="p">],</span> <span class="n">result</span><span class="p">[</span><span class="mi">11</span><span class="p">],</span>
+        <span class="n">result</span><span class="p">[</span><span class="mi">12</span><span class="p">],</span> <span class="n">result</span><span class="p">[</span><span class="mi">13</span><span class="p">],</span> <span class="n">result</span><span class="p">[</span><span class="mi">14</span><span class="p">],</span> <span class="n">result</span><span class="p">[</span><span class="mi">15</span><span class="p">]</span>
+        <span class="p">];</span>  
+<span class="p">}</span>
+<span class="k">@end</span>
+
+<span class="k">@implementation</span> <span class="nc">NSData</span> <span class="p">(</span><span class="nl">MyAdditions</span><span class="p">)</span>
+<span class="k">-</span> <span class="p">(</span><span class="n">NSString</span><span class="o">*</span><span class="p">)</span><span class="n">md5</span>
+<span class="p">{</span>
+    <span class="kt">unsigned</span> <span class="kt">char</span> <span class="n">result</span><span class="p">[</span><span class="nf">CC_MD5_DIGEST_LENGTH</span><span class="p">];</span>
+    <span class="n">CC_MD5</span><span class="p">(</span> <span class="n">self</span><span class="p">.</span><span class="n">bytes</span><span class="p">,</span> <span class="p">(</span><span class="kt">int</span><span class="p">)</span><span class="n">self</span><span class="p">.</span><span class="n">length</span><span class="p">,</span> <span class="n">result</span> <span class="p">);</span> <span class="c1">// This is the md5 call</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">NSString</span> <span class="nf">stringWithFormat</span><span class="p">:</span>
+        <span class="s">@"%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x"</span><span class="p">,</span>
+        <span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">result</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">result</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">result</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> 
+        <span class="n">result</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span> <span class="n">result</span><span class="p">[</span><span class="mi">5</span><span class="p">],</span> <span class="n">result</span><span class="p">[</span><span class="mi">6</span><span class="p">],</span> <span class="n">result</span><span class="p">[</span><span class="mi">7</span><span class="p">],</span>
+        <span class="n">result</span><span class="p">[</span><span class="mi">8</span><span class="p">],</span> <span class="n">result</span><span class="p">[</span><span class="mi">9</span><span class="p">],</span> <span class="n">result</span><span class="p">[</span><span class="mi">10</span><span class="p">],</span> <span class="n">result</span><span class="p">[</span><span class="mi">11</span><span class="p">],</span>
+        <span class="n">result</span><span class="p">[</span><span class="mi">12</span><span class="p">],</span> <span class="n">result</span><span class="p">[</span><span class="mi">13</span><span class="p">],</span> <span class="n">result</span><span class="p">[</span><span class="mi">14</span><span class="p">],</span> <span class="n">result</span><span class="p">[</span><span class="mi">15</span><span class="p">]</span>
+        <span class="p">];</span>  
+<span class="p">}</span>
+<span class="k">@end</span>
+</code></pre></div></div>
+
+                </section>
+
+                <a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a>
+              </div>
+            <div class="search-results">
+              <div class="has-results">
+                <h1 class="search-results-title"><span class="search-results-count"></span> results matching "<span class="search-query"></span>"</h1>
+                <ul class="search-results-list"></ul>
+              </div>
+            <div class="no-results">
+              <h1 class="search-results-title">No results matching "<span class="search-query"></span>"</h1>
+            </div>
+            </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+      <!--<a href="rpi3.html" class="navigation navigation-next navigation-unique" aria-label="Next page: 2016 Raspberry Pi Model 3 B" style="margin-right: 0px;">
+          <i class="fa fa-angle-right"></i>
+      </a>
+    </div> -->
+</div>
+
+    
+  </body>
+</html>
