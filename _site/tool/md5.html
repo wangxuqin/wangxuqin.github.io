@@ -139,19 +139,46 @@
     function doMD5Encode()
     {
       var input = document.getElementById("input_textarea");
+      updateOutput(md5(input.value));
+    }
+
+    function updateOutput(value){
       var output = document.getElementById("output_textarea");
       var output1 = document.getElementById("output_textarea_1");
       var output2 = document.getElementById("output_textarea_2");
       var output3 = document.getElementById("output_textarea_3");
-      var input_value = input.value;
-      var result = md5(input_value)
 
-      if(result.length == 32){
-        output.value = result;
-        output1.value = result.toLowerCase();
-        output2.value = result.substring(8, 24);
-        output3.value = result.substring(8, 24).toLowerCase();
+      if(value.length == 32){
+        output.value  = value;
+        output1.value = value.toLowerCase();
+        output2.value = value.substring(8, 24);
+        output3.value = value.substring(8, 24).toLowerCase();
       }
+    }
+
+    window.onload = function(){
+      fileInput = document.getElementById('input_file'),
+      // 监听change事件:
+      fileInput.addEventListener('change', function () {
+          // 检查文件是否选择:
+          if (!fileInput.value) {
+              return;
+          }
+          
+          var input = document.getElementById("input_textarea");
+          input.value = "";
+
+          // 获取File引用:
+          var file = fileInput.files[0];
+          // 读取文件:
+          var reader = new FileReader();
+          reader.onload = function(e) {
+            var array = Array.from(new Uint8Array(reader.result));
+            updateOutput(md5(array));
+          }
+
+          reader.readAsArrayBuffer(file);
+      });
     }
 
   </script>
@@ -219,6 +246,7 @@
                       <textarea id="input_textarea" placeholder="请输入待编码的字符串" class="tool-input-textarea" spellcheck="false"></textarea>
                       <div class="tool-button-group">
                         <button id="encode" class="tool-button" onClick="doMD5Encode()">编码</button>
+                        <input  id="input_file" type="file"/>
                       </div>
                       
                       <div class="tool-output-area">

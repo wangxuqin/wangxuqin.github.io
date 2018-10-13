@@ -82,9 +82,21 @@ var safeAdd = function(x, y) {
     return (msw << 16) | (lsw & 0xffff)
 }
 
-function md5(str){
+function md5(input){
 	var arr = new Array();
-	var bytes = stringToByte(str);
+	var bytes = null;
+	if(Object.prototype.toString.call(input) === "[object String]"){
+		str = input
+		bytes = stringToByte(str);
+	}
+	else if(Object.prototype.toString.call(input) === "[object Array]"){
+		bytes = input;
+	}
+	else{
+		alert("输入参数错误!");
+		return;
+	}
+
 	var len = bytes.length;
 	if(len == 0){
 		return "";
@@ -110,9 +122,6 @@ function md5(str){
 	bytes.push((hLen >> 16) & 0xff);
 	bytes.push((hLen >> 24) & 0xff);
 
-
-	console.log(bytes);
-
 	var S = [	
 				7, 12, 17, 22,  7, 12, 17, 22,  7, 12, 17, 22,  7, 12, 17, 22,
 				5,  9, 14, 20,  5,  9, 14, 20,  5,  9, 14, 20,  5,  9, 14, 20,
@@ -125,7 +134,6 @@ function md5(str){
 	var K = new Array();
 	for(var i = 0; i < 64; i++){
 		K[i] = Math.floor(Math.pow(2, 32) * Math.abs(Math.sin(i + 1)));
-		console.log(K[i].toString(16));
 	}
 
  // var K = [
