@@ -1,49 +1,8 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="{{ site.lang | default: "zh" }}">
   <head>
 
-  <meta charset="utf-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-
-<title>md5编码 | KimWang's blog</title>
-<meta name="description" content="KimWang's blog">
-
-<meta itemprop="name" content="">
-<meta itemprop="description" content="KimWang's blog">
-<meta itemprop="image" content="">
-
-<meta property="og:url" content="http://localhost:4000/tool/md5.html">
-<meta property="og:type" content="website">
-<meta property="og:title" content="md5编码 | KimWang's blog">
-<meta property="og:site_name" content="KimWang's blog">
-<meta property="og:description" content="KimWang's blog">
-<meta property="og:image" content="">
-
-<meta name="twitter:url" content="http://localhost:4000/tool/md5.html">
-<meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="md5编码 | KimWang's blog">
-<meta name="twitter:site" content="KimWang's blog">
-<meta name="twitter:description" content="KimWang's blog">
-
-<meta property="twitter:image" content="">
-
-<link rel="icon" type="image/x-icon" href="/assets/images/favicon.ico">
-
-<!--
-<link rel="stylesheet" href="/assets/css/app.min.css">
-<link rel="alternate" type="application/rss+xml" title="KimWang's blog" href="/feed.xml">
-<link rel="canonical" href="/tool/md5.html">
--->
-
-<link rel="stylesheet" href="/assets/dist/style.css">
-<link rel="stylesheet" href="/assets/dist/highlight.css">
-<link rel="stylesheet" href="/assets/dist/search.css">
-<link rel="stylesheet" href="/assets/dist/fontsettings.css">
-<link rel="stylesheet" href="/assets/dist/tool.css">
-
-
-
+  {% include head.html %}
   <style>
       .unselectable {
           -webkit-touch-callout: none;
@@ -132,28 +91,19 @@
       }
   </style>
 
-  <link rel="stylesheet" href="/assets/dist/sheet.css">
-  <script src="/assets/dist/js/tool/md5.js"></script>
+  <link rel="stylesheet" href="{{ '/assets/dist/sheet.css' | relative_url }}">
+  <script src="{{ '/assets/dist/js/tool/sha.js' | relative_url }}"></script>
   <script>
     //MD5编码
-    function doMD5Encode()
+    function doSHA1Encode()
     {
       var input = document.getElementById("input_textarea");
-      updateOutput(md5(input.value));
+      updateOutput(sha1(input.value));
     }
 
     function updateOutput(value){
       var output = document.getElementById("output_textarea");
-      var output1 = document.getElementById("output_textarea_1");
-      var output2 = document.getElementById("output_textarea_2");
-      var output3 = document.getElementById("output_textarea_3");
-
-      if(value.length == 32){
-        output.value  = value;
-        output1.value = value.toLowerCase();
-        output2.value = value.substring(8, 24);
-        output3.value = value.substring(8, 24).toLowerCase();
-      }
+      output.value  = value;
     }
 
     window.onload = function(){
@@ -174,7 +124,7 @@
           var reader = new FileReader();
           reader.onload = function(e) {
             var array = Array.from(new Uint8Array(reader.result));
-            updateOutput(md5(array));
+            updateOutput(sha1(array));
           }
 
           reader.readAsArrayBuffer(file);
@@ -187,49 +137,7 @@
 
   <body>
     <div class="book without-animation with-summary font-size-2 font-family-1">
-      <input type='checkbox' id='sidemenu' checked="true">
-<aside>
-<h3>KimWang's blog</h3>
-<ul id="sideul">
-    <li><a            href="http://localhost:4000/">主页</a></li>
-    <li><a class="active" href="http://localhost:4000/posts.html">文章</a></li>
-    <li><a  href="http://localhost:4000/tools.html">工具</a></li>
-    <li><a href="#">关于</a></li>
-</ul> 
-</aside>   
-
-<div class="book-summary">
-	
-		<nav role="navigation">
-  <ul class="summary">
-  	<h2>&nbsp;&nbsp;解码编码工具</h2>
-    
-      
-      <li class="active"><a href="/tool/base64.html">&nbsp;&nbsp;&nbsp;&nbsp;base64编/解码</a></li>
-      
-    
-      
-    
-      
-      <li class="active"><a href="/tool/md5.html">&nbsp;&nbsp;&nbsp;&nbsp;md5编码</a></li>
-      
-    
-      
-    
-      
-      <li class="active"><a href="/tool/sha.html">&nbsp;&nbsp;&nbsp;&nbsp;sha编码</a></li>
-      
-    
-      
-    
-  </ul>
-</nav>
-	
-</div>
-
-<div id='wrap'>
-    <label id='sideMenuControl' for='sidemenu'>≡</label>
-</div>
+      {% include sidebar.html param="toollist" %}
       
       <div class="book-body">
         <div class="body-inner">
@@ -237,7 +145,7 @@
             <div style="display: none">TODO: share icons</div>
             <h1>
               <i class="fa fa-circle-o-notch fa-spin"></i>
-              <a>md5编码</a>
+              <a>{{ page.title }}</a>
             </h1>
           </div>
   
@@ -245,32 +153,16 @@
             <ul class="tab-list clearfloat">
               <li class="tab-itom">
                   <input type="radio" id="testTabRadio1" class="test-radio" name="tab" checked="checked">
-                  <label class="test-label unselectable" for="testTabRadio1">MD5</label>
+                  <label class="test-label unselectable" for="testTabRadio1">SHA1</label>
                   <div class="tab-box">
                       <textarea id="input_textarea" placeholder="请输入待编码的字符串" class="tool-input-textarea" spellcheck="false"></textarea>
                       <div class="tool-button-group">
-                        <button id="encode" class="tool-button" onClick="doMD5Encode()">编码</button>
+                        <button id="encode" class="tool-button" onClick="doSHA1Encode()">编码</button>
                         <input  id="input_file" type="file"/>
                       </div>
                       
                       <div class="tool-output-area">
-                        <span class="tool-output-label">32位大写</span>
                         <textarea id="output_textarea"class="tool-output-textarea-2" readonly="readonly" spellcheck="false"></textarea>
-                      </div>
-                      
-                      <div class="tool-output-area">
-                        <span class="tool-output-label">32位小写</span>
-                        <textarea id="output_textarea_1"class="tool-output-textarea-2" readonly="readonly" spellcheck="false"></textarea>
-                      </div>
-
-                      <div class="tool-output-area">
-                        <span class="tool-output-label">16位大写</span>
-                        <textarea id="output_textarea_2"class="tool-output-textarea-2" readonly="readonly" spellcheck="false"></textarea>
-                      </div>
-
-                      <div class="tool-output-area">
-                        <span class="tool-output-label">16位小写</span>
-                        <textarea id="output_textarea_3"class="tool-output-textarea-2" readonly="readonly" spellcheck="false"></textarea>
                       </div>
                   </div>
               </li>
@@ -280,6 +172,15 @@
   </div>
  
 
-    
+    {% if site.google_analytics %}
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+      ga('create', '{{ site.google_analytics }}', 'auto');
+      ga('send', 'pageview');
+    </script>
+    {% endif %}
   </body>
 </html>
