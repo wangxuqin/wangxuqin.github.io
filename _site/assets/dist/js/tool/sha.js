@@ -208,7 +208,6 @@ function sha1(input){
 	        c = leftrotate(b, 30);
 	        b = a;
 	        a = temp;
-	        console.log([a, b, c, d, e]);
 		}
 
 		h0 = safeAdd(h0, a);
@@ -322,7 +321,7 @@ function sha224(input){
     var h5 = 0x68581511;
     var h6 = 0x64f98fa7;
     var h7 = 0xbefa4fa4;
-    
+
 	for(var i = 0; i < bytes.length; i = i + 64)
 	{
 

@@ -26,6 +26,15 @@
     border-color: #CCC;
 }
 
+.tool-output-textarea-3{
+    font-family:monospace;
+    width:95%;
+    height:30px;
+    padding: 5px;
+    resize: none;
+    border-color:#CCC;
+}
+
 .tool-output-label{
     font-size: 1.2em;
     text-align: center;
