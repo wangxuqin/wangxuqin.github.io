@@ -82,25 +82,8 @@ var safeAdd = function(x, y) {
     return (msw << 16) | (lsw & 0xffff)
 }
 
-function md5(input){
-	var arr = new Array();
-	var bytes = null;
-	if(Object.prototype.toString.call(input) === "[object String]"){
-		str = input
-		bytes = stringToByte(str);
-	}
-	else if(Object.prototype.toString.call(input) === "[object Array]"){
-		bytes = input;
-	}
-	else{
-		alert("输入参数错误!");
-		return;
-	}
-
+var fill = function(bytes){
 	var len = bytes.length;
-	if(len == 0){
-		return "";
-	}
 
 	if ((len % 64) != 56){
 		bytes.push(0x01 << 7);
@@ -121,6 +104,34 @@ function md5(input){
 	bytes.push((hLen >> 8)  & 0xff);
 	bytes.push((hLen >> 16) & 0xff);
 	bytes.push((hLen >> 24) & 0xff);
+	return bytes;
+}
+
+var handleInput = function(input)
+{
+	var bytes = null;
+	if(Object.prototype.toString.call(input) === "[object String]"){
+		str = input
+		bytes = stringToByte(str);
+	}
+	else if(Object.prototype.toString.call(input) === "[object Array]"){
+		bytes = input;
+	}
+	else{
+		alert("输入参数错误!");
+		return bytes;
+	}
+	fill(bytes);
+	return bytes;
+}
+
+function md5(input){
+	var bytes = handleInput(input);
+	if(bytes == null){
+		return "";
+	}
+
+	var arr = new Array();
 
 	var S = [	
 				7, 12, 17, 22,  7, 12, 17, 22,  7, 12, 17, 22,  7, 12, 17, 22,
