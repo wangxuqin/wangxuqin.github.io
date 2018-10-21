@@ -13,14 +13,14 @@
 <meta itemprop="description" content="KimWang's blog">
 <meta itemprop="image" content="">
 
-<meta property="og:url" content="/tool/sha.html">
+<meta property="og:url" content="http://localhost:4000/tool/sha.html">
 <meta property="og:type" content="website">
 <meta property="og:title" content="sha编码 | KimWang's blog">
 <meta property="og:site_name" content="KimWang's blog">
 <meta property="og:description" content="KimWang's blog">
 <meta property="og:image" content="">
 
-<meta name="twitter:url" content="/tool/sha.html">
+<meta name="twitter:url" content="http://localhost:4000/tool/sha.html">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="sha编码 | KimWang's blog">
 <meta name="twitter:site" content="KimWang's blog">
@@ -150,6 +150,9 @@
       else if(sha == "sha256"){
         outputValue = sha256(inputValue);
       }
+      else if(sha == "sha512"){
+        outputValue = sha512(inputValue);
+      }
 
       updateOutput(sha, outputValue);
     }
@@ -188,6 +191,9 @@
             else if(sha == "sha256"){
               outputValue = sha256(array);
             }
+            else if(sha == "sha512"){
+              outputValue = sha512(array);
+            }
             updateOutput(sha, outputValue);
           }
 
@@ -199,6 +205,7 @@
       initFileInput('sha1');
       initFileInput('sha224');
       initFileInput('sha256');
+      initFileInput('sha512');
     }
 
   </script>
@@ -211,9 +218,9 @@
 <aside>
 <h3>KimWang's blog</h3>
 <ul id="sideul">
-    <li><a            href="/">主页</a></li>
-    <li><a class="active" href="/posts.html">文章</a></li>
-    <li><a  href="/tools.html">工具</a></li>
+    <li><a            href="http://localhost:4000/">主页</a></li>
+    <li><a class="active" href="http://localhost:4000/posts.html">文章</a></li>
+    <li><a  href="http://localhost:4000/tools.html">工具</a></li>
     <li><a href="#">关于</a></li>
 </ul> 
 </aside>   
@@ -302,6 +309,20 @@
                       </div>
                       
                         <textarea id="output_textarea_sha256"class="tool-output-textarea-3" readonly="readonly" spellcheck="false"></textarea>
+                  </div>
+              </li>
+
+              <li class="tab-itom">
+                  <input type="radio" id="testTabRadio4" class="test-radio" name="tab">
+                  <label class="test-label unselectable" for="testTabRadio4">SHA512</label>
+                  <div class="tab-box">
+                      <textarea id="input_textarea_sha512" placeholder="请输入待编码的字符串" class="tool-input-textarea" spellcheck="false"></textarea>
+                      <div class="tool-button-group">
+                        <button id="encode_sha512" class="tool-button" onClick="doSHAEncode('sha512')">编码</button>
+                        <input  id="input_file_sha512" type="file"/>
+                      </div>
+                      
+                        <textarea id="output_textarea_sha512"class="tool-output-textarea-4" readonly="readonly" spellcheck="false"></textarea>
                   </div>
               </li>
             </ul>
