@@ -598,6 +598,143 @@ function sha224(input){
 }
 
 
+function sha384(input)
+{
+	var bytes = handleInputInt64(input);
+	if(bytes == null){
+		return "";
+	}
+
+	var K = [
+		int64(0x428a2f98, 0xd728ae22), int64(0x71374491, 0x23ef65cd), int64(0xb5c0fbcf, 0xec4d3b2f), int64(0xe9b5dba5, 0x8189dbbc), 
+		int64(0x3956c25b, 0xf348b538), int64(0x59f111f1, 0xb605d019), int64(0x923f82a4, 0xaf194f9b), int64(0xab1c5ed5, 0xda6d8118), 
+		int64(0xd807aa98, 0xa3030242), int64(0x12835b01, 0x45706fbe), int64(0x243185be, 0x4ee4b28c), int64(0x550c7dc3, 0xd5ffb4e2), 
+		int64(0x72be5d74, 0xf27b896f), int64(0x80deb1fe, 0x3b1696b1), int64(0x9bdc06a7, 0x25c71235), int64(0xc19bf174, 0xcf692694),
+		int64(0xe49b69c1, 0x9ef14ad2), int64(0xefbe4786, 0x384f25e3), int64(0x0fc19dc6, 0x8b8cd5b5), int64(0x240ca1cc, 0x77ac9c65), 
+		int64(0x2de92c6f, 0x592b0275), int64(0x4a7484aa, 0x6ea6e483), int64(0x5cb0a9dc, 0xbd41fbd4), int64(0x76f988da, 0x831153b5),
+		int64(0x983e5152, 0xee66dfab), int64(0xa831c66d, 0x2db43210), int64(0xb00327c8, 0x98fb213f), int64(0xbf597fc7, 0xbeef0ee4), 
+		int64(0xc6e00bf3, 0x3da88fc2), int64(0xd5a79147, 0x930aa725), int64(0x06ca6351, 0xe003826f), int64(0x14292967, 0x0a0e6e70),
+		int64(0x27b70a85, 0x46d22ffc), int64(0x2e1b2138, 0x5c26c926), int64(0x4d2c6dfc, 0x5ac42aed), int64(0x53380d13, 0x9d95b3df), 
+		int64(0x650a7354, 0x8baf63de), int64(0x766a0abb, 0x3c77b2a8), int64(0x81c2c92e, 0x47edaee6), int64(0x92722c85, 0x1482353b),
+		int64(0xa2bfe8a1, 0x4cf10364), int64(0xa81a664b, 0xbc423001), int64(0xc24b8b70, 0xd0f89791), int64(0xc76c51a3, 0x0654be30), 
+		int64(0xd192e819, 0xd6ef5218), int64(0xd6990624, 0x5565a910), int64(0xf40e3585, 0x5771202a), int64(0x106aa070, 0x32bbd1b8),
+		int64(0x19a4c116, 0xb8d2d0c8), int64(0x1e376c08, 0x5141ab53), int64(0x2748774c, 0xdf8eeb99), int64(0x34b0bcb5, 0xe19b48a8), 
+		int64(0x391c0cb3, 0xc5c95a63), int64(0x4ed8aa4a, 0xe3418acb), int64(0x5b9cca4f, 0x7763e373), int64(0x682e6ff3, 0xd6b2b8a3),
+		int64(0x748f82ee, 0x5defb2fc), int64(0x78a5636f, 0x43172f60), int64(0x84c87814, 0xa1f0ab72), int64(0x8cc70208, 0x1a6439ec), 
+		int64(0x90befffa, 0x23631e28), int64(0xa4506ceb, 0xde82bde9), int64(0xbef9a3f7, 0xb2c67915), int64(0xc67178f2, 0xe372532b),
+		int64(0xca273ece, 0xea26619c), int64(0xd186b8c7, 0x21c0c207), int64(0xeada7dd6, 0xcde0eb1e), int64(0xf57d4f7f, 0xee6ed178), 
+		int64(0x06f067aa, 0x72176fba), int64(0x0a637dc5, 0xa2c898a6), int64(0x113f9804, 0xbef90dae), int64(0x1b710b35, 0x131c471b),
+		int64(0x28db77f5, 0x23047d84), int64(0x32caab7b, 0x40c72493), int64(0x3c9ebe0a, 0x15c9bebc), int64(0x431d67c4, 0x9c100d4c), 
+		int64(0x4cc5d4be, 0xcb3e42b6), int64(0x597f299c, 0xfc657e2a), int64(0x5fcb6fab, 0x3ad6faec), int64(0x6c44198c, 0x4a475817)
+	];
+
+	var h0 = int64(0xcbbb9d5d, 0xc1059ed8);
+	var h1 = int64(0x629a292a, 0x367cd507);
+	var h2 = int64(0x9159015a, 0x3070dd17);
+	var h3 = int64(0x152fecd8, 0xf70e5939);
+	var h4 = int64(0x67332667, 0xffc00b31);
+	var h5 = int64(0x8eb44a87, 0x68581511);
+	var h6 = int64(0xdb0c2e0d, 0x64f98fa7);
+	var h7 = int64(0x47b5481d, 0xbefa4fa4);
+
+	var a  = int64(0, 0);
+	var b  = int64(0, 0);
+	var c  = int64(0, 0);
+	var d  = int64(0, 0);
+	var e  = int64(0, 0);
+	var f  = int64(0, 0);
+	var g  = int64(0, 0);
+	var h  = int64(0, 0);
+
+	var r1 = int64(0, 0);
+	var r2 = int64(0, 0);
+	var r3 = int64(0, 0);
+	var s0 = int64(0, 0);
+	var s1 = int64(0, 0);
+
+	var Ch = int64(0, 0);
+	var Maj= int64(0, 0);
+	var T1 = int64(0, 0);
+	var T2 = int64(0, 0);
+
+	var gamma0 = int64(0, 0);
+	var gamma1 = int64(0, 0);
+
+	for(var i = 0; i < bytes.length; i = i + 128)
+	{
+		var w = group64(bytes, i, 80);
+		for(var k = 16; k < 80; k++){
+			w[k] = int64(0, 0);
+			int64_right_rotate(r1, w[k - 2], 19);
+			int64_right_rotate(r2, w[k - 2], 61);
+			int64_right_shift(r3, w[k - 2], 6);
+			s1.l = r1.l ^ r2.l ^ r3.l;
+			s1.h = r1.h ^ r2.h ^ r3.h;
+
+			int64_right_rotate(r1, w[k - 15], 1);
+			int64_right_rotate(r2, w[k - 15], 8);
+			int64_right_shift(r3, w[k - 15], 7);
+			s0.l = r1.l ^ r2.l ^ r3.l;
+			s0.h = r1.h ^ r2.h ^ r3.h;
+
+			int64_add4(w[k], s1, w[k - 7], s0, w[k - 16]);
+		}
+
+		int64_copy(a, h0);
+		int64_copy(b, h1);
+		int64_copy(c, h2);
+		int64_copy(d, h3);
+		int64_copy(e, h4);
+		int64_copy(f, h5);
+		int64_copy(g, h6);
+		int64_copy(h, h7);
+
+		for(var n = 0; n < 80; n++){
+			//计算T1
+			Ch.l = (e.l & f.l) ^ (~e.l & g.l);
+			Ch.h = (e.h & f.h) ^ (~e.h & g.h);
+
+			int64_right_rotate(r1, e, 14);
+			int64_right_rotate(r2, e, 18);
+			int64_right_rotate(r3, e, 41);
+			gamma1.l = r1.l ^ r2.l ^ r3.l;
+			gamma1.h = r1.h ^ r2.h ^ r3.h;
+			int64_add5(T1, h, gamma1, Ch, K[n], w[n]);
+
+			//计算T2
+			int64_right_rotate(r1, a, 28);
+			int64_right_rotate(r2, a, 34);
+			int64_right_rotate(r3, a, 39);
+			gamma0.l = r1.l ^ r2.l ^ r3.l;
+			gamma0.h = r1.h ^ r2.h ^ r3.h;
+
+			Maj.l = (a.l & b.l) ^ (a.l & c.l) ^ (b.l & c.l);
+			Maj.h = (a.h & b.h) ^ (a.h & c.h) ^ (b.h & c.h);
+			int64_add(T2, gamma0, Maj);
+
+			int64_copy(h, g);
+			int64_copy(g, f);
+			int64_copy(f, e);
+			int64_add(e, d, T1);
+			int64_copy(d, c);
+			int64_copy(c, b);
+			int64_copy(b, a);
+			int64_add(a, T1, T2);
+		}
+
+		int64_add(h0, h0, a);
+		int64_add(h1, h1, b);
+		int64_add(h2, h2, c);
+		int64_add(h3, h3, d);
+		int64_add(h4, h4, e);
+		int64_add(h5, h5, f);
+		int64_add(h6, h6, g);
+		int64_add(h7, h7, h);
+	}
+
+	return hexOutput64([h0, h1, h2, h3, h4, h5]);
+}
+
 function sha512(input)
 {
 	var bytes = handleInputInt64(input);
@@ -736,8 +873,276 @@ function sha512(input)
 }
 
 
+function sha512_224(input)
+{
+	var bytes = handleInputInt64(input);
+	if(bytes == null){
+		return "";
+	}
 
+	var K = [
+		int64(0x428a2f98, 0xd728ae22), int64(0x71374491, 0x23ef65cd), int64(0xb5c0fbcf, 0xec4d3b2f), int64(0xe9b5dba5, 0x8189dbbc), 
+		int64(0x3956c25b, 0xf348b538), int64(0x59f111f1, 0xb605d019), int64(0x923f82a4, 0xaf194f9b), int64(0xab1c5ed5, 0xda6d8118), 
+		int64(0xd807aa98, 0xa3030242), int64(0x12835b01, 0x45706fbe), int64(0x243185be, 0x4ee4b28c), int64(0x550c7dc3, 0xd5ffb4e2), 
+		int64(0x72be5d74, 0xf27b896f), int64(0x80deb1fe, 0x3b1696b1), int64(0x9bdc06a7, 0x25c71235), int64(0xc19bf174, 0xcf692694),
+		int64(0xe49b69c1, 0x9ef14ad2), int64(0xefbe4786, 0x384f25e3), int64(0x0fc19dc6, 0x8b8cd5b5), int64(0x240ca1cc, 0x77ac9c65), 
+		int64(0x2de92c6f, 0x592b0275), int64(0x4a7484aa, 0x6ea6e483), int64(0x5cb0a9dc, 0xbd41fbd4), int64(0x76f988da, 0x831153b5),
+		int64(0x983e5152, 0xee66dfab), int64(0xa831c66d, 0x2db43210), int64(0xb00327c8, 0x98fb213f), int64(0xbf597fc7, 0xbeef0ee4), 
+		int64(0xc6e00bf3, 0x3da88fc2), int64(0xd5a79147, 0x930aa725), int64(0x06ca6351, 0xe003826f), int64(0x14292967, 0x0a0e6e70),
+		int64(0x27b70a85, 0x46d22ffc), int64(0x2e1b2138, 0x5c26c926), int64(0x4d2c6dfc, 0x5ac42aed), int64(0x53380d13, 0x9d95b3df), 
+		int64(0x650a7354, 0x8baf63de), int64(0x766a0abb, 0x3c77b2a8), int64(0x81c2c92e, 0x47edaee6), int64(0x92722c85, 0x1482353b),
+		int64(0xa2bfe8a1, 0x4cf10364), int64(0xa81a664b, 0xbc423001), int64(0xc24b8b70, 0xd0f89791), int64(0xc76c51a3, 0x0654be30), 
+		int64(0xd192e819, 0xd6ef5218), int64(0xd6990624, 0x5565a910), int64(0xf40e3585, 0x5771202a), int64(0x106aa070, 0x32bbd1b8),
+		int64(0x19a4c116, 0xb8d2d0c8), int64(0x1e376c08, 0x5141ab53), int64(0x2748774c, 0xdf8eeb99), int64(0x34b0bcb5, 0xe19b48a8), 
+		int64(0x391c0cb3, 0xc5c95a63), int64(0x4ed8aa4a, 0xe3418acb), int64(0x5b9cca4f, 0x7763e373), int64(0x682e6ff3, 0xd6b2b8a3),
+		int64(0x748f82ee, 0x5defb2fc), int64(0x78a5636f, 0x43172f60), int64(0x84c87814, 0xa1f0ab72), int64(0x8cc70208, 0x1a6439ec), 
+		int64(0x90befffa, 0x23631e28), int64(0xa4506ceb, 0xde82bde9), int64(0xbef9a3f7, 0xb2c67915), int64(0xc67178f2, 0xe372532b),
+		int64(0xca273ece, 0xea26619c), int64(0xd186b8c7, 0x21c0c207), int64(0xeada7dd6, 0xcde0eb1e), int64(0xf57d4f7f, 0xee6ed178), 
+		int64(0x06f067aa, 0x72176fba), int64(0x0a637dc5, 0xa2c898a6), int64(0x113f9804, 0xbef90dae), int64(0x1b710b35, 0x131c471b),
+		int64(0x28db77f5, 0x23047d84), int64(0x32caab7b, 0x40c72493), int64(0x3c9ebe0a, 0x15c9bebc), int64(0x431d67c4, 0x9c100d4c), 
+		int64(0x4cc5d4be, 0xcb3e42b6), int64(0x597f299c, 0xfc657e2a), int64(0x5fcb6fab, 0x3ad6faec), int64(0x6c44198c, 0x4a475817)
+	];
 
+	var h0 = int64(0x8C3D37C8, 0x19544DA2);
+	var h1 = int64(0x73E19966, 0x89DCD4D6);
+	var h2 = int64(0x1DFAB7AE, 0x32FF9C82);
+	var h3 = int64(0x679DD514, 0x582F9FCF);
+	var h4 = int64(0x0F6D2B69, 0x7BD44DA8);
+	var h5 = int64(0x77E36F73, 0x04C48942);
+	var h6 = int64(0x3F9D85A8, 0x6A1D36C8);
+	var h7 = int64(0x1112E6AD, 0x91D692A1);
 
+	var a  = int64(0, 0);
+	var b  = int64(0, 0);
+	var c  = int64(0, 0);
+	var d  = int64(0, 0);
+	var e  = int64(0, 0);
+	var f  = int64(0, 0);
+	var g  = int64(0, 0);
+	var h  = int64(0, 0);
 
+	var r1 = int64(0, 0);
+	var r2 = int64(0, 0);
+	var r3 = int64(0, 0);
+	var s0 = int64(0, 0);
+	var s1 = int64(0, 0);
 
+	var Ch = int64(0, 0);
+	var Maj= int64(0, 0);
+	var T1 = int64(0, 0);
+	var T2 = int64(0, 0);
+
+	var gamma0 = int64(0, 0);
+	var gamma1 = int64(0, 0);
+
+	for(var i = 0; i < bytes.length; i = i + 128)
+	{
+		var w = group64(bytes, i, 80);
+		for(var k = 16; k < 80; k++){
+			w[k] = int64(0, 0);
+			int64_right_rotate(r1, w[k - 2], 19);
+			int64_right_rotate(r2, w[k - 2], 61);
+			int64_right_shift(r3, w[k - 2], 6);
+			s1.l = r1.l ^ r2.l ^ r3.l;
+			s1.h = r1.h ^ r2.h ^ r3.h;
+
+			int64_right_rotate(r1, w[k - 15], 1);
+			int64_right_rotate(r2, w[k - 15], 8);
+			int64_right_shift(r3, w[k - 15], 7);
+			s0.l = r1.l ^ r2.l ^ r3.l;
+			s0.h = r1.h ^ r2.h ^ r3.h;
+
+			int64_add4(w[k], s1, w[k - 7], s0, w[k - 16]);
+		}
+
+		int64_copy(a, h0);
+		int64_copy(b, h1);
+		int64_copy(c, h2);
+		int64_copy(d, h3);
+		int64_copy(e, h4);
+		int64_copy(f, h5);
+		int64_copy(g, h6);
+		int64_copy(h, h7);
+
+		for(var n = 0; n < 80; n++){
+			//计算T1
+			Ch.l = (e.l & f.l) ^ (~e.l & g.l);
+			Ch.h = (e.h & f.h) ^ (~e.h & g.h);
+
+			int64_right_rotate(r1, e, 14);
+			int64_right_rotate(r2, e, 18);
+			int64_right_rotate(r3, e, 41);
+			gamma1.l = r1.l ^ r2.l ^ r3.l;
+			gamma1.h = r1.h ^ r2.h ^ r3.h;
+			int64_add5(T1, h, gamma1, Ch, K[n], w[n]);
+
+			//计算T2
+			int64_right_rotate(r1, a, 28);
+			int64_right_rotate(r2, a, 34);
+			int64_right_rotate(r3, a, 39);
+			gamma0.l = r1.l ^ r2.l ^ r3.l;
+			gamma0.h = r1.h ^ r2.h ^ r3.h;
+
+			Maj.l = (a.l & b.l) ^ (a.l & c.l) ^ (b.l & c.l);
+			Maj.h = (a.h & b.h) ^ (a.h & c.h) ^ (b.h & c.h);
+			int64_add(T2, gamma0, Maj);
+
+			int64_copy(h, g);
+			int64_copy(g, f);
+			int64_copy(f, e);
+			int64_add(e, d, T1);
+			int64_copy(d, c);
+			int64_copy(c, b);
+			int64_copy(b, a);
+			int64_add(a, T1, T2);
+		}
+
+		int64_add(h0, h0, a);
+		int64_add(h1, h1, b);
+		int64_add(h2, h2, c);
+		int64_add(h3, h3, d);
+		int64_add(h4, h4, e);
+		int64_add(h5, h5, f);
+		int64_add(h6, h6, g);
+		int64_add(h7, h7, h);
+	}
+
+	return hexOutput([h0.h,h0.l,h1.h,h1.l,h2.h,h2.l,h3.h]);
+}
+
+function sha512_256(input)
+{
+	var bytes = handleInputInt64(input);
+	if(bytes == null){
+		return "";
+	}
+
+	var K = [
+		int64(0x428a2f98, 0xd728ae22), int64(0x71374491, 0x23ef65cd), int64(0xb5c0fbcf, 0xec4d3b2f), int64(0xe9b5dba5, 0x8189dbbc), 
+		int64(0x3956c25b, 0xf348b538), int64(0x59f111f1, 0xb605d019), int64(0x923f82a4, 0xaf194f9b), int64(0xab1c5ed5, 0xda6d8118), 
+		int64(0xd807aa98, 0xa3030242), int64(0x12835b01, 0x45706fbe), int64(0x243185be, 0x4ee4b28c), int64(0x550c7dc3, 0xd5ffb4e2), 
+		int64(0x72be5d74, 0xf27b896f), int64(0x80deb1fe, 0x3b1696b1), int64(0x9bdc06a7, 0x25c71235), int64(0xc19bf174, 0xcf692694),
+		int64(0xe49b69c1, 0x9ef14ad2), int64(0xefbe4786, 0x384f25e3), int64(0x0fc19dc6, 0x8b8cd5b5), int64(0x240ca1cc, 0x77ac9c65), 
+		int64(0x2de92c6f, 0x592b0275), int64(0x4a7484aa, 0x6ea6e483), int64(0x5cb0a9dc, 0xbd41fbd4), int64(0x76f988da, 0x831153b5),
+		int64(0x983e5152, 0xee66dfab), int64(0xa831c66d, 0x2db43210), int64(0xb00327c8, 0x98fb213f), int64(0xbf597fc7, 0xbeef0ee4), 
+		int64(0xc6e00bf3, 0x3da88fc2), int64(0xd5a79147, 0x930aa725), int64(0x06ca6351, 0xe003826f), int64(0x14292967, 0x0a0e6e70),
+		int64(0x27b70a85, 0x46d22ffc), int64(0x2e1b2138, 0x5c26c926), int64(0x4d2c6dfc, 0x5ac42aed), int64(0x53380d13, 0x9d95b3df), 
+		int64(0x650a7354, 0x8baf63de), int64(0x766a0abb, 0x3c77b2a8), int64(0x81c2c92e, 0x47edaee6), int64(0x92722c85, 0x1482353b),
+		int64(0xa2bfe8a1, 0x4cf10364), int64(0xa81a664b, 0xbc423001), int64(0xc24b8b70, 0xd0f89791), int64(0xc76c51a3, 0x0654be30), 
+		int64(0xd192e819, 0xd6ef5218), int64(0xd6990624, 0x5565a910), int64(0xf40e3585, 0x5771202a), int64(0x106aa070, 0x32bbd1b8),
+		int64(0x19a4c116, 0xb8d2d0c8), int64(0x1e376c08, 0x5141ab53), int64(0x2748774c, 0xdf8eeb99), int64(0x34b0bcb5, 0xe19b48a8), 
+		int64(0x391c0cb3, 0xc5c95a63), int64(0x4ed8aa4a, 0xe3418acb), int64(0x5b9cca4f, 0x7763e373), int64(0x682e6ff3, 0xd6b2b8a3),
+		int64(0x748f82ee, 0x5defb2fc), int64(0x78a5636f, 0x43172f60), int64(0x84c87814, 0xa1f0ab72), int64(0x8cc70208, 0x1a6439ec), 
+		int64(0x90befffa, 0x23631e28), int64(0xa4506ceb, 0xde82bde9), int64(0xbef9a3f7, 0xb2c67915), int64(0xc67178f2, 0xe372532b),
+		int64(0xca273ece, 0xea26619c), int64(0xd186b8c7, 0x21c0c207), int64(0xeada7dd6, 0xcde0eb1e), int64(0xf57d4f7f, 0xee6ed178), 
+		int64(0x06f067aa, 0x72176fba), int64(0x0a637dc5, 0xa2c898a6), int64(0x113f9804, 0xbef90dae), int64(0x1b710b35, 0x131c471b),
+		int64(0x28db77f5, 0x23047d84), int64(0x32caab7b, 0x40c72493), int64(0x3c9ebe0a, 0x15c9bebc), int64(0x431d67c4, 0x9c100d4c), 
+		int64(0x4cc5d4be, 0xcb3e42b6), int64(0x597f299c, 0xfc657e2a), int64(0x5fcb6fab, 0x3ad6faec), int64(0x6c44198c, 0x4a475817)
+	];
+
+	var h0 = int64(0x22312194, 0xFC2BF72C);
+	var h1 = int64(0x9F555FA3, 0xC84C64C2);
+	var h2 = int64(0x2393B86B, 0x6F53B151);
+	var h3 = int64(0x96387719, 0x5940EABD);
+	var h4 = int64(0x96283EE2, 0xA88EFFE3);
+	var h5 = int64(0xBE5E1E25, 0x53863992);
+	var h6 = int64(0x2B0199FC, 0x2C85B8AA);
+	var h7 = int64(0x0EB72DDC, 0x81C52CA2); 
+
+	var a  = int64(0, 0);
+	var b  = int64(0, 0);
+	var c  = int64(0, 0);
+	var d  = int64(0, 0);
+	var e  = int64(0, 0);
+	var f  = int64(0, 0);
+	var g  = int64(0, 0);
+	var h  = int64(0, 0);
+
+	var r1 = int64(0, 0);
+	var r2 = int64(0, 0);
+	var r3 = int64(0, 0);
+	var s0 = int64(0, 0);
+	var s1 = int64(0, 0);
+
+	var Ch = int64(0, 0);
+	var Maj= int64(0, 0);
+	var T1 = int64(0, 0);
+	var T2 = int64(0, 0);
+
+	var gamma0 = int64(0, 0);
+	var gamma1 = int64(0, 0);
+
+	for(var i = 0; i < bytes.length; i = i + 128)
+	{
+		var w = group64(bytes, i, 80);
+		for(var k = 16; k < 80; k++){
+			w[k] = int64(0, 0);
+			int64_right_rotate(r1, w[k - 2], 19);
+			int64_right_rotate(r2, w[k - 2], 61);
+			int64_right_shift(r3, w[k - 2], 6);
+			s1.l = r1.l ^ r2.l ^ r3.l;
+			s1.h = r1.h ^ r2.h ^ r3.h;
+
+			int64_right_rotate(r1, w[k - 15], 1);
+			int64_right_rotate(r2, w[k - 15], 8);
+			int64_right_shift(r3, w[k - 15], 7);
+			s0.l = r1.l ^ r2.l ^ r3.l;
+			s0.h = r1.h ^ r2.h ^ r3.h;
+
+			int64_add4(w[k], s1, w[k - 7], s0, w[k - 16]);
+		}
+
+		int64_copy(a, h0);
+		int64_copy(b, h1);
+		int64_copy(c, h2);
+		int64_copy(d, h3);
+		int64_copy(e, h4);
+		int64_copy(f, h5);
+		int64_copy(g, h6);
+		int64_copy(h, h7);
+
+		for(var n = 0; n < 80; n++){
+			//计算T1
+			Ch.l = (e.l & f.l) ^ (~e.l & g.l);
+			Ch.h = (e.h & f.h) ^ (~e.h & g.h);
+
+			int64_right_rotate(r1, e, 14);
+			int64_right_rotate(r2, e, 18);
+			int64_right_rotate(r3, e, 41);
+			gamma1.l = r1.l ^ r2.l ^ r3.l;
+			gamma1.h = r1.h ^ r2.h ^ r3.h;
+			int64_add5(T1, h, gamma1, Ch, K[n], w[n]);
+
+			//计算T2
+			int64_right_rotate(r1, a, 28);
+			int64_right_rotate(r2, a, 34);
+			int64_right_rotate(r3, a, 39);
+			gamma0.l = r1.l ^ r2.l ^ r3.l;
+			gamma0.h = r1.h ^ r2.h ^ r3.h;
+
+			Maj.l = (a.l & b.l) ^ (a.l & c.l) ^ (b.l & c.l);
+			Maj.h = (a.h & b.h) ^ (a.h & c.h) ^ (b.h & c.h);
+			int64_add(T2, gamma0, Maj);
+
+			int64_copy(h, g);
+			int64_copy(g, f);
+			int64_copy(f, e);
+			int64_add(e, d, T1);
+			int64_copy(d, c);
+			int64_copy(c, b);
+			int64_copy(b, a);
+			int64_add(a, T1, T2);
+		}
+
+		int64_add(h0, h0, a);
+		int64_add(h1, h1, b);
+		int64_add(h2, h2, c);
+		int64_add(h3, h3, d);
+		int64_add(h4, h4, e);
+		int64_add(h5, h5, f);
+		int64_add(h6, h6, g);
+		int64_add(h7, h7, h);
+	}
+
+	return hexOutput64([h0, h1, h2, h3]);
+}

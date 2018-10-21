@@ -150,6 +150,9 @@
       else if(sha == "sha256"){
         outputValue = sha256(inputValue);
       }
+      else if(sha == "sha384"){
+        outputValue = sha384(inputValue);
+      }
       else if(sha == "sha512"){
         outputValue = sha512(inputValue);
       }
@@ -191,6 +194,9 @@
             else if(sha == "sha256"){
               outputValue = sha256(array);
             }
+            else if(sha == "sha384"){
+              outputValue = sha512(array);
+            }
             else if(sha == "sha512"){
               outputValue = sha512(array);
             }
@@ -205,6 +211,7 @@
       initFileInput('sha1');
       initFileInput('sha224');
       initFileInput('sha256');
+      initFileInput('sha384');
       initFileInput('sha512');
     }
 
@@ -314,7 +321,21 @@
 
               <li class="tab-itom">
                   <input type="radio" id="testTabRadio4" class="test-radio" name="tab">
-                  <label class="test-label unselectable" for="testTabRadio4">SHA512</label>
+                  <label class="test-label unselectable" for="testTabRadio4">SHA384</label>
+                  <div class="tab-box">
+                      <textarea id="input_textarea_sha384" placeholder="请输入待编码的字符串" class="tool-input-textarea" spellcheck="false"></textarea>
+                      <div class="tool-button-group">
+                        <button id="encode_sha384" class="tool-button" onClick="doSHAEncode('sha384')">编码</button>
+                        <input  id="input_file_sha384" type="file"/>
+                      </div>
+                      
+                        <textarea id="output_textarea_sha384"class="tool-output-textarea-4" readonly="readonly" spellcheck="false"></textarea>
+                  </div>
+              </li>
+
+              <li class="tab-itom">
+                  <input type="radio" id="testTabRadio5" class="test-radio" name="tab">
+                  <label class="test-label unselectable" for="testTabRadio5">SHA512</label>
                   <div class="tab-box">
                       <textarea id="input_textarea_sha512" placeholder="请输入待编码的字符串" class="tool-input-textarea" spellcheck="false"></textarea>
                       <div class="tool-button-group">
