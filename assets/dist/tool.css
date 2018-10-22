@@ -1,3 +1,7 @@
+.tool-operation-area{
+    width:100%;
+}
+
 .tool-input-textarea{
     font-family:monospace;
 	width:95%;

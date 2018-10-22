@@ -14,6 +14,7 @@
       }
 
       ul {
+          width: 95%;
           margin: 0;
           padding: 0;
 
@@ -37,13 +38,14 @@
           float: left;
           list-style: none;
           margin-right: 4px;
+          margin-bottom: 4px;
       }
 
       .tab-itom .test-label {
           position: relative;
           display: block;
           font-size: 1.5em;
-          width: 120px;
+          width: 140px;
           height: 27px;
           border: 1px solid transparent;
           border-top-left-radius: 0px;
@@ -94,46 +96,51 @@
   <link rel="stylesheet" href="{{ '/assets/dist/sheet.css' | relative_url }}">
   <script src="{{ '/assets/dist/js/tool/sha.js' | relative_url }}"></script>
   <script>
-    //MD5编码
-    function doSHAEncode(sha)
+    function getSelectedFuncName()
     {
-      var input = document.getElementById("input_textarea_"+sha);
-      var inputValue = input.value;
-      var outputValue = "";
-      if(sha == "sha1"){
-        outputValue = sha1(inputValue);
+      var str = null;
+      var radioArr = document.getElementsByClassName("test-radio");
+      for(var i = 0;i < radioArr.length; i++){
+        var radio = radioArr[i];
+        console.log(i, radio, radio.value);
+        if(radio.checked == true){
+          str = radio.value;
+          break;
+        }
       }
-      else if(sha == "sha224"){
-        outputValue = sha224(inputValue);
-      }
-      else if(sha == "sha256"){
-        outputValue = sha256(inputValue);
-      }
-      else if(sha == "sha384"){
-        outputValue = sha384(inputValue);
-      }
-      else if(sha == "sha512"){
-        outputValue = sha512(inputValue);
-      }
-
-      updateOutput(sha, outputValue);
+      console.log("str = ", str);
+      return str;
     }
 
-    function updateOutput(sha, value){
-      var output = document.getElementById("output_textarea_"+sha);
+
+    //MD5编码
+    function doSHAEncode()
+    {
+      var sha = getSelectedFuncName();
+      if(sha != null){
+        var input = document.getElementById("input_textarea");
+        var inputValue = input.value;
+        var outputValue = eval(sha)(inputValue);
+        updateOutput(outputValue);
+      }
+    }
+
+    function updateOutput(value){
+      var output = document.getElementById("output_textarea");
       output.value  = value;
     }
 
-    function initFileInput(sha){
-      var fileInput = document.getElementById('input_file_'+sha);
+    function initFileInput(){
+      var fileInput = document.getElementById('input_file');
       // 监听change事件:
       fileInput.addEventListener('change', function () {
+          var sha = getSelectedFuncName();
+          if(sha == null){ return; }
+
           // 检查文件是否选择:
-          if (!fileInput.value) {
-              return;
-          }
+          if (!fileInput.value) { return; }
           
-          var input = document.getElementById("input_textarea_"+sha);
+          var input = document.getElementById("input_textarea");
           input.value = "";
 
           // 获取File引用:
@@ -143,23 +150,8 @@
           reader.onload = function(e) {
             var array = Array.from(new Uint8Array(reader.result));
             
-            var outputValue = "";
-            if(sha == "sha1"){
-              outputValue = sha1(array);
-            }
-            else if(sha == "sha224"){
-              outputValue = sha224(array);
-            }
-            else if(sha == "sha256"){
-              outputValue = sha256(array);
-            }
-            else if(sha == "sha384"){
-              outputValue = sha512(array);
-            }
-            else if(sha == "sha512"){
-              outputValue = sha512(array);
-            }
-            updateOutput(sha, outputValue);
+            var outputValue = eval(sha)(array);
+            updateOutput(outputValue);
           }
 
           reader.readAsArrayBuffer(file);
@@ -167,11 +159,7 @@
     }
 
     window.onload = function(){
-      initFileInput('sha1');
-      initFileInput('sha224');
-      initFileInput('sha256');
-      initFileInput('sha384');
-      initFileInput('sha512');
+      initFileInput();
     }
 
   </script>
@@ -195,75 +183,39 @@
           <div>
             <ul class="tab-list clearfloat">
               <li class="tab-itom">
-                  <input type="radio" id="testTabRadio1" class="test-radio" name="tab" checked="checked">
-                  <label class="test-label unselectable" for="testTabRadio1">SHA1</label>
-                  <div class="tab-box">
-                      <textarea id="input_textarea_sha1" placeholder="请输入待编码的字符串" class="tool-input-textarea" spellcheck="false"></textarea>
-                      <div class="tool-button-group">
-                        <button id="encode_sha1" class="tool-button" onClick="doSHAEncode('sha1')">编码</button>
-                        <input  id="input_file_sha1" type="file"/>
-                      </div>
-                      
-                        <textarea id="output_textarea_sha1"class="tool-output-textarea-3" readonly="readonly" spellcheck="false"></textarea>
-                  </div>
+                <input type="radio" id="testTabRadio1" class="test-radio" name="tab" value="sha1" checked="true"/>
+                <label class="test-label unselectable" for="testTabRadio1">SHA1</label>
               </li>
-
-              <li class="tab-itom">
-                  <input type="radio" id="testTabRadio2" class="test-radio" name="tab">
-                  <label class="test-label unselectable" for="testTabRadio2">SHA224</label>
-                  <div class="tab-box">
-                      <textarea id="input_textarea_sha224" placeholder="请输入待编码的字符串" class="tool-input-textarea" spellcheck="false"></textarea>
-                      <div class="tool-button-group">
-                        <button id="encode_sha224" class="tool-button" onClick="doSHAEncode('sha224')">编码</button>
-                        <input  id="input_file_sha224" type="file"/>
-                      </div>
-              
-                        <textarea id="output_textarea_sha224"class="tool-output-textarea-3" readonly="readonly" spellcheck="false"></textarea>
-                  </div>
+               <li class="tab-itom">
+                <input type="radio" id="testTabRadio2" class="test-radio" name="tab" value="sha256"/>
+                <label class="test-label unselectable" for="testTabRadio2">SHA256</label>
               </li>
-
-              <li class="tab-itom">
-                  <input type="radio" id="testTabRadio3" class="test-radio" name="tab">
-                  <label class="test-label unselectable" for="testTabRadio3">SHA256</label>
-                  <div class="tab-box">
-                      <textarea id="input_textarea_sha256" placeholder="请输入待编码的字符串" class="tool-input-textarea" spellcheck="false"></textarea>
-                      <div class="tool-button-group">
-                        <button id="encode_sha256" class="tool-button" onClick="doSHAEncode('sha256')">编码</button>
-                        <input  id="input_file_sha256" type="file"/>
-                      </div>
-                      
-                        <textarea id="output_textarea_sha256"class="tool-output-textarea-3" readonly="readonly" spellcheck="false"></textarea>
-                  </div>
+               <li class="tab-itom">
+                <input type="radio" id="testTabRadio3" class="test-radio" name="tab" value="sha384"/>
+                <label class="test-label unselectable" for="testTabRadio3">SHA384</label>
               </li>
-
-              <li class="tab-itom">
-                  <input type="radio" id="testTabRadio4" class="test-radio" name="tab">
-                  <label class="test-label unselectable" for="testTabRadio4">SHA384</label>
-                  <div class="tab-box">
-                      <textarea id="input_textarea_sha384" placeholder="请输入待编码的字符串" class="tool-input-textarea" spellcheck="false"></textarea>
-                      <div class="tool-button-group">
-                        <button id="encode_sha384" class="tool-button" onClick="doSHAEncode('sha384')">编码</button>
-                        <input  id="input_file_sha384" type="file"/>
-                      </div>
-                      
-                        <textarea id="output_textarea_sha384"class="tool-output-textarea-4" readonly="readonly" spellcheck="false"></textarea>
-                  </div>
+               <li class="tab-itom">
+                <input type="radio" id="testTabRadio4" class="test-radio" name="tab" value="sha512"/>
+                <label class="test-label unselectable" for="testTabRadio4">SHA512</label>
               </li>
-
-              <li class="tab-itom">
-                  <input type="radio" id="testTabRadio5" class="test-radio" name="tab">
-                  <label class="test-label unselectable" for="testTabRadio5">SHA512</label>
-                  <div class="tab-box">
-                      <textarea id="input_textarea_sha512" placeholder="请输入待编码的字符串" class="tool-input-textarea" spellcheck="false"></textarea>
-                      <div class="tool-button-group">
-                        <button id="encode_sha512" class="tool-button" onClick="doSHAEncode('sha512')">编码</button>
-                        <input  id="input_file_sha512" type="file"/>
-                      </div>
-                      
-                        <textarea id="output_textarea_sha512"class="tool-output-textarea-4" readonly="readonly" spellcheck="false"></textarea>
-                  </div>
+               <li class="tab-itom">
+                <input type="radio" id="testTabRadio5" class="test-radio" name="tab" value="sha512_224"/>
+                <label class="test-label unselectable" for="testTabRadio5">SHA512/224</label>
+              </li>
+               <li class="tab-itom">
+                <input type="radio" id="testTabRadio6" class="test-radio" name="tab" value="sha512_256"/>
+                <label class="test-label unselectable" for="testTabRadio6">SHA512/256</label>
               </li>
             </ul>
+            <div class="tool-operation-area">
+                <textarea id="input_textarea" placeholder="请输入待编码的字符串" class="tool-input-textarea" spellcheck="false"></textarea>
+                <div class="tool-button-group">
+                  <button id="encode" class="tool-button" onClick="doSHAEncode()">编码</button>
+                  <input  id="input_file" type="file"/>
+                </div>
+                
+                  <textarea id="output_textarea"class="tool-output-textarea-4" readonly="readonly" spellcheck="false"></textarea>
+            </div>
         </div>
       </div>
   </div>
