@@ -5,3 +5,4 @@ google_analytics:
 theme: jekyll-theme-gitbook
 markdown: kramdown
 highlighter: rouge
+show_drafts: true

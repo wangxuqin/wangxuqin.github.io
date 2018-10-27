@@ -1,9 +1,72 @@
 
+
+function padding(num) {
+	var length = 16;
+    var str = num.toString(2);
+    for(var len = str.length; len < length; len = str.length) {
+        str = "0" + str;            
+    }
+    return str;
+}
+
+function padding16(num) {
+	var length = 4;
+    var str = num.toString(16);
+    for(var len = str.length; len < length; len = str.length) {
+        str = "0" + str;            
+    }
+    return str;
+}
+
+
 class int64_class {
 	constructor(h, l){
 		this.h = h;
 		this.l = l;
 	}
+}
+
+int64_class.prototype.toString = function()
+{
+	var r0 = this.l & 0xffff;
+	var r1 = this.l >>> 16;
+	var r2 = this.h & 0xffff;
+	var r3 = this.h >>> 16;
+	return (padding16(r3) + padding16(r2) + padding16(r1) + padding16(r0));
+}
+
+int64_class.prototype.toByteArray = function()
+{
+	var arr = new Array(8);
+	arr[0] = this.l & 0xff;
+	arr[1] = (this.l & 0xffff) >>> 8;
+	arr[2] = (this.l >>> 16) & 0xff;
+	arr[3] = (this.l >>> 24);
+
+	arr[4] = this.h & 0xff;
+	arr[5] = (this.h & 0xffff) >>> 8;
+	arr[6] = (this.h >>> 16) & 0xff;
+	arr[7] = (this.h >>> 24);
+	return arr;
+}
+
+int64_class.prototype.fromByteArray = function(arr)
+{
+	
+	this.l = arr[3] << 24 | arr[2] << 16 | arr[1] << 8 | arr[0];
+	this.h = arr[7] << 24 | arr[6] << 16 | arr[5] << 8 | arr[4];
+}
+
+int64_class.prototype.toGetByteArrayWithArray = function(arr)
+{
+	arr.push(this.l & 0xff);
+	arr.push((this.l & 0xffff) >>> 8);
+	arr.push((this.l >>> 16) & 0xff);
+	arr.push(this.l >>> 24);
+	arr.push(this.h & 0xff);
+	arr.push((this.h & 0xffff) >>> 8);
+	arr.push((this.h >>> 16) & 0xff);
+	arr.push((this.h >>> 24));
 }
 
 function int64(h, l){
@@ -55,15 +118,6 @@ function int64_copy(a, b)
 {
 	a.h = b.h;
 	a.l = b.l;
-}
-
-function padding(num) {
-	var length = 16;
-    var str = num.toString(2);
-    for(var len = str.length; len < length; len = str.length) {
-        str = "0" + str;            
-    }
-    return str;
 }
 
 function int64_right_rotate(ret, a, n)
@@ -133,6 +187,66 @@ function int64_right_shift(ret, a, n)
 }
 
 
+function int64_left_rotate(ret, a, n)
+{
+	n = n % 64;
+	var t0 = a.l & 0xffff;
+	var t1 = a.l >>> 16;
+	var t2 = a.h & 0xffff;
+	var t3 = a.h >>> 16;
+
+	var t  = [t3, t2, t1, t0]
+	var offset = Math.floor(n / 16);
+	var w  = new Array(4);
+	w[3] = t[(0 + offset) % 4];
+	w[2] = t[(1 + offset) % 4];
+	w[1] = t[(2 + offset) % 4];
+	w[0] = t[(3 + offset) % 4];
+	n = n % 16;
+
+	var r0 = (w[0] << n & 0xffff) | w[3] >>> (16 - n);
+	var r1 = (w[1] << n & 0xffff) | w[0] >>> (16 - n);
+	var r2 = (w[2] << n & 0xffff) | w[1] >>> (16 - n);
+	var r3 = (w[3] << n & 0xffff) | w[2] >>> (16 - n);
+
+	ret.h = (r3 << 16) & 0xffffffff | r2;
+	ret.l = (r1 << 16) & 0xffffffff | r0;
+	//console.log("n = "+n + " " + padding16(r3) + padding16(r2) + padding16(r1) + padding16(r0));
+}
+
+function int64_left_shift(ret, a, n)
+{
+
+	if(n >= 64){
+		ret.h = 0;
+		ret.l = 0;
+		return;
+	}
+
+	var t0 = a.l & 0xffff;
+	var t1 = a.l >>> 16;
+	var t2 = a.h & 0xffff;
+	var t3 = a.h >>> 16;
+
+	var t  = [t3, t2, t1, t0, 0, 0, 0]
+	var offset = Math.floor(n / 16);
+	var w  = new Array(4);
+	w[3] = t[0 + offset];
+	w[2] = t[1 + offset];
+	w[1] = t[2 + offset];
+	w[0] = t[3 + offset];
+	n = n % 16;
+
+	var r0 = (w[0] << n & 0xffff);
+	var r1 = (w[1] << n & 0xffff) | w[0] >>> (16 - n);
+	var r2 = (w[2] << n & 0xffff) | w[1] >>> (16 - n);
+	var r3 = (w[3] << n & 0xffff) | w[2] >>> (16 - n);
+
+	ret.h = (r3 << 16) & 0xffffffff | r2;
+	ret.l = (r1 << 16) & 0xffffffff | r0;
+
+	//console.log("n = "+n + "\t"+ padding(r3) + "\t" + padding(r2) + "\t" + padding(r1) + "\t" + padding(r0));
+}
 
 var hex_char = '0123456789abcdef'.split('');
 
@@ -1145,4 +1259,183 @@ function sha512_256(input)
 	}
 
 	return hexOutput64([h0, h1, h2, h3]);
+}
+
+
+var keccak_f = function(state)
+{
+	var RC = [
+		int64(0x00000000, 0x00000001),int64(0x00000000, 0x00008082),
+		int64(0x80000000, 0x0000808A),int64(0x80000000, 0x80008000),
+		int64(0x00000000, 0x0000808B),int64(0x00000000, 0x80000001),
+		int64(0x80000000, 0x80008081),int64(0x80000000, 0x00008009),
+		int64(0x00000000, 0x0000008A),int64(0x00000000, 0x00000088),
+		int64(0x00000000, 0x80008009),int64(0x00000000, 0x8000000A),
+		int64(0x00000000, 0x8000808B),int64(0x80000000, 0x0000008B),
+		int64(0x80000000, 0x00008089),int64(0x80000000, 0x00008003),
+		int64(0x80000000, 0x00008002),int64(0x80000000, 0x00000080),
+		int64(0x00000000, 0x0000800A),int64(0x80000000, 0x8000000A),
+		int64(0x80000000, 0x80008081),int64(0x80000000, 0x00008080),
+		int64(0x00000000, 0x80000001),int64(0x80000000, 0x80008008)
+	];
+
+	var ROUND_COUNT = 24;
+
+	var x = 0;
+	var y = 0;
+	var h = 0;
+	var l = 0;
+	var tmp = int64(0, 0);
+
+	for(var n = 0; n < ROUND_COUNT; n++){
+		//Θ step
+		var C = new Array(5);
+		var D = new Array(5);
+		for(x = 0; x < 5; x++){
+			h = state[x][0].h ^ state[x][1].h ^ state[x][2].h ^ state[x][3].h ^  state[x][4].h;
+			l = state[x][0].l ^ state[x][1].l ^ state[x][2].l ^ state[x][3].l ^  state[x][4].l;
+			C[x] = int64(h, l);
+		}
+		for(x = 0; x < 5; x++){
+			int64_left_rotate(tmp, C[ (x + 1) % 5], 1);
+			h = C[(x + 4) % 5].h ^ tmp.h;
+			l = C[(x + 4) % 5].l ^ tmp.l;
+			D[x] = int64(h, l);
+			for(y = 0; y < 5; y++){
+				h = state[x][y].h ^ D[x].h;
+				l = state[x][y].l ^ D[x].l;
+				state[x][y].h = h;
+				state[x][y].l = l;
+			}
+		}
+
+		//ρ step and π step
+		x = 1;
+		y = 0;
+		var current = int64(0, 0);
+		int64_copy(current, state[x][y]);
+		for(var t = 0; t < 24; t++){
+			int64_left_rotate(tmp, current, Math.floor((t + 1) * (t + 2) / 2) % 64);
+			var tX = x;
+			x = y;
+			y = (tX * 2 + y * 3) % 5;
+			int64_copy(current, state[x][y]);
+			int64_copy(state[x][y], tmp);
+		}
+
+		//χ step
+		for(y = 0; y < 5; y++){
+			for(x = 0; x < 5; x++){
+				int64_copy(C[x], state[x][y]);
+			}
+
+
+			for(x = 0; x < 5; x++){
+				h = state[x][y].h ^ (~C[(x + 1) % 5].h) & C[(x + 2) % 5].h;
+				l = state[x][y].l ^ (~C[(x + 1) % 5].l) & C[(x + 2) % 5].l;
+				state[x][y].h = h;
+				state[x][y].l = l;
+			}
+		}
+
+		//ι step
+		state[0][0].h ^= RC[n].h;
+		state[0][0].l ^= RC[n].l;
+	}
+}
+
+var state_xor = function(state, index, val)
+{
+	var z = index % 8;
+	var y = Math.floor(index / 40);
+	var x = Math.floor(index / 8) % 5;
+	var int64Value = state[x][y];
+	var byteArray = int64Value.toByteArray();
+	byteArray[z] ^= val;
+	int64Value.fromByteArray(byteArray);
+}
+
+var state_to_byte_array = function(state)
+{
+	var arr = [];
+	for(var y = 0; y < 5; y++){
+		for(var x = 0; x < 5; x++){
+			state[x][y].toGetByteArrayWithArray(arr)
+		}
+	}
+	return arr;
+}
+
+var hexOutput_8_little_endian = function(arr)
+{
+	var output = new Array();
+	for(var i = 0; i < arr.length; i++)
+	{
+		var n = arr[i];
+		var s = hex_char[n >>> 4] + hex_char[n & 0x0F];
+		output.push(s);
+	}
+	return output.join('');
+}
+
+var print_state = function(state)
+{
+	for(var x = 0; x < 5; x++){
+		for(var y = 0; y < 5; y++){
+			console.log("(" + x + "," + y + ")=", state[x][y].toString());
+		}
+	}
+}
+
+function sha3_224(input){
+	var bytes = null;
+	if(Object.prototype.toString.call(input) === "[object String]"){
+		str = input
+		bytes = stringToByte(str);
+	}
+	else if(Object.prototype.toString.call(input) === "[object Array]"){
+		bytes = input;
+	}
+	else{
+		alert("输入参数错误!");
+		return;
+	}
+
+	var c  = 224 * 2;
+	var r  = 1600 - c;
+	var r_size = r / 8;
+	var output_size = c / 2 / 8;
+	var pad = 0x06;
+
+	var state = [
+		[int64(0, 0),int64(0, 0),int64(0, 0),int64(0, 0),int64(0, 0)],
+		[int64(0, 0),int64(0, 0),int64(0, 0),int64(0, 0),int64(0, 0)],
+		[int64(0, 0),int64(0, 0),int64(0, 0),int64(0, 0),int64(0, 0)],
+		[int64(0, 0),int64(0, 0),int64(0, 0),int64(0, 0),int64(0, 0)],
+		[int64(0, 0),int64(0, 0),int64(0, 0),int64(0, 0),int64(0, 0)]
+	]
+
+	var pt = 0;
+	for(var i = 0; i < bytes.length; i++){
+		state_xor(state, pt, bytes[i]);
+		pt += 1;
+		if(pt == r_size){
+			keccak_f(state);
+			pt = 0;
+		}
+	}
+
+	state_xor(state, pt, pad);
+	state_xor(state, r_size - 1, 0x80);
+	keccak_f(state);
+	//print_state(state);
+
+	var byteArray = state_to_byte_array(state);
+	var outputArray = byteArray.slice(0, output_size);
+	for(var i = 0; i < byteArray.length; i++){
+		console.log(i + "=" + byteArray[i])
+	}
+
+
+	return hexOutput_8_little_endian(outputArray);
 }
