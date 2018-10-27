@@ -1387,7 +1387,8 @@ var print_state = function(state)
 	}
 }
 
-function sha3_224(input){
+var keccak = function(input, c, pad)
+{
 	var bytes = null;
 	if(Object.prototype.toString.call(input) === "[object String]"){
 		str = input
@@ -1401,11 +1402,10 @@ function sha3_224(input){
 		return;
 	}
 
-	var c  = 224 * 2;
+	var c  = c * 2;
 	var r  = 1600 - c;
 	var r_size = r / 8;
 	var output_size = c / 2 / 8;
-	var pad = 0x06;
 
 	var state = [
 		[int64(0, 0),int64(0, 0),int64(0, 0),int64(0, 0),int64(0, 0)],
@@ -1432,10 +1432,26 @@ function sha3_224(input){
 
 	var byteArray = state_to_byte_array(state);
 	var outputArray = byteArray.slice(0, output_size);
-	for(var i = 0; i < byteArray.length; i++){
-		console.log(i + "=" + byteArray[i])
-	}
-
 
 	return hexOutput_8_little_endian(outputArray);
+}
+
+function sha3_224(input)
+{
+	return keccak(input, 224, 0x06);
+}
+
+function sha3_256(input)
+{
+	return keccak(input, 256, 0x06);
+}
+
+function sha3_384(input)
+{
+	return keccak(input, 384, 0x06);
+}
+
+function sha3_512(input)
+{
+	return keccak(input, 512, 0x06);
 }
