@@ -1387,7 +1387,7 @@ var print_state = function(state)
 	}
 }
 
-var keccak = function(input, c, pad)
+var keccak = function(input, c, pad, output_len)
 {
 	var bytes = null;
 	if(Object.prototype.toString.call(input) === "[object String]"){
@@ -1402,10 +1402,17 @@ var keccak = function(input, c, pad)
 		return;
 	}
 
-	var c  = c * 2;
+	c  = c * 2;
 	var r  = 1600 - c;
 	var r_size = r / 8;
-	var output_size = c / 2 / 8;
+	var c_size = c / 2 / 8;
+
+	if (output_len == undefined){
+		output_len = c_size;
+	}
+	else{
+		output_len = Math.floor(output_len / 8);
+	}
 
 	var state = [
 		[int64(0, 0),int64(0, 0),int64(0, 0),int64(0, 0),int64(0, 0)],
@@ -1428,12 +1435,35 @@ var keccak = function(input, c, pad)
 	state_xor(state, pt, pad);
 	state_xor(state, r_size - 1, 0x80);
 	keccak_f(state);
-	//print_state(state);
+	pt = 0;
 
+	var ret = "";
 	var byteArray = state_to_byte_array(state);
-	var outputArray = byteArray.slice(0, output_size);
+	var outputArray = null;
+	
+	if(output_len == c_size){
+		outputArray = byteArray.slice(0, c_size);
+		ret = hexOutput_8_little_endian(outputArray);
+	}else{
+		outputArray = [];
+		var j = 0;
+		for(var i = 0; i < output_len; i++){
+			outputArray.push(byteArray[j]);
+			j += 1;
+			if(j == r_size){
+				ret += hexOutput_8_little_endian(outputArray);
+				keccak_f(state);
+				byteArray = state_to_byte_array(state);
+				outputArray = [];
+				j = 0;
+			}
+		}
+		if(outputArray.length > 0){
+			ret += hexOutput_8_little_endian(outputArray);
+		}
+	}
 
-	return hexOutput_8_little_endian(outputArray);
+	return ret;
 }
 
 function sha3_224(input)
@@ -1454,4 +1484,14 @@ function sha3_384(input)
 function sha3_512(input)
 {
 	return keccak(input, 512, 0x06);
+}
+
+function shake128(input, output_len)
+{
+	return keccak(input, 128, 0x1F, output_len);
+}
+
+function shake256(input, output_len)
+{
+	return keccak(input, 256, 0x1F, output_len);
 }

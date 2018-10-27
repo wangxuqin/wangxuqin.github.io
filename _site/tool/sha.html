@@ -82,7 +82,7 @@
           margin-bottom: 4px;
       }
 
-      .tab-itom .test-label {
+      .tab-itom .tab-label {
           position: relative;
           display: block;
           font-size: 1.5em;
@@ -118,8 +118,8 @@
       }
       /* 利用选择器实现  tab切换 */
 
-      /* 当radio为选中状态时设置它的test-label兄弟元素的属性 */
-      input[type="radio"]:checked + .test-label {
+      /* 当radio为选中状态时设置它的tab-label兄弟元素的属性 */
+      input[type="radio"]:checked + .tab-label {
           color:#fff;
           /* 为了修饰存在的边框背景属性 */
           border-color: #2e6da4;
@@ -137,19 +137,32 @@
   <link rel="stylesheet" href="/assets/dist/sheet.css">
   <script src="/assets/dist/js/tool/sha.js"></script>
   <script>
+
+    function onTabChange()
+    {
+      document.getElementById("bits").hidden = true;
+      var radioArr = document.getElementsByClassName("tab-radio");
+      for(var i = 0; i < radioArr.length; i++){
+        var radio = radioArr[i];
+        if((radio.checked == true) && (radio.value == "shake128" || radio.value == "shake256")){
+          document.getElementById("bits").hidden = false;
+          break;
+        }
+      }
+    }
+
+
     function getSelectedFuncName()
     {
       var str = null;
-      var radioArr = document.getElementsByClassName("test-radio");
+      var radioArr = document.getElementsByClassName("tab-radio");
       for(var i = 0;i < radioArr.length; i++){
         var radio = radioArr[i];
-        console.log(i, radio, radio.value);
         if(radio.checked == true){
           str = radio.value;
           break;
         }
       }
-      console.log("str = ", str);
       return str;
     }
 
@@ -161,7 +174,14 @@
       if(sha != null){
         var input = document.getElementById("input_textarea");
         var inputValue = input.value;
-        var outputValue = eval(sha)(inputValue);
+        var outputValue = null;
+        if (sha == "shake128" || sha== "shake256") {
+          var output_len = document.getElementById("bits").value;
+          outputValue = eval(sha)(inputValue, output_len);
+        }
+        else{
+          outputValue = eval(sha)(inputValue);
+        }
         updateOutput(outputValue);
       }
     }
@@ -190,8 +210,15 @@
           var reader = new FileReader();
           reader.onload = function(e) {
             var array = Array.from(new Uint8Array(reader.result));
+            var outputValue = null;
+            if (sha == "shake128" || sha == "shake256") {
+              var output_len = document.getElementById("bits").value;
+              outputValue = eval(sha)(array, output_len);
+            }
+            else{
+              outputValue = eval(sha)(array);
+            }
             
-            var outputValue = eval(sha)(array);
             updateOutput(outputValue);
           }
 
@@ -266,44 +293,52 @@
           <div>
             <ul class="tab-list clearfloat">
               <li class="tab-itom">
-                <input type="radio" id="tadRadio1" class="test-radio" name="tab" value="sha1" checked="true"/>
-                <label class="test-label unselectable" for="tadRadio1">SHA1</label>
+                <input type="radio" id="tadRadio1" class="tab-radio" name="tab" onchange="onTabChange();" value="sha1" checked="true"/>
+                <label class="tab-label unselectable" for="tadRadio1">SHA1</label>
               </li>
                <li class="tab-itom">
-                <input type="radio" id="tadRadio2" class="test-radio" name="tab" value="sha256"/>
-                <label class="test-label unselectable" for="tadRadio2">SHA256</label>
+                <input type="radio" id="tadRadio2" class="tab-radio" name="tab" onchange="onTabChange();" value="sha256"/>
+                <label class="tab-label unselectable" for="tadRadio2">SHA256</label>
               </li>
                <li class="tab-itom">
-                <input type="radio" id="tadRadio3" class="test-radio" name="tab" value="sha384"/>
-                <label class="test-label unselectable" for="tadRadio3">SHA384</label>
+                <input type="radio" id="tadRadio3" class="tab-radio" name="tab" onchange="onTabChange();" value="sha384"/>
+                <label class="tab-label unselectable" for="tadRadio3">SHA384</label>
               </li>
                <li class="tab-itom">
-                <input type="radio" id="tadRadio4" class="test-radio" name="tab" value="sha512"/>
-                <label class="test-label unselectable" for="tadRadio4">SHA512</label>
+                <input type="radio" id="tadRadio4" class="tab-radio" name="tab" onchange="onTabChange();" value="sha512"/>
+                <label class="tab-label unselectable" for="tadRadio4">SHA512</label>
               </li>
                <li class="tab-itom">
-                <input type="radio" id="tadRadio5" class="test-radio" name="tab" value="sha512_224"/>
-                <label class="test-label unselectable" for="tadRadio5">SHA512/224</label>
+                <input type="radio" id="tadRadio5" class="tab-radio" name="tab" onchange="onTabChange();" value="sha512_224"/>
+                <label class="tab-label unselectable" for="tadRadio5">SHA512/224</label>
               </li>
                <li class="tab-itom">
-                <input type="radio" id="tadRadio6" class="test-radio" name="tab" value="sha512_256"/>
-                <label class="test-label unselectable" for="tadRadio6">SHA512/256</label>
+                <input type="radio" id="tadRadio6" class="tab-radio" name="tab" onchange="onTabChange();" value="sha512_256"/>
+                <label class="tab-label unselectable" for="tadRadio6">SHA512/256</label>
               </li>
               <li class="tab-itom">
-                <input type="radio" id="tadRadio7" class="test-radio" name="tab" value="sha3_224"/>
-                <label class="test-label unselectable" for="tadRadio7">SHA3-224</label>
+                <input type="radio" id="tadRadio7" class="tab-radio" name="tab" onchange="onTabChange();" value="sha3_224"/>
+                <label class="tab-label unselectable" for="tadRadio7">SHA3-224</label>
               </li>
               <li class="tab-itom">
-                <input type="radio" id="tadRadio8" class="test-radio" name="tab" value="sha3_256"/>
-                <label class="test-label unselectable" for="tadRadio8">SHA3-256</label>
+                <input type="radio" id="tadRadio8" class="tab-radio" name="tab" onchange="onTabChange();" value="sha3_256"/>
+                <label class="tab-label unselectable" for="tadRadio8">SHA3-256</label>
               </li>
               <li class="tab-itom">
-                <input type="radio" id="tadRadio9" class="test-radio" name="tab" value="sha3_384"/>
-                <label class="test-label unselectable" for="tadRadio9">SHA3-384</label>
+                <input type="radio" id="tadRadio9" class="tab-radio" name="tab" onchange="onTabChange();" ue="sha3_384"/>
+                <label class="tab-label unselectable" for="tadRadio9">SHA3-384</label>
               </li>
               <li class="tab-itom">
-                <input type="radio" id="tadRadio10" class="test-radio" name="tab" value="sha3_512"/>
-                <label class="test-label unselectable" for="tadRadio10">SHA3-512</label>
+                <input type="radio" id="tadRadio10" class="tab-radio" name="tab" onchange="onTabChange();" value="sha3_512"/>
+                <label class="tab-label unselectable" for="tadRadio10">SHA3-512</label>
+              </li>
+              <li class="tab-itom">
+                <input type="radio" id="tadRadio11" class="tab-radio" name="tab" onchange="onTabChange();" value="shake128"/>
+                <label class="tab-label unselectable" for="tadRadio11">SHAKE128</label>
+              </li>
+              <li class="tab-itom">
+                <input type="radio" id="tadRadio12" class="tab-radio" name="tab" onchange="onTabChange();" value="shake256"/>
+                <label class="tab-label unselectable" for="tadRadio12">SHAKE256</label>
               </li>
             </ul>
             <div class="tool-operation-area">
@@ -311,9 +346,9 @@
                 <div class="tool-button-group">
                   <button id="encode" class="tool-button" onClick="doSHAEncode()">编码</button>
                   <input  id="input_file" type="file"/>
+                  <input  id="bits" type="number" value="256" step="8" min="8" data-option="" hidden/>
                 </div>
-                
-                  <textarea id="output_textarea"class="tool-output-textarea-4" readonly="readonly" spellcheck="false"></textarea>
+                <textarea id="output_textarea"class="tool-output-textarea-4" readonly="readonly" spellcheck="false"></textarea>
             </div>
         </div>
       </div>
