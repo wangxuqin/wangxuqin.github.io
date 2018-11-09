@@ -36,13 +36,10 @@ var generateKey = function(inputKeys)
 {
 	var keys = Array(56);
 	for(var i = 0; i < 56; i++){
-		var idx = pc1[i];
-		//console.log(idx, Math.floor(idx / 8), idx % 8, inputKeys[Math.floor(idx / 8)], inputKeys[Math.floor(idx / 8)] & mask1[(idx - 1) % 8]);
-		var cur = (inputKeys[Math.floor(idx / 8)] & mask1[idx - Math.floor(idx / 8) * 8] > 0) ? 1 : 0;
+		var idx = pc1[i] - 1;
+		var cur = (inputKeys[Math.floor(idx / 8)] & mask1[idx % 8]) != 0 ? 1 : 0;
 		keys[i] = cur;
 	}
-
-	console.log(keys);
 
 	var lParts = keys.slice(0, 28);
 	var rParts = keys.slice(28, 56);
@@ -53,14 +50,18 @@ var generateKey = function(inputKeys)
 		leftRotate(rParts, leftRotateTable[i]);
 		for(var n = 0; n < 48; n++){
 			var idx1 = Math.floor(n / 6);
-			var idx2 = pc2[n];
+			var idx2 = pc2[n] - 1;
 			var cur = (idx2 < 28) ? lParts[idx2] : rParts[idx2 - 28];
 			k[idx1] = k[idx1] << 1 | cur;
 		}
 		outputKeys[i] = k;
 	}
+
 	return outputKeys;
 }
 
-generateKey([0b00010011, 0b00110100, 0b01010111, 0b01111001, 0b10011011, 0b10111100, 0b11011111, 0b11110001]);
-//console.log(generateKey([0b00010011, 0b00110100, 0b01010111, 0b01111001, 0b10011011, 0b10111100, 0b11011111, 0b11110001]));
+// TEST
+// var outputKeys = generateKey([0b00010011, 0b00110100, 0b01010111, 0b01111001, 0b10011011, 0b10111100, 0b11011111, 0b11110001]);
+// console.log(outputKeys);
+
+
