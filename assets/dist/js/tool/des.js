@@ -1,3 +1,54 @@
+//将字符串转换成UTF8数组
+ var stringToByte = function(str) {
+	var bytes = new Array();
+	var len, c;
+	len = str.length;
+	for(var i = 0; i < len; i++) {
+		c = str.charCodeAt(i);
+		if(c >= 0x010000 && c <= 0x10FFFF) {
+			bytes.push(((c >> 18) & 0x07) | 0xF0);
+			bytes.push(((c >> 12) & 0x3F) | 0x80);
+			bytes.push(((c >> 6) & 0x3F) | 0x80);
+			bytes.push((c & 0x3F) | 0x80);
+		} else if(c >= 0x000800 && c <= 0x00FFFF) {
+			bytes.push(((c >> 12) & 0x0F) | 0xE0);
+			bytes.push(((c >> 6) & 0x3F) | 0x80);
+			bytes.push((c & 0x3F) | 0x80);
+		} else if(c >= 0x000080 && c <= 0x0007FF) {
+			bytes.push(((c >> 6) & 0x1F) | 0xC0);
+			bytes.push((c & 0x3F) | 0x80);
+		} else {
+			bytes.push(c & 0xFF);
+		}
+	}
+	return bytes;
+}
+ 
+//将数组转换成UTF16格式字符串
+var byteToString = function(arr) {
+	if(typeof arr === 'string') {
+		return arr;
+	}
+	var str = '',
+		_arr = arr;
+	for(var i = 0; i < _arr.length; i++) {
+		var one = _arr[i].toString(2),
+			v = one.match(/^1+?(?=0)/);
+		if(v && one.length == 8) {
+			var bytesLength = v[0].length;
+			var store = _arr[i].toString(2).slice(7 - bytesLength);
+			for(var st = 1; st < bytesLength; st++) {
+				store += _arr[st + i].toString(2).slice(2);
+			}
+			str += String.fromCharCode(parseInt(store, 2));
+			i += bytesLength - 1;
+		} else {
+			str += String.fromCharCode(_arr[i]);
+		}
+	}
+	return str;
+}
+
 var pc1 = [
   57,   49,    41,   33,    25,    17,    9,
    1,   58,    50,   42,    34,    26,   18,
@@ -136,7 +187,7 @@ var leftRotate = function(array, n)
 	}
 }
 
-var generateKey = function(inputKeys)
+var generateSubKey = function(inputKeys)
 {
 	var keys = Array(56);
 	for(var i = 0; i < 56; i++){
@@ -283,9 +334,60 @@ var blockEncrypt = function(data, keys)
 }
 
 // TEST
-var outputKeys = generateKey([0b00010011, 0b00110100, 0b01010111, 0b01111001, 0b10011011, 0b10111100, 0b11011111, 0b11110001]);
+// var outputKeys = generateKey([0b00010011, 0b00110100, 0b01010111, 0b01111001, 0b10011011, 0b10111100, 0b11011111, 0b11110001]);
 // console.log(outputKeys);
+// blockEncrypt([0b00000001,0b00100011, 0b01000101, 0b01100111, 0b10001001, 0b10101011, 0b11001101, 0b11101111], outputKeys);
 
-blockEncrypt([0b00000001,0b00100011, 0b01000101, 0b01100111, 0b10001001, 0b10101011, 0b11001101, 0b11101111], outputKeys);
+//mode    分组模式,分别有ECB, CBC, CFB, OFB, CRT
+//padding 填充模式,分别有zeropadding(默认), pkcs5padding, pkcs7padding, iso10126, ansix923
+//iv      偏移量
+function des_encrypt(inputString, keysString, mode, padding, iv){
+	var output = [];
+	var data = stringToByte(inputString);
+	if(data.length == 0){
+		return output;
+	}
+	while(data.length % 8 != 0){data.push(0);}
+
+	console.log("data", data);
+
+	var keys = stringToByte(keysString);
+	keys = keys.slice(0, 8);
+	for(var i = 0; i < 8; i++){
+		if(keys[i] == undefined){
+			keys[i] = 0;
+		}
+	}
+	console.log("keys", keys);
+
+	var subKeys = generateSubKey(keys);
+	
+	for(var i = 0; i < data.length; i += 8){
+		var block = data.slice(i, i + 8);
+		block = blockEncrypt(block, subKeys);
+		output = output.concat(block);
+	}
+	return output;
+}
+
+var output = des_encrypt("12345678", "12345678");
+console.log(output);
+
+var str = "";
+for(var i = 0; i < output.length; i++){
+	str += output[i].toString(16);
+	if(i < output.length - 1){
+		str += ","
+	}
+}
+
+console.log(str);
+
+
+
+
+
+
+
 
 
