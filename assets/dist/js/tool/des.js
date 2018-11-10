@@ -106,6 +106,17 @@ var S = [
 	]
 ];
 
+var P = [
+	16,   7,  20,  21,
+	29,  12,  28,  17,
+	 1,  15,  23,  26,
+	 5,  18,  31,  10,
+	 2,   8,  24,  14,
+	32,  27,   3,   9,
+	19,  13,  30,   6,
+	22,  11,   4,  25
+];
+
 var FP = [
 	40,    8,    48,    16,    56,   24,    64,    32,
 	39,    7,    47,    15,    55,   23,    63,    31,
@@ -163,10 +174,18 @@ var blockEncrypt = function(data, keys)
 		m[i] = cur;
 	}
 
+	console.log("初始置换", m);
+
 	var lParts = m.slice(0, 32);
 	var rParts = m.slice(32, 64);
 	
 	for(var round = 0; round < 16; round++){
+		console.log("round" + round);
+		console.log("left:", lParts);
+		console.log("right:",rParts);
+
+
+
 		//将右部进行扩展置换
 		var eTable = [0, 0, 0, 0, 0, 0, 0, 0];
 		for(var i = 0; i < 8; i++){
@@ -184,17 +203,24 @@ var blockEncrypt = function(data, keys)
 
 		//S盒置换
 		var sTable = [0, 0, 0, 0, 0, 0, 0, 0];
-		for(var i = 0, i < 8; i++){
+		for(var i = 0; i < 8; i++){
 			var cur = eTable[i];
 			var row = (cur & 0b100000) >> 4 | (cur & 0b000001);
 			var col = (cur & 0b011110);
 			sTable[i] = S[i][row][col];
 		}
 
+		//P盒置换
+		var pTable = new Array(32);
+		for(var i = 0; i < 32; i++){
+			var idx = P[i] - 1;
+			var cur = (sTable[Math.floor(idx / 4)] & mask2[idx % 4]) != 0 ? 1 : 0;
+			pTable[i] = cur;
+		}
+
 		//与左部进行异或
 		for(var i = 0; i < 32; i++){
-			var cur = (sTable[Math.floor(i / 4)] & mask2[i % 4]) != 0 ? 1 : 0;
-			rParts[i] = lParts[i] ^ cur;
+			rParts[i] = lParts[i] ^ pTable[i];
 		}
 
 		//左右部分进行交换
@@ -211,13 +237,15 @@ var blockEncrypt = function(data, keys)
 		var byteIdx = Math.floor(i / 8);
 		output[byteIdx] = output[byteIdx] << 1 | m[idx];
 	}
+
+	console.log("终止置换", output);
 	return output;
 }
 
 // TEST
-// var outputKeys = generateKey([0b00010011, 0b00110100, 0b01010111, 0b01111001, 0b10011011, 0b10111100, 0b11011111, 0b11110001]);
+var outputKeys = generateKey([0b00010011, 0b00110100, 0b01010111, 0b01111001, 0b10011011, 0b10111100, 0b11011111, 0b11110001]);
 // console.log(outputKeys);
 
-blockEncrypt([0b00000001,0b00100011, 0b01000101, 0b01100111, 0b10001001, 0b10101011, 0b11001101, 0b11101111]);
+blockEncrypt([0b00000001,0b00100011, 0b01000101, 0b01100111, 0b10001001, 0b10101011, 0b11001101, 0b11101111], outputKeys);
 
 
