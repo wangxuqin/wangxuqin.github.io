@@ -164,6 +164,36 @@ var generateKey = function(inputKeys)
 	return outputKeys;
 }
 
+function padding(num, padCount) {
+	if(padCount == undefined){
+		padCount = 8;
+	}
+	var length = padCount;
+    var str = num.toString(2);
+    for(var len = str.length; len < length; len = str.length) {
+        str = "0" + str;            
+    }
+    return str;
+}
+
+
+var dump = function(tag, arr, isHex, padCount)
+{
+	if(isHex){
+		var str = "";
+		for(var i = 0; i < arr.length; i++){
+			str = str + padding(arr[i], padCount);
+			if(i < arr.length - 1){
+				str = str + ",";
+			}
+		}
+		console.log(tag, str);
+	}
+	else{
+		console.log(tag, arr);
+	}
+}
+
 var blockEncrypt = function(data, keys)
 {
 	//进行初始置换
@@ -180,19 +210,20 @@ var blockEncrypt = function(data, keys)
 	var rParts = m.slice(32, 64);
 	
 	for(var round = 0; round < 16; round++){
-		console.log("round" + round);
-		console.log("left:", lParts);
-		console.log("right:",rParts);
-
-
+		console.log("L"+round, lParts);
+		console.log("R"+round, rParts);
 
 		//将右部进行扩展置换
 		var eTable = [0, 0, 0, 0, 0, 0, 0, 0];
 		for(var i = 0; i < 8; i++){
 			for(var j = 0; j < 6; j++){
-				var idx = E[i * 8 + j] - 1;
+				var idx = E[i * 6 + j] - 1;
 				eTable[i] = eTable[i] << 1 | rParts[idx];
 			}
+		}
+
+		if(round == 0){
+			dump("扩展置换", eTable, true, 6);
 		}
 
 		//与密钥进行异或运算
@@ -201,13 +232,22 @@ var blockEncrypt = function(data, keys)
 			eTable[i] = eTable[i] ^ key[i];
 		}
 
+
+		if(round == 0){
+			dump("密钥异或", eTable, true, 6);
+		}
+
 		//S盒置换
 		var sTable = [0, 0, 0, 0, 0, 0, 0, 0];
 		for(var i = 0; i < 8; i++){
 			var cur = eTable[i];
 			var row = (cur & 0b100000) >> 4 | (cur & 0b000001);
-			var col = (cur & 0b011110);
+			var col = (cur & 0b011110) >> 1;
 			sTable[i] = S[i][row][col];
+		}
+
+		if(round == 0){
+			dump("S盒置换", sTable, true, 4);
 		}
 
 		//P盒置换
@@ -217,16 +257,16 @@ var blockEncrypt = function(data, keys)
 			var cur = (sTable[Math.floor(idx / 4)] & mask2[idx % 4]) != 0 ? 1 : 0;
 			pTable[i] = cur;
 		}
+		dump("P盒置换", pTable);
 
+		var tmp = rParts.slice(0, 32);
 		//与左部进行异或
 		for(var i = 0; i < 32; i++){
 			rParts[i] = lParts[i] ^ pTable[i];
 		}
 
 		//左右部分进行交换
-		var tmp = lParts;
-		lParts = rParts;
-		rParts = tmp;
+		lParts = tmp;
 	}
 
 	//进行终止置换
