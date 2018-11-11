@@ -255,14 +255,14 @@ var blockEncrypt = function(data, keys)
 		m[i] = cur;
 	}
 
-	console.log("初始置换", m);
+	//console.log("初始置换", m);
 
 	var lParts = m.slice(0, 32);
 	var rParts = m.slice(32, 64);
 	
 	for(var round = 0; round < 16; round++){
-		console.log("L"+round, lParts);
-		console.log("R"+round, rParts);
+		//console.log("L"+round, lParts);
+		//console.log("R"+round, rParts);
 
 		//将右部进行扩展置换
 		var eTable = [0, 0, 0, 0, 0, 0, 0, 0];
@@ -274,7 +274,7 @@ var blockEncrypt = function(data, keys)
 		}
 
 		if(round == 0){
-			dump("扩展置换", eTable, true, 6);
+			//dump("扩展置换", eTable, true, 6);
 		}
 
 		//与密钥进行异或运算
@@ -285,7 +285,7 @@ var blockEncrypt = function(data, keys)
 
 
 		if(round == 0){
-			dump("密钥异或", eTable, true, 6);
+			//dump("密钥异或", eTable, true, 6);
 		}
 
 		//S盒置换
@@ -298,7 +298,7 @@ var blockEncrypt = function(data, keys)
 		}
 
 		if(round == 0){
-			dump("S盒置换", sTable, true, 4);
+			//dump("S盒置换", sTable, true, 4);
 		}
 
 		//P盒置换
@@ -308,7 +308,7 @@ var blockEncrypt = function(data, keys)
 			var cur = (sTable[Math.floor(idx / 4)] & mask2[idx % 4]) != 0 ? 1 : 0;
 			pTable[i] = cur;
 		}
-		dump("P盒置换", pTable);
+		//dump("P盒置换", pTable);
 
 		var tmp = rParts.slice(0, 32);
 		//与左部进行异或
@@ -329,7 +329,7 @@ var blockEncrypt = function(data, keys)
 		output[byteIdx] = output[byteIdx] << 1 | m[idx];
 	}
 
-	console.log("终止置换", output);
+	//console.log("终止置换", output);
 	return output;
 }
 
@@ -344,6 +344,12 @@ var des_padding = function(data, mode, padding){
 		var padding_count = 8 - (data.length % 8);
 
 		switch(padding){
+			case "zeropadding":
+			for(var i = 0; i < padding_count; i++){
+				data.push(0x00);
+			}
+			break;
+
 			case "pkcs5padding":
 			case "pkcs7padding":
 			for(var i = 0; i < padding_count; i++){
@@ -351,14 +357,14 @@ var des_padding = function(data, mode, padding){
 			}
 			break;
 
-			case "ISO/IEC7816-4":
+			case "iso/iec7816-4":
 			data.push(0x80);
 			for(var i = 1; i < padding_count; i++){
 				data.push(0);
 			}
 			break;
 
-			case "IOS10126":
+			case "ios10126":
 			for(var i = 0; i < padding_count - 1; i++){
 				data.push(Math.floor(Math.random() * 256));
 			}
@@ -376,7 +382,7 @@ var des_padding = function(data, mode, padding){
 
 
 //mode    分组模式,分别有ECB, CBC, CFB, OFB, CRT
-//padding 填充模式,分别有zeropadding(默认), pkcs5padding, pkcs7padding, ISO10126, ansix923, ISO/IEC7816-4
+//padding 填充模式,分别有zeropadding, pkcs5padding(默认), pkcs7padding, ISO10126, ansix923, ISO/IEC7816-4
 //iv      偏移量
 function des_encrypt(inputString, keysString, mode, padding, iv){
 	var output = [];
@@ -384,8 +390,8 @@ function des_encrypt(inputString, keysString, mode, padding, iv){
 	if(data.length == 0){
 		return output;
 	}
-	while(data.length % 8 != 0){data.push(0);}
-
+	
+	des_padding(data, mode, padding);
 	console.log("data", data);
 
 	var keys = stringToByte(keysString);
@@ -407,24 +413,20 @@ function des_encrypt(inputString, keysString, mode, padding, iv){
 	return output;
 }
 
-var output = des_encrypt("Symmetric Ciphers Online allows you to encrypt or decrypt arbitrary message using several well known symmetric encryption algorithms such as AES, 3DES, or BLOWFISH.", "1");
+var content = "许多经典密码会将明文排列成特定的形状（如：正方形、长方形等），而如果明文不能完全符合形状，就需要添加字母来填满形状。 用无意义的字母来填充则更可以阻碍一些密码分析。"
+var key = "1";
+var mode = "ECB";
+var padding_mode = "pkcs5padding"
+
+var output = des_encrypt(content, key, mode, padding_mode);
 console.log(output);
 
 var str = "";
 for(var i = 0; i < output.length; i++){
-	str += output[i].toString(16);
-	if(i < output.length - 1){
-		str += ","
-	}
+	var hex = output[i].toString(16);
+	if(hex.length == 1){hex = "0" + hex;}
+	str += hex;
+	if(str.length == 1){str = "0" + str;}
 }
 
 console.log(str);
-
-
-
-
-
-
-
-
-
