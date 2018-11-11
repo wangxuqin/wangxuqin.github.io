@@ -321,7 +321,7 @@ var blockEncrypt = function(data, keys)
 	}
 
 	//进行终止置换
-	m = lParts.concat(rParts);
+	m = rParts.concat(lParts);
 	var output = [0, 0, 0, 0, 0, 0, 0, 0]
 	for(var i = 0; i < 64; i++){
 		var idx = FP[i] - 1;
@@ -338,8 +338,45 @@ var blockEncrypt = function(data, keys)
 // console.log(outputKeys);
 // blockEncrypt([0b00000001,0b00100011, 0b01000101, 0b01100111, 0b10001001, 0b10101011, 0b11001101, 0b11101111], outputKeys);
 
+
+var des_padding = function(data, mode, padding){
+	if(mode == "ECB"){
+		var padding_count = 8 - (data.length % 8);
+
+		switch(padding){
+			case "pkcs5padding":
+			case "pkcs7padding":
+			for(var i = 0; i < padding_count; i++){
+				data.push(padding_count);
+			}
+			break;
+
+			case "ISO/IEC7816-4":
+			data.push(0x80);
+			for(var i = 1; i < padding_count; i++){
+				data.push(0);
+			}
+			break;
+
+			case "IOS10126":
+			for(var i = 0; i < padding_count - 1; i++){
+				data.push(Math.floor(Math.random() * 256));
+			}
+			data.push(padding_count);
+
+			case "ansix923":
+			for(var i = 0; i < padding_count - 1; i++){
+				data.push(0x00);
+			}
+			data.push(padding_count);
+			break;
+		}
+	}
+}
+
+
 //mode    分组模式,分别有ECB, CBC, CFB, OFB, CRT
-//padding 填充模式,分别有zeropadding(默认), pkcs5padding, pkcs7padding, iso10126, ansix923
+//padding 填充模式,分别有zeropadding(默认), pkcs5padding, pkcs7padding, ISO10126, ansix923, ISO/IEC7816-4
 //iv      偏移量
 function des_encrypt(inputString, keysString, mode, padding, iv){
 	var output = [];
@@ -370,7 +407,7 @@ function des_encrypt(inputString, keysString, mode, padding, iv){
 	return output;
 }
 
-var output = des_encrypt("12345678", "12345678");
+var output = des_encrypt("Symmetric Ciphers Online allows you to encrypt or decrypt arbitrary message using several well known symmetric encryption algorithms such as AES, 3DES, or BLOWFISH.", "1");
 console.log(output);
 
 var str = "";
