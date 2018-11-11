@@ -245,7 +245,8 @@ var dump = function(tag, arr, isHex, padCount)
 	}
 }
 
-var blockEncrypt = function(data, keys)
+//mode: encrypt、decrypt
+var blockProcess = function(data, keys, mode)
 {
 	//进行初始置换
 	var m = new Array(64);
@@ -259,6 +260,13 @@ var blockEncrypt = function(data, keys)
 
 	var lParts = m.slice(0, 32);
 	var rParts = m.slice(32, 64);
+
+	if (mode == "decrypt"){
+		var t = rParts;
+		rParts = lParts;
+		lParts = t;
+	}
+
 	
 	for(var round = 0; round < 16; round++){
 		//console.log("L"+round, lParts);
@@ -278,7 +286,7 @@ var blockEncrypt = function(data, keys)
 		}
 
 		//与密钥进行异或运算
-		var key = keys[round];
+		var key = keys[mode == "encrypt" ? round : (15 - round)];
 		for(var i = 0; i < 8; i++){
 			eTable[i] = eTable[i] ^ key[i];
 		}
@@ -339,7 +347,7 @@ var blockEncrypt = function(data, keys)
 // blockEncrypt([0b00000001,0b00100011, 0b01000101, 0b01100111, 0b10001001, 0b10101011, 0b11001101, 0b11101111], outputKeys);
 
 
-var des_padding = function(data, mode, padding){
+var des_add_padding = function(data, mode, padding){
 	if(mode == "ECB"){
 		var padding_count = 8 - (data.length % 8);
 
@@ -369,12 +377,47 @@ var des_padding = function(data, mode, padding){
 				data.push(Math.floor(Math.random() * 256));
 			}
 			data.push(padding_count);
+			break;
 
 			case "ansix923":
 			for(var i = 0; i < padding_count - 1; i++){
 				data.push(0x00);
 			}
 			data.push(padding_count);
+			break;
+		}
+	}
+}
+
+
+var des_remove_padding = function(data, mode, padding){
+	if(mode == "ECB"){
+		switch(padding){
+			case "zeropadding":
+			while(data[data.length - 1] == 0){
+				data.pop();
+			}
+
+			break;
+
+			case "pkcs5padding":
+			case "pkcs7padding":
+			case "ios10126":
+			case "ansix923":
+			var padding_count = data[data.length - 1];
+			for(var i = 0; i < padding_count; i++){
+				data.pop();
+			}
+			break;
+
+			case "iso/iec7816-4":
+			while(data[data.length - 1] != 0x80){
+				data.pop();
+			}
+
+			if(data[data.length - 1] == 0x80){
+				data.pop();
+			}
 			break;
 		}
 	}
@@ -391,7 +434,7 @@ function des_encrypt(inputString, keysString, mode, padding, iv){
 		return output;
 	}
 	
-	des_padding(data, mode, padding);
+	des_add_padding(data, mode, padding);
 	console.log("data", data);
 
 	var keys = stringToByte(keysString);
@@ -407,9 +450,34 @@ function des_encrypt(inputString, keysString, mode, padding, iv){
 	
 	for(var i = 0; i < data.length; i += 8){
 		var block = data.slice(i, i + 8);
-		block = blockEncrypt(block, subKeys);
+		block = blockProcess(block, subKeys, "encrypt");
 		output = output.concat(block);
 	}
+	return output;
+}
+
+
+function des_encrypt(data, keysString, mode, padding, iv){	
+	console.log("data", data);
+
+	var keys = stringToByte(keysString);
+	keys = keys.slice(0, 8);
+	for(var i = 0; i < 8; i++){
+		if(keys[i] == undefined){
+			keys[i] = 0;
+		}
+	}
+	console.log("keys", keys);
+
+	var subKeys = generateSubKey(keys);
+	
+	for(var i = 0; i < data.length; i += 8){
+		var block = data.slice(i, i + 8);
+		block = blockProcess(block, subKeys, "decrypt");
+		output = output.concat(block);
+	}
+
+	des_remove_padding(output, mode, padding);
 	return output;
 }
 
