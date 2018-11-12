@@ -260,13 +260,6 @@ var blockProcess = function(data, keys, mode)
 
 	var lParts = m.slice(0, 32);
 	var rParts = m.slice(32, 64);
-
-	if (mode == "decrypt"){
-		var t = rParts;
-		rParts = lParts;
-		lParts = t;
-	}
-
 	
 	for(var round = 0; round < 16; round++){
 		//console.log("L"+round, lParts);
@@ -282,7 +275,7 @@ var blockProcess = function(data, keys, mode)
 		}
 
 		if(round == 0){
-			//dump("扩展置换", eTable, true, 6);
+			//("扩展置换", eTable, true, 6);
 		}
 
 		//与密钥进行异或运算
@@ -340,12 +333,6 @@ var blockProcess = function(data, keys, mode)
 	//console.log("终止置换", output);
 	return output;
 }
-
-// TEST
-// var outputKeys = generateKey([0b00010011, 0b00110100, 0b01010111, 0b01111001, 0b10011011, 0b10111100, 0b11011111, 0b11110001]);
-// console.log(outputKeys);
-// blockEncrypt([0b00000001,0b00100011, 0b01000101, 0b01100111, 0b10001001, 0b10101011, 0b11001101, 0b11101111], outputKeys);
-
 
 var des_add_padding = function(data, mode, padding){
 	if(mode == "ECB"){
@@ -414,6 +401,7 @@ var des_remove_padding = function(data, mode, padding){
 			while(data[data.length - 1] != 0x80){
 				data.pop();
 			}
+			break;
 
 			if(data[data.length - 1] == 0x80){
 				data.pop();
@@ -457,8 +445,8 @@ function des_encrypt(inputString, keysString, mode, padding, iv){
 }
 
 
-function des_encrypt(data, keysString, mode, padding, iv){	
-	console.log("data", data);
+function des_decrypt(data, keysString, mode, padding, iv){	
+	var output = [];
 
 	var keys = stringToByte(keysString);
 	keys = keys.slice(0, 8);
@@ -467,7 +455,6 @@ function des_encrypt(data, keysString, mode, padding, iv){
 			keys[i] = 0;
 		}
 	}
-	console.log("keys", keys);
 
 	var subKeys = generateSubKey(keys);
 	
@@ -476,7 +463,6 @@ function des_encrypt(data, keysString, mode, padding, iv){
 		block = blockProcess(block, subKeys, "decrypt");
 		output = output.concat(block);
 	}
-
 	des_remove_padding(output, mode, padding);
 	return output;
 }
@@ -487,8 +473,7 @@ var mode = "ECB";
 var padding_mode = "pkcs5padding"
 
 var output = des_encrypt(content, key, mode, padding_mode);
-console.log(output);
-
+console.log("encrypt", output);
 var str = "";
 for(var i = 0; i < output.length; i++){
 	var hex = output[i].toString(16);
@@ -496,5 +481,7 @@ for(var i = 0; i < output.length; i++){
 	str += hex;
 	if(str.length == 1){str = "0" + str;}
 }
+console.log("解密",str);
 
-console.log(str);
+output = des_decrypt(output, key, mode, padding_mode);
+console.log("解密", byteToString(output));
