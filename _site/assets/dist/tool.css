@@ -4,20 +4,35 @@
 
 .tool-input-textarea{
     font-family:monospace;
-	width:95%;
-/*	max-width: 800px;*/
-	height:200px;
-	padding: 5px;
-	resize: none;
+    width:95%;
+/*  max-width: 800px;*/
+    height:200px;
+    padding: 5px;
+    resize: none;
+}
+
+.tool-input-textare-2{
+    font-family:monospace;
+    width:100px;
+/*  max-width: 800px;*/
+    height:25px;
+    padding: 5px;
+    resize: none;
+}
+
+.tool-input-inline-block{
+    margin:5px;
+    display:inline-block;
+    height: 30px;
 }
 
 .tool-output-textarea{
-	width:95%;
-/*	max-width: 800px;*/
-	height:200px;
-	padding: 5px;
-	resize: none;
-	outline: none;
+    width:95%;
+/*  max-width: 800px;*/
+    height:200px;
+    padding: 5px;
+    resize: none;
+    outline: none;
 }
 
 .tool-output-textarea-2{
@@ -61,9 +76,9 @@
 }
 
 .tool-button{
-	display: inline-block;
-	width: 80px;
-	color: #fff;
+    display: inline-block;
+    width: 80px;
+    color: #fff;
     background-color: #337ab7;
     margin-bottom: 0;
     margin-right: 5px;
@@ -87,5 +102,5 @@
 }
 
 .tool-button-group{
-	margin:10px 0px;
+    margin:10px 0px;
 }

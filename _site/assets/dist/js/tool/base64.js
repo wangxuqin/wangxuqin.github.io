@@ -69,10 +69,21 @@ Object.keys(base64Table).forEach(function(key){
 	}
 });
 
-function base64Encode(str)
+function base64Encode(input)
 {
+	var bytes = null;
+
+	if(Object.prototype.toString.call(input) === "[object String]"){
+		bytes = stringToByte(input);
+	}
+	else if(Object.prototype.toString.call(input) === "[object Array]"){
+		bytes = input;
+	}
+	else{
+		return "";
+	}
+
 	var arr = new Array();
-	var bytes = stringToByte(str);
 	var index = 0;
 	while(index < bytes.length){
 		var byte0 = bytes[index++];
@@ -105,7 +116,9 @@ function base64Encode(str)
 }
 
 
-function base64Decode(str){
+function base64Decode(str, output){
+	if (output == undefined) {output = "str"}
+
 	var arr = new Array();
 	var bytes = stringToByte(str);
 	if(bytes.length > 0 && (bytes.length % 4) != 0){
@@ -163,7 +176,12 @@ function base64Decode(str){
 		index = index + 4;
 	}
 
-	return byteToString(arr);
+	if(output == "arr"){
+		return arr;
+	}
+	else if(output == "str"){
+		return byteToString(arr);
+	}
 }
 
 
@@ -287,10 +305,20 @@ var base32BytesToBinBytes = function(input_bytes)
 }
 
 //base32编码
-function base32Encode(str)
+function base32Encode(input)
 {
+	var bytes = null;
+	if(Object.prototype.toString.call(input) === "[object String]"){
+		bytes = stringToByte(input);
+	}
+	else if(Object.prototype.toString.call(input) === "[object Array]"){
+		bytes = input;
+	}
+	else{
+		return "";
+	}
+
 	var arr = new Array();
-	var bytes = stringToByte(str);
 	var index = 0;
 	while(index < bytes.length)
 	{
@@ -361,8 +389,18 @@ var base16Convert = function(byteValue)
 //base16解码
 function base16Decode(str)
 {
+	var bytes = null;
+	if(Object.prototype.toString.call(input) === "[object String]"){
+		bytes = stringToByte(input);
+	}
+	else if(Object.prototype.toString.call(input) === "[object Array]"){
+		bytes = input;
+	}
+	else{
+		return "";
+	}
+
 	var arr   = new Array();
-	var bytes = stringToByte(str);
 	var index = 0;
 	while(index < bytes.length)
 	{

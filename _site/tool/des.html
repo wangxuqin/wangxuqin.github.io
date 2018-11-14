@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="zh">
+  <head>
+
+  <meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>des加密 | KimWang's blog</title>
+<meta name="description" content="KimWang's blog">
+
+<meta itemprop="name" content="">
+<meta itemprop="description" content="KimWang's blog">
+<meta itemprop="image" content="">
+
+<meta property="og:url" content="/tool/des.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="des加密 | KimWang's blog">
+<meta property="og:site_name" content="KimWang's blog">
+<meta property="og:description" content="KimWang's blog">
+<meta property="og:image" content="">
+
+<meta name="twitter:url" content="/tool/des.html">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="des加密 | KimWang's blog">
+<meta name="twitter:site" content="KimWang's blog">
+<meta name="twitter:description" content="KimWang's blog">
+
+<meta property="twitter:image" content="">
+
+<link rel="icon" type="image/x-icon" href="/assets/images/favicon.ico">
+
+<!--
+<link rel="stylesheet" href="/assets/css/app.min.css">
+<link rel="alternate" type="application/rss+xml" title="KimWang's blog" href="/feed.xml">
+<link rel="canonical" href="/tool/des.html">
+-->
+
+<link rel="stylesheet" href="/assets/dist/style.css">
+<link rel="stylesheet" href="/assets/dist/highlight.css">
+<link rel="stylesheet" href="/assets/dist/search.css">
+<link rel="stylesheet" href="/assets/dist/fontsettings.css">
+<link rel="stylesheet" href="/assets/dist/tool.css">
+
+
+
+  <style>
+      .unselectable {
+          -webkit-touch-callout: none;
+          -webkit-user-select: none;
+          -khtml-user-select: none;
+          -moz-user-select: none;
+          -ms-user-select: none;
+          user-select: none;
+      }
+
+      ul {
+          margin: 0;
+          padding: 0;
+
+      }
+      .clearfloat {
+          zoom: 1;
+      }
+      .clearfloat::after {
+          display: block;
+          clear: both;
+          content: "";
+          visibility: hidden;
+          height: 0;
+      }
+
+      .tab-list {
+          position: relative;
+      }
+
+      .tab-list .tab-itom {
+          float: left;
+          list-style: none;
+          margin-right: 4px;
+      }
+
+      .tab-itom .test-label {
+          position: relative;
+          display: block;
+          font-size: 1.5em;
+          width: 120px;
+          height: 27px;
+          border: 1px solid transparent;
+          border-top-left-radius: 0px;
+          border-top-right-radius: 0px;
+          border-bottom-left-radius: 0px;
+          border-bottom-right-radius: 0px;
+          line-height: 27px;
+          text-align: center;
+          background: #e7e8eb;
+      }
+
+      .tab-itom .tab-box {
+          /* 设置绝对定位方便定位相对于tab-list栏的位置，同时为了可以使用z-index属性 */
+          position: absolute;
+          left: 0;
+          top: 28px;
+          width: 95%;
+          height: 520px;
+          border-radius: 5px;
+          border-top-left-radius: 0px;
+          background: #fff;
+          /* 设置层级最低方便选中状态遮挡 */
+          z-index: 0;
+      }
+      /* 用绝对定位使按钮脱离文档流，透明度设置为0将其隐藏 */
+      input[type="radio"] {
+          position: absolute;
+          opacity: 0;
+      }
+      /* 利用选择器实现  tab切换 */
+
+      /* 当radio为选中状态时设置它的test-label兄弟元素的属性 */
+      input[type="radio"]:checked + .test-label {
+          color:#fff;
+          /* 为了修饰存在的边框背景属性 */
+          border-color: #2e6da4;
+          background: #2e6da4;
+          /* 为了修饰存在的层级使下边框遮挡下方div的上边框 */
+          z-index: 10;
+      }
+      /* 当radio为选中状态时设置与它同级的tab-box元素的显示层级 */
+      input[type="radio"]:checked ~ .tab-box {
+          /* 选中时提升层级，遮挡其他tab页达到选中切换的效果 */
+          z-index: 5;
+      }
+  </style>
+
+  <link rel="stylesheet" href="/assets/dist/sheet.css">
+
+  <script src="/assets/dist/js/tool/des.js"></script>
+  <script src="/assets/dist/js/tool/base64.js"></script>
+  <script src="/assets/dist/js/tool/utf8util.js"></script>
+  <script>
+
+      //显示初始化向量
+      function showInputIVBlock(visible)
+      {
+        var inputIV = document.getElementById("input_iv_block");
+        if(inputIV != null){
+          inputIV.style.visibility = visible == true ? 'visible' : 'hidden';
+        }
+
+      }
+
+      //加密模式
+      function onModeSelectChange(value)
+      {
+        showInputIVBlock(value != "ECB");
+      }
+
+      function hexEncode(arr)
+      {
+        var output = [];
+        for(var i = 0; i < arr.length; i++){
+          var val = arr[i].toString(16);
+          if(val.length == 1){val = "0" + val;}
+          output.push(val);
+        }
+        return output.join('');
+      }
+
+      function hexDecode(arr)
+      {
+        var output = [];
+        for(var i = 0; i < arr.length; i += 2)
+        {
+          var h = parseInt(arr[i], 16);
+          var l = parseInt(arr[i+1], 16);
+          output.push(h << 4 | l);
+        }
+        return output;
+      }
+
+      //加密
+      function onEncrypt()
+      {
+        var input = document.getElementById("input_textarea").value;
+        if(input == ""){
+          alert("请输入需要加密或解密的文本");
+          return;
+        }
+
+        var modeSelect = document.getElementById("mode_select");
+        var mode = modeSelect.options[modeSelect.options.selectedIndex].value;
+        
+        var paddingSelect = document.getElementById("padding_select");
+        var padding = paddingSelect.options[paddingSelect.options.selectedIndex].value;
+
+        var password = document.getElementById("input_password").value;
+        var iv = document.getElementById("input_iv").value;
+
+        var encryptBytes = des_encrypt(input, password, mode, padding, iv);
+
+        var outputSelect = document.getElementById("ouput_select");
+        var outputMode = outputSelect.options[outputSelect.options.selectedIndex].value;
+
+        var ouput = document.getElementById("output_textarea");
+        if(outputMode == "base64"){
+          ouput.value = base64Encode(encryptBytes);
+        }
+        else{
+          ouput.value = hexEncode(encryptBytes);
+        }
+
+      }
+
+      //解密
+      function onDecrypt()
+      {
+        var input = document.getElementById("input_textarea").value;
+        if(input == ""){
+          alert("请输入需要加密或解密的文本");
+          return;
+        }
+
+        var outputSelect = document.getElementById("ouput_select");
+        var outputMode = outputSelect.options[outputSelect.options.selectedIndex].value;
+
+        var inputArr = null;
+        if(outputMode == "base64"){
+          inputArr = base64Decode(input, "arr");
+        }
+        else{
+          inputArr = hexDecode(input);
+        }
+
+        if((inputArr.length == 0) || (inputArr.length % 8 != 0)){
+          alert("输入数据有误，请检查");
+          return;
+        }
+
+        var modeSelect = document.getElementById("mode_select");
+        var mode = modeSelect.options[modeSelect.options.selectedIndex].value;
+        
+        var paddingSelect = document.getElementById("padding_select");
+        var padding = paddingSelect.options[paddingSelect.options.selectedIndex].value;
+
+        var password = document.getElementById("input_password").value;
+        var iv = document.getElementById("input_iv").value;
+
+        var decryptBytes = des_decrypt(inputArr, password, mode, padding, iv);
+
+        var output = document.getElementById("output_textarea");
+        output.value = byteToString(decryptBytes);
+      }
+
+      window.onload = function(){
+        showInputIVBlock(false);
+        var sel = document.getElementById("mode_select");
+        if(sel&&sel.addEventListener){
+            sel.addEventListener('change',function(e){
+                var ev = e||window.event;
+                var target = ev.target||ev.srcElement;
+                onModeSelectChange(target.value);
+            },false)
+        }
+      }
+
+  </script>
+
+</head>
+
+  <body>
+    <div class="book without-animation with-summary font-size-2 font-family-1">
+      <input type='checkbox' id='sidemenu' checked="true">
+<aside>
+<h3>KimWang's blog</h3>
+<ul id="sideul">
+    <li><a            href="/">主页</a></li>
+    <li><a class="active" href="/posts.html">文章</a></li>
+    <li><a  href="/tools.html">工具</a></li>
+    <li><a href="#">关于</a></li>
+</ul> 
+</aside>   
+
+<div class="book-summary">
+	
+		<nav role="navigation">
+  <ul class="summary">
+  	<h2>&nbsp;&nbsp;解码编码工具</h2>
+    
+      
+      <li class="active"><a href="/tool/base64.html">&nbsp;&nbsp;&nbsp;&nbsp;base64编/解码</a></li>
+      
+    
+      
+      <li class="active"><a href="/tool/des.html">&nbsp;&nbsp;&nbsp;&nbsp;des加密</a></li>
+      
+    
+      
+    
+      
+      <li class="active"><a href="/tool/md5.html">&nbsp;&nbsp;&nbsp;&nbsp;md5编码</a></li>
+      
+    
+      
+    
+      
+      <li class="active"><a href="/tool/sha.html">&nbsp;&nbsp;&nbsp;&nbsp;sha编码</a></li>
+      
+    
+      
+    
+  </ul>
+</nav>
+	
+</div>
+
+<div id='wrap'>
+    <label id='sideMenuControl' for='sidemenu'>≡</label>
+</div>
+      
+      <div class="book-body">
+        <div class="body-inner">
+          <div class="book-header" role="navigation">
+            <div style="display: none">TODO: share icons</div>
+            <h1>
+              <i class="fa fa-circle-o-notch fa-spin"></i>
+              <a>des加密</a>
+            </h1>
+          </div>
+
+          <div>
+
+            <div class="tool-input-inline-block">
+              <span>加密模式</span>
+              <select id="mode_select">
+                <option value="ECB" selected="selected">ECB</option>
+                <option value="CBC">CBC</option>
+                <option value="CFB">CFB</option>
+                <option value="OFB">OFB</option>
+                <option value="CTR">CTR</option>
+              </select>
+            </div>
+
+            <div class="tool-input-inline-block">
+              <span>填充模式</span>
+              <select id="padding_select">
+                <option value="zeropadding">zeropadding</option>
+                <option value="pkcs5padding" selected="selected">pkcs5padding</option>
+                <option value="pkcs7padding">pkcs7padding</option>
+                <option value="iso10126">iso10126</option>
+                <option value="iso/iec7816-4">iso/iec7816-4</option>
+              </select>
+            </div>
+
+            <div class="tool-input-inline-block">
+              <span>输出</span>
+              <select id="ouput_select">
+                <option value="base64" selected="selected">base64</option>
+                <option value="hex">hex</option>
+              </select> 
+            </div>         
+
+            <div class="tool-input-inline-block">
+              <span>密码</span>
+              <input tpye="text" id="input_password" class="tool-input-textare-2" spellcheck="false" maxlength="8"></textarea>
+            </div>
+
+            <div  id="input_iv_block" class="tool-input-inline-block">
+              <span>初始向量(iv)</span>
+              <input type="text" id="input_iv" class="tool-input-textare-2" spellcheck="false" maxlength="8"></textarea>
+            </div>
+
+            
+          </div>
+  
+          <div>
+            <ul class="tab-list clearfloat">
+              <li class="tab-itom">
+                  <input type="radio" id="tabRadio1" class="test-radio" name="tab" checked="checked">
+                  <label class="test-label unselectable" for="tabRadio1">DES</label>
+                  <div class="tab-box">
+                      <textarea id="input_textarea" placeholder="请输入待解码或编码的字符串" class="tool-input-textarea" spellcheck="false"></textarea>
+                      <div class="tool-button-group">
+                        <button id="decode" class="tool-button" onClick="onEncrypt()">加密</button>
+                        <button id="encode" class="tool-button" onClick="onDecrypt()">解密</button>
+                      </div>
+                      <textarea id="output_textarea"class="tool-output-textarea" readonly="readonly" spellcheck="false"></textarea>
+                  </div>
+              </li>
+          </ul>
+        <div/>
+
+        </div>
+      </div>
+  </div>
+ 
+
+    
+  </body>
+</html>
