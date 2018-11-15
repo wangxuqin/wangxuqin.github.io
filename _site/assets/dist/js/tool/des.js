@@ -335,7 +335,7 @@ var blockProcess = function(data, keys, mode)
 }
 
 var des_add_padding = function(data, mode, padding){
-	if(mode == "ECB"){
+	if(mode == "ECB" || mode == "CBC"){
 		var padding_count = 8 - (data.length % 8);
 
 		switch(padding){
@@ -378,7 +378,7 @@ var des_add_padding = function(data, mode, padding){
 
 
 var des_remove_padding = function(data, mode, padding){
-	if(mode == "ECB"){
+	if(mode == "ECB" || mode == "CBC"){
 		switch(padding){
 			case "zeropadding":
 			while(data[data.length - 1] == 0){
@@ -412,12 +412,41 @@ var des_remove_padding = function(data, mode, padding){
 }
 
 
+function xor_arr(arr1, arr2)
+{
+	var output = [];
+	if(arr1 != null && arr2 != null){
+		var len = Math.min(arr1.length, arr2.length);
+		for(var i = 0; i < len; i++){
+			output.push(arr1[i] ^ arr2[i]);
+		}
+	}
+	return output;
+}
+
+function inc_arr(arr)
+{
+	if(arr != null){
+		var idx = arr.length - 1;
+		while(idx > 0){
+			arr[idx] += 1;
+			if(arr[idx] == 256){
+				arr[idx] = 0;
+				idx = idx - 1;
+			}
+			else{
+				break;
+			}
+		}
+	}
+}
+
+
 //mode    分组模式,分别有ECB, CBC, CFB, OFB, CTR
 //padding 填充模式,分别有zeropadding, pkcs5padding(默认), pkcs7padding, ISO10126, ansix923, ISO/IEC7816-4
 //iv      偏移量
-function des_encrypt(inputString, keysString, mode, padding, iv){
-	var output = [];
-	var data = stringToByte(inputString);
+function des_encrypt(inputText, keysText, mode, padding, ivText){
+	var data = stringToByte(inputText);
 	if(data.length == 0){
 		return output;
 	}
@@ -425,43 +454,132 @@ function des_encrypt(inputString, keysString, mode, padding, iv){
 	des_add_padding(data, mode, padding);
 	console.log("data", data);
 
-	var keys = stringToByte(keysString);
-	keys = keys.slice(0, 8);
+	var keys = stringToByte(keysText);
+	var iv   = stringToByte(ivText);
+	keys 	 = keys.slice(0, 8);
+	iv   	 = iv.slice(0, 8);
 	for(var i = 0; i < 8; i++){
 		if(keys[i] == undefined){
 			keys[i] = 0;
 		}
+
+		if(iv[i] == undefined){
+			iv[i] = 0;
+		}
 	}
 	console.log("keys", keys);
+	console.log("iv", iv);
 
+	var output = [];
 	var subKeys = generateSubKey(keys);
-	
-	for(var i = 0; i < data.length; i += 8){
-		var block = data.slice(i, i + 8);
-		block = blockProcess(block, subKeys, "encrypt");
-		output = output.concat(block);
+
+	if(mode == "EBC"){
+		for(var i = 0; i < data.length; i += 8){
+			var block = data.slice(i, i + 8);
+			block = blockProcess(block, subKeys, "encrypt");
+			output = output.concat(block);
+		}
 	}
+	else if(mode == "CBC"){
+		for(var i = 0; i < data.length; i += 8){
+			var block = data.slice(i, i + 8);
+			block = xor_arr(block, iv);
+			block = blockProcess(block, subKeys, "encrypt");
+			console.log("block", block);
+			output = output.concat(block);
+			iv = block;
+		}
+	}
+	else if(mode == "CFB"){
+		for(var i = 0; i < data.length; i += 8){
+			iv = blockProcess(iv, subKeys, "encrypt");
+			var block = data.slice(i, Math.min(i + 8, data.length));
+			block = xor_arr(block, iv);
+			output = output.concat(block);
+			iv = block;
+		}
+	}
+	else if(mode == "OFB"){
+		for(var i = 0; i < data.length; i += 8){
+			iv = blockProcess(iv, subKeys, "encrypt");
+			var block = data.slice(i, Math.min(i + 8, data.length));
+			block = xor_arr(block, iv);
+			output = output.concat(block);
+		}
+	}
+	else if(mode == "CTR"){
+		var timer = iv.slice(0, 8);
+		for(var i = 0; i < data.length; i += 8){
+			var iv = timer.slice(0, 8);
+			iv = blockProcess(iv, subKeys, "encrypt");
+			var block = data.slice(i, Math.min(i + 8, data.length));
+			block = xor_arr(block, iv);
+			output = output.concat(block);
+			inc_arr(timer);
+		}
+	}
+	console.log("output", output);
 	return output;
 }
 
 
-function des_decrypt(data, keysString, mode, padding, iv){	
-	var output = [];
-
-	var keys = stringToByte(keysString);
+function des_decrypt(data, keysText, mode, padding, ivText){	
+	var keys = stringToByte(keysText);
+	var iv   = stringToByte(ivText);
 	keys = keys.slice(0, 8);
+	iv = iv.slice(0, 8);
 	for(var i = 0; i < 8; i++){
 		if(keys[i] == undefined){
 			keys[i] = 0;
 		}
+		if(iv[i] == undefined){
+			iv[i] = 0;
+		}
 	}
 
+	var output = [];
 	var subKeys = generateSubKey(keys);
-	
-	for(var i = 0; i < data.length; i += 8){
-		var block = data.slice(i, i + 8);
-		block = blockProcess(block, subKeys, "decrypt");
-		output = output.concat(block);
+	if(mode == "ECB"){
+		for(var i = 0; i < data.length; i += 8){
+			var block = data.slice(i, i + 8);
+			block = blockProcess(block, subKeys, "decrypt");
+			output = output.concat(block);
+		}
+	}
+	else if(mode == "CBC"){
+		for(var i = 0; i < data.length; i += 8){
+			var block = data.slice(i, i + 8);
+			block = blockProcess(block, subKeys, "decrypt");
+			block = xor_arr(block, iv);
+			output = output.concat(block);
+			iv = data.slice(i, i + 8);
+		}
+	}
+	else if(mode == "CFB"){
+		for(var i = 0; i < data.length; i += 8){
+			iv = blockProcess(iv, subKeys, "encrypt");
+			var block = data.slice(i, Math.min(i + 8, data.length));
+			output = output.concat(xor_arr(block, iv));
+			iv = block;
+		}
+	}
+	else if(mode == "OFB"){
+		for(var i = 0; i < data.length; i += 8){
+			iv = blockProcess(iv, subKeys, "encrypt");
+			var block = data.slice(i, Math.min(i + 8, data.length));
+			output = output.concat(xor_arr(block, iv));
+		}
+	}
+	else if(mode == "CTR"){
+		var timer = iv.slice(0, 8);
+		for(var i = 0; i < data.length; i += 8){
+			var iv = timer.slice(0, 8);
+			iv = blockProcess(iv, subKeys, "encrypt");
+			var block = data.slice(i, Math.min(i + 8, data.length));
+			block = xor_arr(block, iv);
+			output = output.concat(block);
+			inc_arr(timer);
+		}
 	}
 	des_remove_padding(output, mode, padding);
 	return output;

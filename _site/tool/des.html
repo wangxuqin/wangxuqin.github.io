@@ -142,17 +142,25 @@
       //显示初始化向量
       function showInputIVBlock(visible)
       {
-        var inputIV = document.getElementById("input_iv_block");
-        if(inputIV != null){
-          inputIV.style.visibility = visible == true ? 'visible' : 'hidden';
+        var inputIVBlock = document.getElementById("input_iv_block");
+        if(inputIVBlock != null){
+          inputIVBlock.style.display = visible == true ? 'inline-block' : 'none';
         }
+      }
 
+      function showPaddingSelectBlock(visible)
+      {
+        var paddingSelectBlock = document.getElementById("padding_select_block");
+        if(paddingSelectBlock != null){
+          paddingSelectBlock.style.display = visible == true ? 'inline-block' : 'none';
+        }
       }
 
       //加密模式
       function onModeSelectChange(value)
       {
         showInputIVBlock(value != "ECB");
+        showPaddingSelectBlock((value == "ECB" || value == "CBC"));
       }
 
       function hexEncode(arr)
@@ -231,13 +239,13 @@
           inputArr = hexDecode(input);
         }
 
-        if((inputArr.length == 0) || (inputArr.length % 8 != 0)){
+        var modeSelect = document.getElementById("mode_select");
+        var mode = modeSelect.options[modeSelect.options.selectedIndex].value;
+
+         if((inputArr.length == 0) || ((inputArr.length % 8 != 0) && (mode == "ECB" || mode == "CBC"))){
           alert("输入数据有误，请检查");
           return;
         }
-
-        var modeSelect = document.getElementById("mode_select");
-        var mode = modeSelect.options[modeSelect.options.selectedIndex].value;
         
         var paddingSelect = document.getElementById("padding_select");
         var padding = paddingSelect.options[paddingSelect.options.selectedIndex].value;
@@ -340,7 +348,7 @@
               </select>
             </div>
 
-            <div class="tool-input-inline-block">
+            <div id="padding_select_block" class="tool-input-inline-block">
               <span>填充模式</span>
               <select id="padding_select">
                 <option value="zeropadding">zeropadding</option>
