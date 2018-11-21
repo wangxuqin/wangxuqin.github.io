@@ -3,7 +3,7 @@
   <head>
 
   {% include head.html %}
-  <style>
+   <style>
       .unselectable {
           -webkit-touch-callout: none;
           -webkit-user-select: none;
@@ -14,6 +14,7 @@
       }
 
       ul {
+          width: 95%;
           margin: 0;
           padding: 0;
 
@@ -37,13 +38,14 @@
           float: left;
           list-style: none;
           margin-right: 4px;
+          margin-bottom: 4px;
       }
 
-      .tab-itom .test-label {
+      .tab-itom .tab-label {
           position: relative;
           display: block;
           font-size: 1.5em;
-          width: 120px;
+          width: 140px;
           height: 27px;
           border: 1px solid transparent;
           border-top-left-radius: 0px;
@@ -75,8 +77,8 @@
       }
       /* 利用选择器实现  tab切换 */
 
-      /* 当radio为选中状态时设置它的test-label兄弟元素的属性 */
-      input[type="radio"]:checked + .test-label {
+      /* 当radio为选中状态时设置它的tab-label兄弟元素的属性 */
+      input[type="radio"]:checked + .tab-label {
           color:#fff;
           /* 为了修饰存在的边框背景属性 */
           border-color: #2e6da4;
@@ -97,6 +99,30 @@
   <script src="{{ '/assets/dist/js/tool/base64.js' | relative_url }}"></script>
   <script src="{{ '/assets/dist/js/tool/utf8util.js' | relative_url }}"></script>
   <script>
+      var curTabValue = "";
+      function onTabChange()
+      {
+        var inputPassword = document.getElementById("input_password");
+        var radioArr = document.getElementsByClassName("tab-radio");
+        for(var i = 0; i < radioArr.length; i++){
+          var radio = radioArr[i];
+          if(radio.checked == true){
+            if(radio.value == "des"){
+              inputPassword.style.width = "100px";
+              inputPassword.maxLength = 8;
+              inputPassword.placeholder = "长度8个字符";
+              curTabValue = "des";
+            }
+            else if(radio.value == "3des"){
+              inputPassword.style.width = "200px";
+              inputPassword.maxLength = 24;
+              inputPassword.placeholder = "长度24个字符";
+              curTabValue = "3des";
+            }
+            break;
+          }
+        }
+      }
 
       //显示初始化向量
       function showInputIVBlock(visible)
@@ -163,7 +189,7 @@
         var password = document.getElementById("input_password").value;
         var iv = document.getElementById("input_iv").value;
 
-        var encryptBytes = des_encrypt(input, password, mode, padding, iv);
+        var encryptBytes = des_encrypt(input, password, mode, padding, iv, curTabValue);
 
         var outputSelect = document.getElementById("ouput_select");
         var outputMode = outputSelect.options[outputSelect.options.selectedIndex].value;
@@ -212,13 +238,14 @@
         var password = document.getElementById("input_password").value;
         var iv = document.getElementById("input_iv").value;
 
-        var decryptBytes = des_decrypt(inputArr, password, mode, padding, iv);
+        var decryptBytes = des_decrypt(inputArr, password, mode, padding, iv, curTabValue);
 
         var output = document.getElementById("output_textarea");
         output.value = byteToString(decryptBytes);
       }
 
       window.onload = function(){
+        onTabChange();
         showInputIVBlock(false);
         var sel = document.getElementById("mode_select");
         if(sel&&sel.addEventListener){
@@ -249,7 +276,6 @@
           </div>
 
           <div>
-
             <div class="tool-input-inline-block">
               <span>加密模式</span>
               <select id="mode_select">
@@ -294,21 +320,25 @@
           </div>
   
           <div>
-            <ul class="tab-list clearfloat">
+
+          <ul class="tab-list clearfloat">
               <li class="tab-itom">
-                  <input type="radio" id="tabRadio1" class="test-radio" name="tab" checked="checked">
-                  <label class="test-label unselectable" for="tabRadio1">DES</label>
-                  <div class="tab-box">
-                      <textarea id="input_textarea" placeholder="请输入待解码或编码的字符串" class="tool-input-textarea" spellcheck="false"></textarea>
-                      <div class="tool-button-group">
-                        <button id="decode" class="tool-button" onClick="onEncrypt()">加密</button>
-                        <button id="encode" class="tool-button" onClick="onDecrypt()">解密</button>
-                      </div>
-                      <textarea id="output_textarea"class="tool-output-textarea" readonly="readonly" spellcheck="false"></textarea>
-                  </div>
+                <input type="radio" id="tadRadio1" class="tab-radio" name="tab" onchange="onTabChange();" value="des" checked="true"/>
+                <label class="tab-label unselectable" for="tadRadio1">DES</label>
+              </li>
+               <li class="tab-itom">
+                <input type="radio" id="tadRadio2" class="tab-radio" name="tab" onchange="onTabChange();" value="3des"/>
+                <label class="tab-label unselectable" for="tadRadio2">3DES</label>
               </li>
           </ul>
-        <div/>
+          <div class="tab-box">
+              <textarea id="input_textarea" placeholder="请输入待解码或编码的字符串" class="tool-input-textarea" spellcheck="false"></textarea>
+              <div class="tool-button-group">
+                <button id="decode" class="tool-button" onClick="onEncrypt()">加密</button>
+                <button id="encode" class="tool-button" onClick="onDecrypt()">解密</button>
+              </div>
+              <textarea id="output_textarea"class="tool-output-textarea" readonly="readonly" spellcheck="false"></textarea>
+          </div>
 
         </div>
       </div>

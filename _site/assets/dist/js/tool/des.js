@@ -246,7 +246,7 @@ var dump = function(tag, arr, isHex, padCount)
 }
 
 //mode: encrypt、decrypt
-var blockProcess = function(data, keys, mode)
+var blockProcess_des = function(data, keys, mode)
 {
 	//进行初始置换
 	var m = new Array(64);
@@ -332,6 +332,32 @@ var blockProcess = function(data, keys, mode)
 
 	//console.log("终止置换", output);
 	return output;
+}
+
+var blockProcess_3des = function(data, keys, mode)
+{
+	var block = null;
+	if(mode == "encrypt"){
+		block = blockProcess_des(data,  keys[0], "encrypt");
+		block = blockProcess_des(block, keys[1], "decrypt");
+		block = blockProcess_des(block, keys[2], "encrypt");
+	}
+	else{
+		block = blockProcess_des(data,  keys[2], "decrypt");
+		block = blockProcess_des(block, keys[1], "encrypt");
+		block = blockProcess_des(block, keys[0], "decrypt");
+	}
+	return block;
+}
+
+var blockProcessByFlag = function(data, keys, mode, flag)
+{
+	if(flag == "des"){
+		return blockProcess_des(data, keys, mode);
+	}
+	else{
+		return blockProcess_3des(data, keys, mode);
+	}
 }
 
 var des_add_padding = function(data, mode, padding){
@@ -441,42 +467,99 @@ function inc_arr(arr)
 	}
 }
 
+function generateSubKey_des(keysText)
+{
+	var keys = stringToByte(keysText);
+	keys 	 = keys.slice(0, 8);
+	for(var i = 0; i < 8; i++){
+		if(keys[i] == undefined){
+			keys[i] = 0;
+		}
+	}
+	var subKeys = generateSubKey(keys);
+	return subKeys;
+}
+
+function generateSubKey_3des(keysText)
+{
+	var keys = stringToByte(keysText);
+	var lens = [8, 16, 24];
+	var idx = 0;
+	for(var i = 0; i < lens.length; i++){
+		idx = i;
+		if(keys.length <= lens[i]){
+			break;
+		}
+	}
+
+	keys = keys.slice(0, lens[idx]);
+	for(var i = 0; i < lens[idx]; i++){
+		if(keys[i] == undefined){
+			keys[i] = 0;
+		}
+	}
+
+	var k0 = null;
+	var k1 = null;
+	var k2 = null;
+	if(idx == 0){
+		k0 = keys.slice(0, 8);
+		k1 = keys.slice(0, 8);
+		k2 = keys.slice(0, 8);
+	}
+	else if(idx == 1){
+		k0 = keys.slice(0, 8);
+		k1 = keys.slice(8, 16);
+		k2 = keys.slice(0, 8);
+	}
+	else if(idx == 2){
+		k0 = keys.slice(0, 8);
+		k1 = keys.slice(8, 16);
+		k2 = keys.slice(16, 24);
+	}
+
+	var subKeys0 = generateSubKey(k0);
+	var subKeys1 = generateSubKey(k1);
+	var subKeys2 = generateSubKey(k2);
+
+	return [subKeys0, subKeys1, subKeys2];
+}
+
+
 
 //mode    分组模式,分别有ECB, CBC, CFB, OFB, CTR
 //padding 填充模式,分别有zeropadding, pkcs5padding(默认), pkcs7padding, ISO10126, ansix923, ISO/IEC7816-4
 //iv      偏移量
-function des_encrypt(inputText, keysText, mode, padding, ivText){
+function des_encrypt(inputText, keysText, mode, padding, ivText, flag){
+	if(flag == null) { flag = "des"; }
 	var data = stringToByte(inputText);
 	if(data.length == 0){
 		return output;
 	}
 	
 	des_add_padding(data, mode, padding);
-	console.log("data", data);
 
-	var keys = stringToByte(keysText);
 	var iv   = stringToByte(ivText);
-	keys 	 = keys.slice(0, 8);
 	iv   	 = iv.slice(0, 8);
 	for(var i = 0; i < 8; i++){
-		if(keys[i] == undefined){
-			keys[i] = 0;
-		}
-
 		if(iv[i] == undefined){
 			iv[i] = 0;
 		}
 	}
-	console.log("keys", keys);
-	console.log("iv", iv);
 
 	var output = [];
-	var subKeys = generateSubKey(keys);
+	var subKeys = null;
+	if(flag == "des"){
+		subKeys = generateSubKey_des(keysText);
+	}
+	else{
+		subKeys = generateSubKey_3des(keysText)
+	}
 
-	if(mode == "EBC"){
+	if(mode == "ECB"){
 		for(var i = 0; i < data.length; i += 8){
 			var block = data.slice(i, i + 8);
-			block = blockProcess(block, subKeys, "encrypt");
+			block = blockProcessByFlag(block, subKeys, "encrypt", flag);
 			output = output.concat(block);
 		}
 	}
@@ -484,7 +567,7 @@ function des_encrypt(inputText, keysText, mode, padding, ivText){
 		for(var i = 0; i < data.length; i += 8){
 			var block = data.slice(i, i + 8);
 			block = xor_arr(block, iv);
-			block = blockProcess(block, subKeys, "encrypt");
+			block = blockProcessByFlag(block, subKeys, "encrypt", flag);
 			console.log("block", block);
 			output = output.concat(block);
 			iv = block;
@@ -492,7 +575,7 @@ function des_encrypt(inputText, keysText, mode, padding, ivText){
 	}
 	else if(mode == "CFB"){
 		for(var i = 0; i < data.length; i += 8){
-			iv = blockProcess(iv, subKeys, "encrypt");
+			iv = blockProcessByFlag(iv, subKeys, "encrypt", flag);
 			var block = data.slice(i, Math.min(i + 8, data.length));
 			block = xor_arr(block, iv);
 			output = output.concat(block);
@@ -501,7 +584,7 @@ function des_encrypt(inputText, keysText, mode, padding, ivText){
 	}
 	else if(mode == "OFB"){
 		for(var i = 0; i < data.length; i += 8){
-			iv = blockProcess(iv, subKeys, "encrypt");
+			iv = blockProcessByFlag(iv, subKeys, "encrypt", flag);
 			var block = data.slice(i, Math.min(i + 8, data.length));
 			block = xor_arr(block, iv);
 			output = output.concat(block);
@@ -511,7 +594,7 @@ function des_encrypt(inputText, keysText, mode, padding, ivText){
 		var timer = iv.slice(0, 8);
 		for(var i = 0; i < data.length; i += 8){
 			var iv = timer.slice(0, 8);
-			iv = blockProcess(iv, subKeys, "encrypt");
+			iv = blockProcessByFlag(iv, subKeys, "encrypt", flag);
 			var block = data.slice(i, Math.min(i + 8, data.length));
 			block = xor_arr(block, iv);
 			output = output.concat(block);
@@ -523,33 +606,35 @@ function des_encrypt(inputText, keysText, mode, padding, ivText){
 }
 
 
-function des_decrypt(data, keysText, mode, padding, ivText){	
-	var keys = stringToByte(keysText);
+function des_decrypt(data, keysText, mode, padding, ivText, flag){	
 	var iv   = stringToByte(ivText);
-	keys = keys.slice(0, 8);
-	iv = iv.slice(0, 8);
+	iv   	 = iv.slice(0, 8);
 	for(var i = 0; i < 8; i++){
-		if(keys[i] == undefined){
-			keys[i] = 0;
-		}
 		if(iv[i] == undefined){
 			iv[i] = 0;
 		}
 	}
 
 	var output = [];
-	var subKeys = generateSubKey(keys);
+	var subKeys = null;
+	if(flag == "des"){
+		subKeys = generateSubKey_des(keysText);
+	}
+	else{
+		subKeys = generateSubKey_3des(keysText)
+	}
+
 	if(mode == "ECB"){
 		for(var i = 0; i < data.length; i += 8){
 			var block = data.slice(i, i + 8);
-			block = blockProcess(block, subKeys, "decrypt");
+			block = blockProcessByFlag(block, subKeys, "decrypt", flag);
 			output = output.concat(block);
 		}
 	}
 	else if(mode == "CBC"){
 		for(var i = 0; i < data.length; i += 8){
 			var block = data.slice(i, i + 8);
-			block = blockProcess(block, subKeys, "decrypt");
+			block = blockProcessByFlag(block, subKeys, "decrypt", flag);
 			block = xor_arr(block, iv);
 			output = output.concat(block);
 			iv = data.slice(i, i + 8);
@@ -557,7 +642,7 @@ function des_decrypt(data, keysText, mode, padding, ivText){
 	}
 	else if(mode == "CFB"){
 		for(var i = 0; i < data.length; i += 8){
-			iv = blockProcess(iv, subKeys, "encrypt");
+			iv = blockProcessByFlag(iv, subKeys, "encrypt", flag);
 			var block = data.slice(i, Math.min(i + 8, data.length));
 			output = output.concat(xor_arr(block, iv));
 			iv = block;
@@ -565,7 +650,7 @@ function des_decrypt(data, keysText, mode, padding, ivText){
 	}
 	else if(mode == "OFB"){
 		for(var i = 0; i < data.length; i += 8){
-			iv = blockProcess(iv, subKeys, "encrypt");
+			iv = blockProcessByFlag(iv, subKeys, "encrypt", flag);
 			var block = data.slice(i, Math.min(i + 8, data.length));
 			output = output.concat(xor_arr(block, iv));
 		}
@@ -574,7 +659,7 @@ function des_decrypt(data, keysText, mode, padding, ivText){
 		var timer = iv.slice(0, 8);
 		for(var i = 0; i < data.length; i += 8){
 			var iv = timer.slice(0, 8);
-			iv = blockProcess(iv, subKeys, "encrypt");
+			iv = blockProcessByFlag(iv, subKeys, "encrypt", flag);
 			var block = data.slice(i, Math.min(i + 8, data.length));
 			block = xor_arr(block, iv);
 			output = output.concat(block);

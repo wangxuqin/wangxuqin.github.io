@@ -1,3 +1,5 @@
+var decodeErrorTip = function(){}
+
  //将字符串转换成UTF8数组
  var stringToByte = function(str) {
 	var bytes = new Array();
