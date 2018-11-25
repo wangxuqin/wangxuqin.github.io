@@ -107,11 +107,11 @@
 <p>出于相同目的，还诞生了很多类似的编码，比如：uuencoding，Ascii85，SREC，BinHex，kermit等。<br /></p>
 
 <h4 id="编码算法">编码算法</h4>
-<p>假设有一组二进制数组（0xff 0xfe 0xfd 0xfc 0xfb 0xfa…)<br /></p>
+<p>假设有一组二进制数组（0xff, 0xfe, 0xfd, 0xfc, 0xfb, 0xfa…)<br /></p>
 
-<p>步骤1:将数组中每3个字节分为一组比如 (0xff 0xfe 0xfd), (0xfc, 0xfb, 0xfa)…<br /></p>
+<p>步骤1:将数组中每3个字节分为一组比如 (0xff, 0xfe, 0xfd), (0xfc, 0xfb, 0xfa)…<br /></p>
 
-<p>步骤2:将3个字节共24bit平均分为4个6-bit大小的数字，这里以(0xff 0xfe 0xfd)为例：<br />
+<p>步骤2:将3个字节共24bit平均分为4个6-bit大小的数字，这里以(0xff, 0xfe, 0xfd)为例：<br />
 (0xff 0xfe 0xfd)即为(11111111, 11111110, 11111101)，进行6-bit分割得(111111|11, 1111|1110, 11|111101)，分割后为(111111, 111111, 111011, 111101)，用10进制表示(63, 63, 59, 61)<br /></p>
 
 <p>步骤3:将步骤2得到的(63, 63, 59, 61)进行查表替换，标准Base64算法的映射表如下所示，得到(/, /, 7, 9)。<br />
@@ -214,6 +214,8 @@
 
 <h4 id="base系列编码">Base系列编码</h4>
 <p>Base64是Base系列编码其中一种，Base系列中还有ascii85(Base85)、Base58、Base36、Base32、Base16。</p>
+
+<p><img src="/assets/dist/img/base64_category.png" /></p>
 
 <p><strong>1.Ascii85(Base85)</strong><br />
 Ascii85，也称为Base85，是由Paul E. Rutter为btoa实用程序开发的二进制文本编码形式。通过使用五个ASCII字符来表示四个字节的二进制数据（使编码大小¹/ 4大于原始值，假设每个ASCII字符为8位），它比uuencode或Base64更有效，它使用四个字符来表示三个字节数据的增加（¹/ 3增加，假设每个ASCII字符有8位）。<br />
