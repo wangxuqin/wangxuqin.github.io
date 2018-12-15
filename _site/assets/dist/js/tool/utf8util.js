@@ -1,5 +1,5 @@
 //将字符串转换成UTF8数组
- stringToByte = function(str) {
+ var stringToByte = function(str) {
 	var bytes = new Array();
 	var len, c;
 	len = str.length;
@@ -25,7 +25,7 @@
 }
  
 //将数组转换成UTF16格式字符串
-byteToString = function(arr) {
+var byteToString = function(arr) {
 	if(typeof arr === 'string') {
 		return arr;
 	}
@@ -48,3 +48,5 @@ byteToString = function(arr) {
 	}
 	return str;
 }
+
+// export { stringToByte, byteToString};

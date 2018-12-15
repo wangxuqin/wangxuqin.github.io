@@ -1,3 +1,7 @@
+// import * as utf8util from '/utf8util.js';
+// var stringToByte = utf8util.stringToByte;
+// var byteToString = utf8util.byteToString;
+
 var decodeErrorTip = function(){}
 
  //将字符串转换成UTF8数组
