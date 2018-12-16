@@ -267,7 +267,7 @@ var convertCipherKey = function(cipherKeysText, keyLength){
 
 	var cipherKeys = Array(Math.floor(byteLength / 4));
 	for(var i = 0; i < byteLength; i += 4){
-		cipherKeys[i] = keys.slice(i, i + 4);
+		cipherKeys[Math.floor(i / 4)] = keys.slice(i, i + 4);
 	}
 
 	console.log("convertCipherKey cipherKeys", cipherKeys);
@@ -287,7 +287,7 @@ var convertIV = function(ivText){
 
 	var iv = Array(Math.floor(byteLength / 4));
 	for(var i = 0; i < byteLength; i += 4){
-		iv[i] = keys.slice(i, i + 4);
+		iv[Math.floor(i / 4)] = arr.slice(i, i + 4);
 	}
 
 	console.log("convertIV iv", iv);
@@ -340,7 +340,7 @@ var convertBlock = function(arr)
 {
 	var block = Array(4);
 	for(var i = 0; i < arr.length; i += 4){
-		block[i] = arr.slice(i, i + 4);
+		block[Math.floor(i / 4)] = arr.slice(i, i + 4);
 	}
 	return block;
 }
@@ -397,6 +397,24 @@ aes_encrypt = function(plainText, cipherKeysText, keyLength, mode, padding, ivTe
 
 	return output;
 }
+
+
+var output = aes_encrypt("在线AES加密 | AES解密 - 在线工具", "0123456789abcdef", 192, "ECB", "pkcs5padding", "");
+
+dump = function(output)
+{
+	var arr = [];
+	for(var i = 0; i < output.length; i++){
+		var item = output[i].toString(16);
+		if(item.length == 1){ item = "0" + item;}
+		arr.push(item);
+	}
+	return arr.join("");
+}
+
+console.log(dump(output));
+
+
 
 // var block = [
 // 	[0x19, 0x3d, 0xe3, 0xbe],
