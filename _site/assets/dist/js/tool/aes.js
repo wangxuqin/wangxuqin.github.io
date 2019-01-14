@@ -243,43 +243,238 @@ var AddRoundKey = function(block, keys, pIndex)
 
 var blockEncrypt = function(block, keys, round)
 {
-	AddRoundKey(block, keys, 0);
+	var pIdx = 0;
+	AddRoundKey(block, keys, pIdx);
 	for(var i = 0; i < round; i++){
 		SubBytes(block);
 		ShiftRows(block);
 		if(i < (round - 1)){ MixColumns(block); }
-		AddRoundKey(block, keys, 4 * (round + 1));
+		pIdx += 4;
+		AddRoundKey(block, keys, pIdx);
 	}
 }
 
 
-var block = [
-	[0x19, 0x3d, 0xe3, 0xbe],
-	[0xa0, 0xf4, 0xe2, 0x2b],
-	[0x9a, 0xc6, 0x8d, 0x2a],
-	[0xe9, 0xf8, 0x48, 0x08]
-]
+var convertCipherKey = function(cipherKeysText, keyLength){
+	if(cipherKeysText == null){cipherKeysText = ""};
+	var byteLength = keyLength / 8;
+	var keys = stringToByte(cipherKeysText);
+	keys = keys.slice(0, byteLength);
+	for(var i = keys.length; i < byteLength; i++){
+		keys.push(0x00);
+	}
+	console.log("convertCipherKey keys", keys);
 
-console.log("SubBytes");
-SubBytes(block);
-for(var i = 0; i < 4; i++){
-	console.log(i , block[i][0].toString(16), block[i][1].toString(16), block[i][2].toString(16), block[i][3].toString(16));
+	var cipherKeys = Array(Math.floor(byteLength / 4));
+	for(var i = 0; i < byteLength; i += 4){
+		cipherKeys[Math.floor(i / 4)] = keys.slice(i, i + 4);
+	}
+
+	console.log("convertCipherKey cipherKeys", cipherKeys);
+	return cipherKeys;
 }
 
-console.log("ShiftRows");
-ShiftRows(block);
-for(var i = 0; i < 4; i++){
-	console.log(i , block[i][0].toString(16), block[i][1].toString(16), block[i][2].toString(16), block[i][3].toString(16));
+var convertIV = function(ivText){
+	if(ivText == null){ivText = ""};
+	var keyLength = 128;
+	var byteLength = keyLength / 8;
+	var arr = stringToByte(ivText);
+	arr = arr.slice(0, byteLength);
+	for(var i = arr.length; i < byteLength; i++){
+		arr.push(0x00);
+	}
+	console.log("convertIV arr", arr);
+
+	var iv = Array(Math.floor(byteLength / 4));
+	for(var i = 0; i < byteLength; i += 4){
+		iv[Math.floor(i / 4)] = arr.slice(i, i + 4);
+	}
+
+	console.log("convertIV iv", iv);
+	return iv;
 }
 
-console.log("MixColumns");
-MixColumns(block);
-for(var i = 0; i < 4; i++){
-	console.log(i , block[i][0].toString(16), block[i][1].toString(16), block[i][2].toString(16), block[i][3].toString(16));
+var aes_add_padding = function(data, mode, padding){
+	if(mode == "ECB" || mode == "CBC"){
+		var padding_count = 16 - (data.length % 16);
+
+		switch(padding){
+			case "zeropadding":
+			for(var i = 0; i < padding_count; i++){
+				data.push(0x00);
+			}
+			break;
+
+			case "pkcs5padding":
+			case "pkcs7padding":
+			for(var i = 0; i < padding_count; i++){
+				data.push(padding_count);
+			}
+			break;
+
+			case "iso/iec7816-4":
+			data.push(0x80);
+			for(var i = 1; i < padding_count; i++){
+				data.push(0);
+			}
+			break;
+
+			case "ios10126":
+			for(var i = 0; i < padding_count - 1; i++){
+				data.push(Math.floor(Math.random() * 256));
+			}
+			data.push(padding_count);
+			break;
+
+			case "ansix923":
+			for(var i = 0; i < padding_count - 1; i++){
+				data.push(0x00);
+			}
+			data.push(padding_count);
+			break;
+		}
+	}
+}
+
+var convertBlock = function(arr)
+{
+	var block = Array(4);
+	for(var i = 0; i < arr.length; i += 4){
+		block[Math.floor(i / 4)] = arr.slice(i, i + 4);
+	}
+	return block;
+}
+
+var copyToArray = function(output, block)
+{
+	var len  = block.length;
+	for(var i = 0; i < len; i++){
+		for(var j = 0; j < len; j++){
+			output.push(block[i][j]);
+		}
+	}
 }
 
 
+ASEKEY128 = 128;
+ASEKEY192 = 192;
+ASEKEY256 = 256;
+//keyLength 键长度 ASEKEY128, ASEKEY192, ASEKEY256
+//mode    分组模式,分别有ECB, CBC, CFB, OFB, CTR
+//padding 填充模式,分别有zeropadding, pkcs5padding(默认), pkcs7padding, ISO10126, ansix923, ISO/IEC7816-4
+//iv      偏移量
+aes_encrypt = function(plainText, cipherKeysText, keyLength, mode, padding, ivText)
+{
+	if(plainText == null || plainText.length == 0){return "";}
+
+	if(keyLength == null){keyLength = ASEKEY128;}
+	if(mode == null){mode = "ECB";}
+	if(padding == null){padding = "pkcs5padding";}
+
+	var round = 10;
+	switch(keyLength){
+		case ASEKEY128: round = 10; break;
+		case ASEKEY192: round = 12; break;
+		case ASEKEY256: round = 14; break;
+	}
+
+
+	var data = stringToByte(plainText);
+	aes_add_padding(data, mode, padding);
+
+	var cipherKeys = convertCipherKey(cipherKeysText, keyLength);
+	var keys = keyExpansion(cipherKeys, round);
+	var iv = convertIV(ivText);
+
+	var output = [];
+	for(var i = 0; i < data.length; i += 16){
+		var arr = data.slice(i, i + 16);
+		var block = convertBlock(arr);
+		console.log("block", block);
+		blockEncrypt(block, keys, round);
+		copyToArray(output, block);
+	}
+
+	return output;
+}
+
+
+var output = aes_encrypt("在线AES加密 | AES解密 - 在线工具", "0123456789abcdef", 192, "ECB", "pkcs5padding", "");
+
+dump = function(output)
+{
+	var arr = [];
+	for(var i = 0; i < output.length; i++){
+		var item = output[i].toString(16);
+		if(item.length == 1){ item = "0" + item;}
+		arr.push(item);
+	}
+	return arr.join("");
+}
+
+console.log(dump(output));
 
 
 
+// var block = [
+// 	[0x19, 0x3d, 0xe3, 0xbe],
+// 	[0xa0, 0xf4, 0xe2, 0x2b],
+// 	[0x9a, 0xc6, 0x8d, 0x2a],
+// 	[0xe9, 0xf8, 0x48, 0x08]
+// ]
 
+// console.log("SubBytes");
+// SubBytes(block);
+// for(var i = 0; i < 4; i++){
+// 	console.log(i , block[i][0].toString(16), block[i][1].toString(16), block[i][2].toString(16), block[i][3].toString(16));
+// }
+
+// console.log("ShiftRows");
+// ShiftRows(block);
+// for(var i = 0; i < 4; i++){
+// 	console.log(i , block[i][0].toString(16), block[i][1].toString(16), block[i][2].toString(16), block[i][3].toString(16));
+// }
+
+// console.log("MixColumns");
+// MixColumns(block);
+// for(var i = 0; i < 4; i++){
+// 	console.log(i , block[i][0].toString(16), block[i][1].toString(16), block[i][2].toString(16), block[i][3].toString(16));
+// }
+
+
+// var keys = [
+// 	[0xa0, 0xfa, 0xfe, 0x17],
+// 	[0x88, 0x54, 0x2c, 0xb1],
+// 	[0x23, 0xa3, 0x39, 0x39],
+// 	[0x2a, 0x6c, 0x76, 0x05]
+// ]
+
+
+// console.log("AddRoundKey");
+// AddRoundKey(block, keys, 0);
+// for(var i = 0; i < 4; i++){
+// 	console.log(i , block[i][0].toString(16), block[i][1].toString(16), block[i][2].toString(16), block[i][3].toString(16));
+// }
+
+// var block = [
+// 	[0x32, 0x43, 0xf6, 0xa8],
+// 	[0x88, 0x5a, 0x30, 0x8d],
+// 	[0x31, 0x31, 0x98, 0xa2],
+// 	[0xe0, 0x37, 0x07, 0x34]
+// ]
+
+// var cipherKeys = [
+// 	[0x2b, 0x7e, 0x15, 0x16],
+// 	[0x28, 0xae, 0xd2, 0xa6],
+// 	[0xab, 0xf7, 0x15, 0x88],
+// 	[0x09, 0xcf, 0x4f, 0x3c]
+// ]
+
+// var keys = keyExpansion(cipherKeys, 10);
+
+// blockEncrypt(block, keys, 10);
+
+// console.log("blockEncrypt");
+// for(var i = 0; i < 4; i++){
+// 	console.log(i , block[i][0].toString(16), block[i][1].toString(16), block[i][2].toString(16), block[i][3].toString(16));
+// }
