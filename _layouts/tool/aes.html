@@ -95,35 +95,10 @@
 
   <link rel="stylesheet" href="{{ '/assets/dist/sheet.css' | relative_url }}">
 
-  <script src="{{ '/assets/dist/js/tool/des.js' | relative_url }}"></script>
+  <script src="{{ '/assets/dist/js/tool/aes.js' | relative_url }}"></script>
   <script src="{{ '/assets/dist/js/tool/base64.js' | relative_url }}"></script>
   <script src="{{ '/assets/dist/js/tool/utf8util.js' | relative_url }}"></script>
   <script>
-      var curTabValue = "";
-      function onTabChange()
-      {
-        var inputPassword = document.getElementById("input_password");
-        var radioArr = document.getElementsByClassName("tab-radio");
-        for(var i = 0; i < radioArr.length; i++){
-          var radio = radioArr[i];
-          if(radio.checked == true){
-            if(radio.value == "des"){
-              inputPassword.style.width = "100px";
-              inputPassword.maxLength = 8;
-              inputPassword.placeholder = "长度8个字符";
-              curTabValue = "des";
-            }
-            else if(radio.value == "3des"){
-              inputPassword.style.width = "200px";
-              inputPassword.maxLength = 24;
-              inputPassword.placeholder = "长度24个字符";
-              curTabValue = "3des";
-            }
-            break;
-          }
-        }
-      }
-
       //显示初始化向量
       function showInputIVBlock(visible)
       {
@@ -139,6 +114,20 @@
         if(paddingSelectBlock != null){
           paddingSelectBlock.style.display = visible == true ? 'inline-block' : 'none';
         }
+      }
+
+      //加密模式
+      function onPasswordLenSelectChange(value)
+      {
+        var inputPassword = document.getElementById("input_password");
+        inputPassword.style.width = "100px";
+        var len = value / 8;
+        if(len < 16){
+          len = 16;
+        }
+        inputPassword.maxLength = len;
+        inputPassword.placeholder = "长度" + len + "个字符";
+        inputPassword.value = "";
       }
 
       //加密模式
@@ -180,6 +169,10 @@
           return;
         }
 
+        var passwordLenSelect = document.getElementById("password_len_select");
+        var passwordLen = passwordLenSelect.options[passwordLenSelect.options.selectedIndex].value;
+        passwordLen = parseInt(passwordLen);
+
         var modeSelect = document.getElementById("mode_select");
         var mode = modeSelect.options[modeSelect.options.selectedIndex].value;
         
@@ -189,7 +182,7 @@
         var password = document.getElementById("input_password").value;
         var iv = document.getElementById("input_iv").value;
 
-        var encryptBytes = des_encrypt(input, password, mode, padding, iv, curTabValue);
+        var encryptBytes = aes_encrypt(input, password, passwordLen, mode, padding, iv);
 
         var outputSelect = document.getElementById("ouput_select");
         var outputMode = outputSelect.options[outputSelect.options.selectedIndex].value;
@@ -227,25 +220,28 @@
         var modeSelect = document.getElementById("mode_select");
         var mode = modeSelect.options[modeSelect.options.selectedIndex].value;
 
-         if((inputArr.length == 0) || ((inputArr.length % 8 != 0) && (mode == "ECB" || mode == "CBC"))){
+         if((inputArr.length == 0) || ((inputArr.length % 16 != 0) && (mode == "ECB" || mode == "CBC"))){
           alert("输入数据有误，请检查");
           return;
         }
         
+        var passwordLenSelect = document.getElementById("password_len_select");
+        var passwordLen = passwordLenSelect.options[passwordLenSelect.options.selectedIndex].value;
+        passwordLen = parseInt(passwordLen);
+
         var paddingSelect = document.getElementById("padding_select");
         var padding = paddingSelect.options[paddingSelect.options.selectedIndex].value;
 
         var password = document.getElementById("input_password").value;
         var iv = document.getElementById("input_iv").value;
 
-        var decryptBytes = des_decrypt(inputArr, password, mode, padding, iv, curTabValue);
-
+        var decryptBytes = aes_decrypt(inputArr, password, passwordLen, mode, padding, iv);
+        
         var output = document.getElementById("output_textarea");
         output.value = byteToString(decryptBytes);
       }
 
       window.onload = function(){
-        onTabChange();
         showInputIVBlock(false);
         var sel = document.getElementById("mode_select");
         if(sel&&sel.addEventListener){
@@ -255,6 +251,18 @@
                 onModeSelectChange(target.value);
             },false)
         }
+
+        sel = document.getElementById("password_len_select");
+        if(sel&&sel.addEventListener){
+            sel.addEventListener('change',function(e){
+                var ev = e||window.event;
+                var target = ev.target||ev.srcElement;
+                onPasswordLenSelectChange(target.value);
+            },false)
+        }
+
+        onModeSelectChange("ECB");
+        onPasswordLenSelectChange(128);
       }
 
   </script>
@@ -276,6 +284,15 @@
           </div>
 
           <div>
+            <div class="tool-input-inline-block">
+              <span>密码长度</span>
+              <select id="password_len_select">
+                <option value=128 selected="selected">128</option>
+                <option value=192>192</option>
+                <option value=256>256</option>
+              </select>
+            </div>
+
             <div class="tool-input-inline-block">
               <span>加密模式</span>
               <select id="mode_select">
@@ -308,12 +325,12 @@
 
             <div class="tool-input-inline-block">
               <span>密码</span>
-              <input tpye="text" id="input_password" class="tool-input-textare-2" spellcheck="false" maxlength="8"></textarea>
+              <input tpye="text" id="input_password" class="tool-input-textare-2" spellcheck="false" maxlength="16"></textarea>
             </div>
 
             <div  id="input_iv_block" class="tool-input-inline-block">
               <span>初始向量(iv)</span>
-              <input type="text" id="input_iv" class="tool-input-textare-2" spellcheck="false" maxlength="8"></textarea>
+              <input type="text" id="input_iv" class="tool-input-textare-2" spellcheck="false" maxlength="16"></textarea>
             </div>
 
             
