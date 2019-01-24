@@ -385,7 +385,7 @@ var des_add_padding = function(data, mode, padding){
 			}
 			break;
 
-			case "ios10126":
+			case "iso10126":
 			for(var i = 0; i < padding_count - 1; i++){
 				data.push(Math.floor(Math.random() * 256));
 			}
@@ -415,7 +415,7 @@ var des_remove_padding = function(data, mode, padding){
 
 			case "pkcs5padding":
 			case "pkcs7padding":
-			case "ios10126":
+			case "iso10126":
 			case "ansix923":
 			var padding_count = data[data.length - 1];
 			for(var i = 0; i < padding_count; i++){

@@ -1,30 +1,3 @@
-var dump = function(output)
-{
-	var arr = [];
-	for(var i = 0; i < output.length; i++){
-		for(var j = 0; j < output.length; j++){
-			var item = output[i][j].toString(16);
-			if(item.length == 1){ item = "0" + item;}
-			item = "0x"+item;
-			arr.push(item);
-		}
-	}
-	return "\t" + arr.join(",");
-}
-
-var dump_arr = function(output)
-{
-	var arr = [];
-	for(var i = 0; i < output.length; i++){
-		item = output[i];
-		if(item.length == 1){ item = "0" + item;}
-		item = "0x"+item;
-		arr.push(item);
-	}
-	return "\t" + arr.join(",");
-}
-
-
 //将字符串转换成UTF8数组
  var stringToByte = function(str) {
 	var bytes = new Array();
@@ -74,6 +47,63 @@ var byteToString = function(arr) {
 		}
 	}
 	return str;
+}
+
+var dump = function(output)
+{
+	var arr = [];
+	for(var i = 0; i < output.length; i++){
+		for(var j = 0; j < output.length; j++){
+			var item = output[i][j].toString(16);
+			if(item.length == 1){ item = "0" + item;}
+			item = "0x"+item;
+			arr.push(item);
+		}
+	}
+	return "\t" + arr.join(",");
+}
+
+var dump_arr = function(output)
+{
+	var arr = [];
+	for(var i = 0; i < output.length; i++){
+		item = output[i];
+		if(item.length == 1){ item = "0" + item;}
+		item = "0x"+item;
+		arr.push(item);
+	}
+	return "\t" + arr.join(",");
+}
+
+
+function xor_arr(arr1, arr2)
+{
+	var output = [];
+	if(arr1 != null && arr2 != null){
+		var len = Math.min(arr1.length, arr2.length);
+		for(var i = 0; i < len; i++){
+			var val = arr1[i] ^ arr2[i];
+			output.push(val);
+		}
+	}
+	return output;
+}
+
+function inc_arr(arr)
+{
+	if(arr != null){
+		var idx = arr.length - 1;
+		while(idx > 0){
+			arr[idx] += 1;
+			if(arr[idx] == 256){
+				arr[idx] = 0;
+				idx = idx - 1;
+			}
+			else{
+				break;
+			}
+		}
+	}
 }
 
 
@@ -355,7 +385,7 @@ var blockEncrypt = function(block, keys, round)
 		pIdx += 4;
 		AddRoundKey(block, keys, pIdx);
 	}
-	console.log("blockEncrypt", dump(block));
+	//console.log("blockEncrypt", dump(block));
 }
 
 var blockDecrypt = function(block, keys, round)
@@ -369,7 +399,7 @@ var blockDecrypt = function(block, keys, round)
 		AddRoundKey(block, keys, pIdx);
 		if(i < (round - 1)){ InvMixColumns(block); }
 	}
-	console.log("blockDecrypt", dump(block));
+	//console.log("blockDecrypt", dump(block));
 }
 
 var convertCipherKey = function(cipherKeysText, keyLength){
@@ -394,14 +424,9 @@ var convertIV = function(ivText){
 	var keyLength = 128;
 	var byteLength = keyLength / 8;
 	var arr = stringToByte(ivText);
-	arr = arr.slice(0, byteLength);
+	var iv = arr.slice(0, byteLength);
 	for(var i = arr.length; i < byteLength; i++){
-		arr.push(0x00);
-	}
-
-	var iv = Array(Math.floor(byteLength / 4));
-	for(var i = 0; i < byteLength; i += 4){
-		iv[Math.floor(i / 4)] = arr.slice(i, i + 4);
+		iv.push(0x00);
 	}
 
 	return iv;
@@ -493,12 +518,30 @@ var convertBlock = function(arr)
 	return block;
 }
 
-var copyToArray = function(output, block)
+var convertArr = function(block)
 {
+	var arr = Array(16);
+	for(var i = 0; i < 4; i++){
+		for(var j = 0; j < 4; j++){
+			arr.push(block[i][j]);
+		}
+	}
+	return arr;
+}
+
+var copyToArray = function(output, block, flag)
+{
+	if(flag == undefined){flag = "block";}
 	var len  = block.length;
+
 	for(var i = 0; i < len; i++){
-		for(var j = 0; j < len; j++){
-			output.push(block[i][j]);
+		if(flag == "block"){
+			for(var j = 0; j < len; j++){
+				output.push(block[i][j]);
+			}
+		}
+		else if(flag == "array"){
+			output.push(block[i]);
 		}
 	}
 }
@@ -507,6 +550,7 @@ var copyToArray = function(output, block)
 ASEKEY128 = 128;
 ASEKEY192 = 192;
 ASEKEY256 = 256;
+BLOCK_LENGTH = 16;
 //keyLength 键长度 ASEKEY128, ASEKEY192, ASEKEY256
 //mode    分组模式,分别有ECB, CBC, CFB, OFB, CTR
 //padding 填充模式,分别有zeropadding, pkcs5padding(默认), pkcs7padding, ISO10126, ansix923, ISO/IEC7816-4
@@ -529,20 +573,65 @@ aes_encrypt = function(plainText, cipherKeysText, keyLength, mode, padding, ivTe
 
 	var data = stringToByte(plainText);
 	aes_add_padding(data, mode, padding);
-	console.log("aes_encrypt", data);
+	//console.log("aes_encrypt", data);
 
 	var cipherKeys = convertCipherKey(cipherKeysText, keyLength);
 	var keys = keyExpansion(cipherKeys, round);
 	var iv = convertIV(ivText);
 
 	var output = [];
-	for(var i = 0; i < data.length; i += 16){
-		var arr = data.slice(i, i + 16);
-		var block = convertBlock(arr);
-		blockEncrypt(block, keys, round);
-		copyToArray(output, block);
+	if(mode == "ECB"){
+		for(var i = 0; i < data.length; i += BLOCK_LENGTH){
+			var arr = data.slice(i, i + BLOCK_LENGTH);
+			var block = convertBlock(arr);
+			blockEncrypt(block, keys, round);
+			copyToArray(output, block);
+		}
+	}
+	else if(mode == "CBC"){
+		for(var i = 0; i < data.length; i += BLOCK_LENGTH){
+			var arr = data.slice(i, i + BLOCK_LENGTH);
+			arr = xor_arr(arr, iv);
+			var block = convertBlock(arr);
+			blockEncrypt(block, keys, round);
+			copyToArray(output, block);
+			iv = convertArr(block);
+		}
+	}
+	else if(mode == "CFB"){
+		for(var i = 0; i < data.length; i += BLOCK_LENGTH){
+			iv = convertBlock(iv);
+			blockEncrypt(iv, keys, round);
+			var arr = data.slice(i, Math.min(i + BLOCK_LENGTH, data.length));
+			arr = xor_arr(arr, convertArr(iv));
+			copyToArray(output, arr, "array");
+			iv = arr;
+		}
+	}
+	else if(mode == "OFB"){
+		iv = convertBlock(iv);
+		for(var i = 0; i < data.length; i += BLOCK_LENGTH){
+			blockEncrypt(iv, keys, round);
+			var arr = data.slice(i, Math.min(i + BLOCK_LENGTH, data.length));
+			arr = xor_arr(arr, convertArr(iv));
+			copyToArray(output, arr, "array");
+		}
+	}
+	else if(mode == "CTR"){
+		var timer = iv.slice(0, BLOCK_LENGTH);
+		for(var i = 0; i < data.length; i += BLOCK_LENGTH){
+			var iv = timer.slice(0, BLOCK_LENGTH);
+			iv = convertBlock(iv);
+			blockEncrypt(iv, keys, round);
+
+			var arr = data.slice(i, Math.min(i + BLOCK_LENGTH, data.length));
+			arr = xor_arr(arr, convertArr(iv));
+			copyToArray(output, arr, "array");
+			inc_arr(timer);
+		}
 	}
 
+	console.log("aes_encrypt", output);
 	return output;
 }
 
@@ -568,13 +657,57 @@ aes_decrypt = function(data, cipherKeysText, keyLength, mode, padding, ivText)
 	var iv = convertIV(ivText);
 
 	var output = [];
-	for(var i = 0; i < data.length; i += 16){
-		var arr = data.slice(i, i + 16);
-		var block = convertBlock(arr);
-		blockDecrypt(block, keys, round);
-		copyToArray(output, block);
+	if(mode == "ECB"){
+		for(var i = 0; i < data.length; i += BLOCK_LENGTH){
+			var arr = data.slice(i, i + BLOCK_LENGTH);
+			var block = convertBlock(arr);
+			blockDecrypt(block, keys, round);
+			copyToArray(output, block);
+		}
+	}
+	else if(mode == "CBC"){
+		for(var i = 0; i < data.length; i += BLOCK_LENGTH){
+			var arr = data.slice(i, i + BLOCK_LENGTH);
+			var block = convertBlock(arr);
+			blockDecrypt(block, keys, round);
+			arr = xor_arr(convertArr(block), iv);
+			copyToArray(output, arr, "array");
+			iv = data.slice(i, i + BLOCK_LENGTH);
+		}
+	}
+	else if(mode == "CFB"){
+		for(var i = 0; i < data.length; i += BLOCK_LENGTH){
+			iv = convertBlock(iv);
+			blockEncrypt(iv, keys, round);
+			var arr = data.slice(i, Math.min(i + BLOCK_LENGTH, data.length));
+			arr = xor_arr(arr, convertArr(iv));
+			copyToArray(output, arr, "array");
+			iv = arr;
+		}
+	}
+	else if(mode == "OFB"){
+		iv = convertBlock(iv);
+		for(var i = 0; i < data.length; i += BLOCK_LENGTH){
+			blockEncrypt(iv, keys, round);
+			var arr = data.slice(i, Math.min(i + BLOCK_LENGTH, data.length));
+			arr = xor_arr(arr, convertArr(iv));
+			copyToArray(output, arr, "array");
+		}
+	}
+	else if(mode == "CTR"){
+		var timer = iv.slice(0, BLOCK_LENGTH);
+		for(var i = 0; i < data.length; i += BLOCK_LENGTH){
+			var iv = timer.slice(0, BLOCK_LENGTH);
+			iv = convertBlock(iv);
+			blockEncrypt(iv, keys, round);
+			var arr = data.slice(i, Math.min(i + BLOCK_LENGTH, data.length));
+			arr = xor_arr(arr, convertArr(iv));
+			copyToArray(output, arr, "array");
+			inc_arr(timer);
+		}
 	}
 
 	aes_remove_padding(output, mode, padding);
+	console.log("aes_decrypt", output);
 	return output;
 }
