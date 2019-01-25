@@ -520,7 +520,7 @@ var convertBlock = function(arr)
 
 var convertArr = function(block)
 {
-	var arr = Array(16);
+	var arr = Array(0);
 	for(var i = 0; i < 4; i++){
 		for(var j = 0; j < 4; j++){
 			arr.push(block[i][j]);
@@ -573,7 +573,6 @@ aes_encrypt = function(plainText, cipherKeysText, keyLength, mode, padding, ivTe
 
 	var data = stringToByte(plainText);
 	aes_add_padding(data, mode, padding);
-	//console.log("aes_encrypt", data);
 
 	var cipherKeys = convertCipherKey(cipherKeysText, keyLength);
 	var keys = keyExpansion(cipherKeys, round);
@@ -603,8 +602,7 @@ aes_encrypt = function(plainText, cipherKeysText, keyLength, mode, padding, ivTe
 			iv = convertBlock(iv);
 			blockEncrypt(iv, keys, round);
 			var arr = data.slice(i, Math.min(i + BLOCK_LENGTH, data.length));
-			arr = xor_arr(arr, convertArr(iv));
-			copyToArray(output, arr, "array");
+			copyToArray(output, xor_arr(arr, convertArr(iv)), "array");
 			iv = arr;
 		}
 	}
@@ -631,7 +629,6 @@ aes_encrypt = function(plainText, cipherKeysText, keyLength, mode, padding, ivTe
 		}
 	}
 
-	console.log("aes_encrypt", output);
 	return output;
 }
 
@@ -641,6 +638,7 @@ aes_encrypt = function(plainText, cipherKeysText, keyLength, mode, padding, ivTe
 //iv      偏移量
 aes_decrypt = function(data, cipherKeysText, keyLength, mode, padding, ivText)
 {
+	console.log("aes_decrypt 1", dump_arr(data));
 	if(keyLength == null){keyLength = ASEKEY128;}
 	if(mode == null){mode = "ECB";}
 	if(padding == null){padding = "pkcs5padding";}
@@ -708,6 +706,5 @@ aes_decrypt = function(data, cipherKeysText, keyLength, mode, padding, ivText)
 	}
 
 	aes_remove_padding(output, mode, padding);
-	console.log("aes_decrypt", output);
 	return output;
 }
