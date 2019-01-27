@@ -6,23 +6,23 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<title>des加密 | KimWang's blog</title>
+<title>rc加密 | KimWang's blog</title>
 <meta name="description" content="KimWang's blog">
 
 <meta itemprop="name" content="">
 <meta itemprop="description" content="KimWang's blog">
 <meta itemprop="image" content="">
 
-<meta property="og:url" content="/tool/des.html">
+<meta property="og:url" content="/tool/rc.html">
 <meta property="og:type" content="website">
-<meta property="og:title" content="des加密 | KimWang's blog">
+<meta property="og:title" content="rc加密 | KimWang's blog">
 <meta property="og:site_name" content="KimWang's blog">
 <meta property="og:description" content="KimWang's blog">
 <meta property="og:image" content="">
 
-<meta name="twitter:url" content="/tool/des.html">
+<meta name="twitter:url" content="/tool/rc.html">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="des加密 | KimWang's blog">
+<meta name="twitter:title" content="rc加密 | KimWang's blog">
 <meta name="twitter:site" content="KimWang's blog">
 <meta name="twitter:description" content="KimWang's blog">
 
@@ -33,7 +33,7 @@
 <!--
 <link rel="stylesheet" href="/assets/css/app.min.css">
 <link rel="alternate" type="application/rss+xml" title="KimWang's blog" href="/feed.xml">
-<link rel="canonical" href="/tool/des.html">
+<link rel="canonical" href="/tool/rc.html">
 -->
 
 <link rel="stylesheet" href="/assets/dist/style.css">
@@ -75,14 +75,14 @@
           position: relative;
       }
 
-      .tab-list .tab-itom {
+      .tab-list .tab-item {
           float: left;
           list-style: none;
           margin-right: 4px;
           margin-bottom: 1px;
       }
 
-      .tab-itom .tab-label {
+      .tab-item .tab-label {
           position: relative;
           display: block;
           font-size: 1.5em;
@@ -98,7 +98,7 @@
           background: #e7e8eb;
       }
 
-      .tab-itom .tab-box {
+      .tab-item .tab-box {
           /* 设置绝对定位方便定位相对于tab-list栏的位置，同时为了可以使用z-index属性 */
           position: absolute;
           left: 0;
@@ -136,30 +136,39 @@
 
   <link rel="stylesheet" href="/assets/dist/sheet.css">
 
-  <script src="/assets/dist/js/tool/des.js"></script>
+  <script src="/assets/dist/js/tool/rc.js"></script>
   <script src="/assets/dist/js/tool/base64.js"></script>
   <script src="/assets/dist/js/tool/utf8util.js"></script>
   <script>
       var curTabValue = "";
       function onTabChange()
       {
+        var modeSelectBlock = document.getElementById("mode_select_block");    
+        var paddingSelectBlock = document.getElementById("padding_select_block");
+        var inputIVBlock = document.getElementById("input_iv_block");
         var inputPassword = document.getElementById("input_password");
+
         var radioArr = document.getElementsByClassName("tab-radio");
         for(var i = 0; i < radioArr.length; i++){
           var radio = radioArr[i];
           if(radio.checked == true){
-            if(radio.value == "des"){
-              inputPassword.style.width = "100px";
-              inputPassword.maxLength = 8;
-              inputPassword.placeholder = "长度8个字符";
-              curTabValue = "des";
+            var flag = !(radio.value == "RC4");
+            modeSelectBlock.style.display    = flag ? 'inline-block' : 'none';
+            paddingSelectBlock.style.display = flag ? 'inline-block' : 'none';
+            inputIVBlock.style.display       = flag ? 'inline-block' : 'none';
+            curTabValue = radio.value;
+
+            inputPassword.style.width = "100px";
+            switch(radio.value){
+              case "RC2": break;
+              case "RC4": 
+              inputPassword.maxLength = 256;
+              break;
+              case "RC5": break;
+              case "RC6": break;
             }
-            else if(radio.value == "3des"){
-              inputPassword.style.width = "200px";
-              inputPassword.maxLength = 24;
-              inputPassword.placeholder = "长度24个字符";
-              curTabValue = "3des";
-            }
+
+
             break;
           }
         }
@@ -230,7 +239,14 @@
         var password = document.getElementById("input_password").value;
         var iv = document.getElementById("input_iv").value;
 
-        var encryptBytes = des_encrypt(input, password, mode, padding, iv, curTabValue);
+        var encryptBytes = [];
+        switch(curTabValue){
+          case "RC2": break;
+          case "RC4": encryptBytes = rc4(input, password); break;
+          case "RC5": break;
+          case "RC6": break;
+
+        }
 
         var outputSelect = document.getElementById("ouput_select");
         var outputMode = outputSelect.options[outputSelect.options.selectedIndex].value;
@@ -268,10 +284,10 @@
         var modeSelect = document.getElementById("mode_select");
         var mode = modeSelect.options[modeSelect.options.selectedIndex].value;
 
-         if((inputArr.length == 0) || ((inputArr.length % 8 != 0) && (mode == "ECB" || mode == "CBC"))){
-          alert("输入数据有误，请检查");
-          return;
-        }
+        //  if((inputArr.length == 0) || ((inputArr.length % 8 != 0) && (mode == "ECB" || mode == "CBC"))){
+        //   alert("输入数据有误，请检查");
+        //   return;
+        // }
         
         var paddingSelect = document.getElementById("padding_select");
         var padding = paddingSelect.options[paddingSelect.options.selectedIndex].value;
@@ -279,7 +295,14 @@
         var password = document.getElementById("input_password").value;
         var iv = document.getElementById("input_iv").value;
 
-        var decryptBytes = des_decrypt(inputArr, password, mode, padding, iv, curTabValue);
+        var decryptBytes = [];
+        switch(curTabValue){
+          case "RC2": break;
+          case "RC4": decryptBytes = rc4(inputArr, password); break;
+          case "RC5": break;
+          case "RC6": break;
+
+        }
 
         var output = document.getElementById("output_textarea");
         output.value = byteToString(decryptBytes);
@@ -366,12 +389,12 @@
             <div style="display: none">TODO: share icons</div>
             <h1>
               <i class="fa fa-circle-o-notch fa-spin"></i>
-              <a>des加密</a>
+              <a>rc加密</a>
             </h1>
           </div>
 
           <div>
-            <div class="tool-input-inline-block">
+            <div id="mode_select_block" class="tool-input-inline-block">
               <span>加密模式</span>
               <select id="mode_select">
                 <option value="ECB" selected="selected">ECB</option>
@@ -417,13 +440,21 @@
           <div>
 
           <ul class="tab-list clearfloat">
-              <li class="tab-itom">
-                <input type="radio" id="tadRadio1" class="tab-radio" name="tab" onchange="onTabChange();" value="des" checked="true"/>
-                <label class="tab-label unselectable" for="tadRadio1">DES</label>
+              <li class="tab-item">
+                <input type="radio" id="tadRadio1" class="tab-radio" name="tab" onchange="onTabChange();" value="RC2"/>
+                <label class="tab-label unselectable" for="tadRadio1">RC2</label>
               </li>
-               <li class="tab-itom">
-                <input type="radio" id="tadRadio2" class="tab-radio" name="tab" onchange="onTabChange();" value="3des"/>
-                <label class="tab-label unselectable" for="tadRadio2">3DES</label>
+              <li class="tab-item">
+                <input type="radio" id="tadRadio2" class="tab-radio" name="tab" onchange="onTabChange();" value="RC4" checked="true"/>
+                <label class="tab-label unselectable" for="tadRadio2">RC4</label>
+              </li>
+               <li class="tab-item">
+                <input type="radio" id="tadRadio3" class="tab-radio" name="tab" onchange="onTabChange();" value="RC5"/>
+                <label class="tab-label unselectable" for="tadRadio3">RC5</label>
+              </li>
+              <li class="tab-item">
+                <input type="radio" id="tadRadio4" class="tab-radio" name="tab" onchange="onTabChange();" value="RC5"/>
+                <label class="tab-label unselectable" for="tadRadio4">RC6</label>
               </li>
           </ul>
           <div class="tab-box">
