@@ -1,10 +1,52 @@
+{% assign pages = "" | split: "" %}
+{% for page in site.pages %}
+    {%if page.tag == "tool" %}
+      {% assign pages = pages | push: page %}
+    {% endif %}
+{% endfor %}
+
+<!-- {% for page in pages %}
+<p>{{page | inspect}}</p>
+{% endfor %} -->
+
+{% assign categories = "" | split: "" %}
+{% assign tmpArr = pages | map:"categories" %}
+{% assign hasOtherFlag = false %}
+{% for tmp in tmpArr %}
+  {% assign flag = false %}
+  
+  {% for categorie in categories %}
+    {% if categorie == tmp %}
+      {% assign flag = true %}
+      {% break %}
+    {% endif %}
+  {% endfor %}
+  
+  {% if flag == false %}
+    {% if tmp == "其它" %}
+      {% assign hasOtherFlag = true %}
+    {% else %}
+      {% assign categories = categories | push: tmp %}
+    {% endif %}
+  {% endif %}
+{% endfor %}
+
+{% if hasOtherFlag == true %}
+  {% assign categories = categories | push: "其它" %}
+{% endif %}
+
+
 <nav role="navigation">
-  <ul class="summary">
   	<h2>&nbsp;&nbsp;解码编码工具</h2>
-    {% for p in site.pages %}
-      {%if p.tag == "tool" %}
-      <li {%if p != page %}class="active"{% endif %}><a href="{{ p.url }}">&nbsp;&nbsp;&nbsp;&nbsp;{{ p.title }}</a></li>
-      {% endif %}
-    {% endfor %}
-  </ul>
+    {% for categorie in categories %}
+	  <p>&nbsp;&nbsp;&nbsp;{{categorie}}</p>
+	   <ul class="summary">
+	  {% for p in pages %}
+	      {% assign cur = p.categories | frist %}
+	      {% if categorie == cur %}
+	        <li {%if p.url != page.url %}class="active"{% endif %}><a href="{{ p.url }}">&nbsp;&nbsp;&nbsp;&nbsp;{{ p.title }}</a></li>
+	      {% endif %}
+	  {% endfor %}
+	  </ul>
+	{% endfor %}
 </nav>
