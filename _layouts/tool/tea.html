@@ -1,49 +1,8 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="{{ site.lang | default: "zh" }}">
   <head>
 
-  <meta charset="utf-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-
-<title>des加密 | KimWang's blog</title>
-<meta name="description" content="KimWang's blog">
-
-<meta itemprop="name" content="">
-<meta itemprop="description" content="KimWang's blog">
-<meta itemprop="image" content="">
-
-<meta property="og:url" content="/tool/des.html">
-<meta property="og:type" content="website">
-<meta property="og:title" content="des加密 | KimWang's blog">
-<meta property="og:site_name" content="KimWang's blog">
-<meta property="og:description" content="KimWang's blog">
-<meta property="og:image" content="">
-
-<meta name="twitter:url" content="/tool/des.html">
-<meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="des加密 | KimWang's blog">
-<meta name="twitter:site" content="KimWang's blog">
-<meta name="twitter:description" content="KimWang's blog">
-
-<meta property="twitter:image" content="">
-
-<link rel="icon" type="image/x-icon" href="/assets/images/favicon.ico">
-
-<!--
-<link rel="stylesheet" href="/assets/css/app.min.css">
-<link rel="alternate" type="application/rss+xml" title="KimWang's blog" href="/feed.xml">
-<link rel="canonical" href="/tool/des.html">
--->
-
-<link rel="stylesheet" href="/assets/dist/style.css">
-<link rel="stylesheet" href="/assets/dist/highlight.css">
-<link rel="stylesheet" href="/assets/dist/search.css">
-<link rel="stylesheet" href="/assets/dist/fontsettings.css">
-<link rel="stylesheet" href="/assets/dist/tool.css">
-
-
-
+  {% include head.html %}
    <style>
       .unselectable {
           -webkit-touch-callout: none;
@@ -75,14 +34,14 @@
           position: relative;
       }
 
-      .tab-list .tab-itom {
+      .tab-list .tab-item {
           float: left;
           list-style: none;
           margin-right: 4px;
           margin-bottom: 1px;
       }
 
-      .tab-itom .tab-label {
+      .tab-item .tab-label {
           position: relative;
           display: block;
           font-size: 1.5em;
@@ -98,7 +57,7 @@
           background: #e7e8eb;
       }
 
-      .tab-itom .tab-box {
+      .tab-item .tab-box {
           /* 设置绝对定位方便定位相对于tab-list栏的位置，同时为了可以使用z-index属性 */
           position: absolute;
           left: 0;
@@ -134,32 +93,36 @@
       }
   </style>
 
-  <link rel="stylesheet" href="/assets/dist/sheet.css">
+  <link rel="stylesheet" href="{{ '/assets/dist/sheet.css' | relative_url }}">
 
-  <script src="/assets/dist/js/tool/des.js"></script>
-  <script src="/assets/dist/js/tool/base64.js"></script>
-  <script src="/assets/dist/js/tool/utf8util.js"></script>
+  <script src="{{ '/assets/dist/js/tool/tea.js' | relative_url }}"></script>
+  <script src="{{ '/assets/dist/js/tool/base64.js' | relative_url }}"></script>
+  <script src="{{ '/assets/dist/js/tool/utf8util.js' | relative_url }}"></script>
   <script>
       var curTabValue = "";
       function onTabChange()
       {
+        var modeSelectBlock = document.getElementById("mode_select_block");    
+        var paddingSelectBlock = document.getElementById("padding_select_block");
+        var inputIVBlock = document.getElementById("input_iv_block");
         var inputPassword = document.getElementById("input_password");
+
         var radioArr = document.getElementsByClassName("tab-radio");
         for(var i = 0; i < radioArr.length; i++){
           var radio = radioArr[i];
           if(radio.checked == true){
-            if(radio.value == "des"){
-              inputPassword.style.width = "100px";
-              inputPassword.maxLength = 8;
-              inputPassword.placeholder = "长度8个字符";
-              curTabValue = "des";
+            var flag = !(radio.value == "XXTEA");
+            modeSelectBlock.style.display    = flag ? 'inline-block' : 'none';
+            paddingSelectBlock.style.display = flag ? 'inline-block' : 'none';
+            inputIVBlock.style.display       = flag ? 'inline-block' : 'none';
+            curTabValue = radio.value;
+
+            switch(radio.value){
+              case "TEA": break;
+              case "XTEA": break;
+              case "XXTEA": break;
             }
-            else if(radio.value == "3des"){
-              inputPassword.style.width = "200px";
-              inputPassword.maxLength = 24;
-              inputPassword.placeholder = "长度24个字符";
-              curTabValue = "3des";
-            }
+
             break;
           }
         }
@@ -230,7 +193,12 @@
         var password = document.getElementById("input_password").value;
         var iv = document.getElementById("input_iv").value;
 
-        var encryptBytes = des_encrypt(input, password, mode, padding, iv, curTabValue);
+        var encryptBytes = [];
+        switch(curTabValue){
+          case "TEA": break;
+          case "XTEA": break;
+          case "XXTEA": break;
+        }
 
         var outputSelect = document.getElementById("ouput_select");
         var outputMode = outputSelect.options[outputSelect.options.selectedIndex].value;
@@ -268,10 +236,10 @@
         var modeSelect = document.getElementById("mode_select");
         var mode = modeSelect.options[modeSelect.options.selectedIndex].value;
 
-         if((inputArr.length == 0) || ((inputArr.length % 8 != 0) && (mode == "ECB" || mode == "CBC"))){
-          alert("输入数据有误，请检查");
-          return;
-        }
+        //  if((inputArr.length == 0) || ((inputArr.length % 8 != 0) && (mode == "ECB" || mode == "CBC"))){
+        //   alert("输入数据有误，请检查");
+        //   return;
+        // }
         
         var paddingSelect = document.getElementById("padding_select");
         var padding = paddingSelect.options[paddingSelect.options.selectedIndex].value;
@@ -279,15 +247,33 @@
         var password = document.getElementById("input_password").value;
         var iv = document.getElementById("input_iv").value;
 
-        var decryptBytes = des_decrypt(inputArr, password, mode, padding, iv, curTabValue);
+        var decryptBytes = [];
+        switch(curTabValue){
+          case "TEA": break;
+          case "XTEA": break;
+          case "XXTEA": break;
+        }
 
         var output = document.getElementById("output_textarea");
         output.value = byteToString(decryptBytes);
       }
 
+      function initInput()
+      {
+        var inputPassword = document.getElementById("input_password");
+        inputPassword.style.width = "140px";
+        inputPassword.maxLength   = 16;
+        inputPassword.placeholder = "长度16个字符";
+
+        var inputIV = document.getElementById("input_iv");
+        inputIV.style.width = "140px";
+        inputIV.maxLength   = 16;
+        inputIV.placeholder = "长度16个字符";
+      }
+
       window.onload = function(){
+        initInput();
         onTabChange();
-        showInputIVBlock(false);
         var sel = document.getElementById("mode_select");
         if(sel&&sel.addEventListener){
             sel.addEventListener('change',function(e){
@@ -304,208 +290,7 @@
 
   <body>
     <div class="book without-animation with-summary font-size-2 font-family-1">
-      <input type='checkbox' id='sidemenu' checked="true">
-<aside>
-<h3>KimWang's blog</h3>
-<ul id="sideul">
-    <li><a            href="/">主页</a></li>
-    <li><a class="active" href="/posts.html">文章</a></li>
-    <li><a  href="/tools.html">工具</a></li>
-    <li><a href="#">关于</a></li>
-</ul> 
-</aside>   
-
-<div class="book-summary">
-	
-		
-
-
-<!-- 
-<p>{&quot;layout&quot;=&gt;&quot;tool/aes&quot;, &quot;title&quot;=&gt;&quot;aes加密&quot;, &quot;tag&quot;=&gt;&quot;tool&quot;, &quot;categories&quot;=&gt;&quot;对称加密&quot;, &quot;content&quot;=&gt;&quot;\n&quot;, &quot;dir&quot;=&gt;&quot;/tool/&quot;, &quot;name&quot;=&gt;&quot;aes.md&quot;, &quot;path&quot;=&gt;&quot;tool/aes.md&quot;, &quot;url&quot;=&gt;&quot;/tool/aes.html&quot;}</p>
-
-<p>{&quot;layout&quot;=&gt;&quot;tool/base64&quot;, &quot;title&quot;=&gt;&quot;base64编/解码&quot;, &quot;tag&quot;=&gt;&quot;tool&quot;, &quot;categories&quot;=&gt;&quot;其它&quot;, &quot;content&quot;=&gt;&quot;\n&quot;, &quot;dir&quot;=&gt;&quot;/tool/&quot;, &quot;name&quot;=&gt;&quot;base64.md&quot;, &quot;path&quot;=&gt;&quot;tool/base64.md&quot;, &quot;url&quot;=&gt;&quot;/tool/base64.html&quot;}</p>
-
-<p>{&quot;layout&quot;=&gt;&quot;tool/des&quot;, &quot;title&quot;=&gt;&quot;des加密&quot;, &quot;tag&quot;=&gt;&quot;tool&quot;, &quot;categories&quot;=&gt;&quot;对称加密&quot;, &quot;content&quot;=&gt;&quot;\n&quot;, &quot;dir&quot;=&gt;&quot;/tool/&quot;, &quot;name&quot;=&gt;&quot;des.md&quot;, &quot;path&quot;=&gt;&quot;tool/des.md&quot;, &quot;url&quot;=&gt;&quot;/tool/des.html&quot;}</p>
-
-<p>{&quot;layout&quot;=&gt;&quot;tool/md5&quot;, &quot;title&quot;=&gt;&quot;md5编码&quot;, &quot;tag&quot;=&gt;&quot;tool&quot;, &quot;categories&quot;=&gt;&quot;单向散列哈希函数&quot;, &quot;content&quot;=&gt;&quot;&quot;, &quot;dir&quot;=&gt;&quot;/tool/&quot;, &quot;name&quot;=&gt;&quot;md5.md&quot;, &quot;path&quot;=&gt;&quot;tool/md5.md&quot;, &quot;url&quot;=&gt;&quot;/tool/md5.html&quot;}</p>
-
-<p>{&quot;layout&quot;=&gt;&quot;tool/rc&quot;, &quot;title&quot;=&gt;&quot;rc加密&quot;, &quot;tag&quot;=&gt;&quot;tool&quot;, &quot;categories&quot;=&gt;&quot;对称加密&quot;, &quot;content&quot;=&gt;&quot;&quot;, &quot;dir&quot;=&gt;&quot;/tool/&quot;, &quot;name&quot;=&gt;&quot;rc.md&quot;, &quot;path&quot;=&gt;&quot;tool/rc.md&quot;, &quot;url&quot;=&gt;&quot;/tool/rc.html&quot;}</p>
-
-<p>{&quot;layout&quot;=&gt;&quot;tool/sha&quot;, &quot;title&quot;=&gt;&quot;sha编码&quot;, &quot;tag&quot;=&gt;&quot;tool&quot;, &quot;categories&quot;=&gt;&quot;单向散列哈希函数&quot;, &quot;content&quot;=&gt;&quot;&quot;, &quot;dir&quot;=&gt;&quot;/tool/&quot;, &quot;name&quot;=&gt;&quot;sha.md&quot;, &quot;path&quot;=&gt;&quot;tool/sha.md&quot;, &quot;url&quot;=&gt;&quot;/tool/sha.html&quot;}</p>
-
-<p>{&quot;layout&quot;=&gt;&quot;tool/tea&quot;, &quot;title&quot;=&gt;&quot;tea加密&quot;, &quot;tag&quot;=&gt;&quot;tool&quot;, &quot;categories&quot;=&gt;&quot;对称加密&quot;, &quot;content&quot;=&gt;&quot;&quot;, &quot;dir&quot;=&gt;&quot;/tool/&quot;, &quot;name&quot;=&gt;&quot;tea.md&quot;, &quot;path&quot;=&gt;&quot;tool/tea.md&quot;, &quot;url&quot;=&gt;&quot;/tool/tea.html&quot;}</p>
- -->
-
-
-
-
-
-  
-  
-  
-  
-  
-
-  
-  
-  
-    
-  
-  
-  
-
-  
-  
-  
-    
-      
-      
-  
-  
-
-  
-  
-  
-    
-  
-  
-  
-
-  
-  
-  
-    
-      
-      
-  
-  
-
-  
-  
-  
-    
-  
-    
-      
-      
-  
-  
-
-  
-  
-  
-    
-      
-      
-  
-  
-
-
-
-
-
-<nav role="navigation">
-  	<h2>&nbsp;&nbsp;解码编码工具</h2>
-    
-	  <p>&nbsp;&nbsp;&nbsp;对称加密</p>
-	   <ul class="summary">
-	  
-	      
-	      
-	        <li class="active"><a href="/tool/aes.html">&nbsp;&nbsp;&nbsp;&nbsp;aes加密</a></li>
-	      
-	  
-	      
-	      
-	  
-	      
-	      
-	        <li ><a href="/tool/des.html">&nbsp;&nbsp;&nbsp;&nbsp;des加密</a></li>
-	      
-	  
-	      
-	      
-	  
-	      
-	      
-	        <li class="active"><a href="/tool/rc.html">&nbsp;&nbsp;&nbsp;&nbsp;rc加密</a></li>
-	      
-	  
-	      
-	      
-	  
-	      
-	      
-	        <li class="active"><a href="/tool/tea.html">&nbsp;&nbsp;&nbsp;&nbsp;tea加密</a></li>
-	      
-	  
-	  </ul>
-	
-	  <p>&nbsp;&nbsp;&nbsp;单向散列哈希函数</p>
-	   <ul class="summary">
-	  
-	      
-	      
-	  
-	      
-	      
-	  
-	      
-	      
-	  
-	      
-	      
-	        <li class="active"><a href="/tool/md5.html">&nbsp;&nbsp;&nbsp;&nbsp;md5编码</a></li>
-	      
-	  
-	      
-	      
-	  
-	      
-	      
-	        <li class="active"><a href="/tool/sha.html">&nbsp;&nbsp;&nbsp;&nbsp;sha编码</a></li>
-	      
-	  
-	      
-	      
-	  
-	  </ul>
-	
-	  <p>&nbsp;&nbsp;&nbsp;其它</p>
-	   <ul class="summary">
-	  
-	      
-	      
-	  
-	      
-	      
-	        <li class="active"><a href="/tool/base64.html">&nbsp;&nbsp;&nbsp;&nbsp;base64编/解码</a></li>
-	      
-	  
-	      
-	      
-	  
-	      
-	      
-	  
-	      
-	      
-	  
-	      
-	      
-	  
-	      
-	      
-	  
-	  </ul>
-	
-</nav>
-	
-</div>
-
-<div id='wrap'>
-    <label id='sideMenuControl' for='sidemenu'>≡</label>
-</div>
+      {% include sidebar.html param="toollist" %}
       
       <div class="book-body">
         <div class="body-inner">
@@ -513,12 +298,12 @@
             <div style="display: none">TODO: share icons</div>
             <h1>
               <i class="fa fa-circle-o-notch fa-spin"></i>
-              <a>des加密</a>
+              <a>{{ page.title }}</a>
             </h1>
           </div>
 
           <div>
-            <div class="tool-input-inline-block">
+            <div id="mode_select_block" class="tool-input-inline-block">
               <span>加密模式</span>
               <select id="mode_select">
                 <option value="ECB" selected="selected">ECB</option>
@@ -540,6 +325,15 @@
               </select>
             </div>
 
+            <div id="round_select_block" class="tool-input-inline-block">
+              <span>轮数</span>
+              <select id="round_select">
+                <option value=16>16</option>
+                <option value=32 selected="selected">32</option>
+                <option value=64>64</option>
+              </select> 
+            </div>   
+
             <div class="tool-input-inline-block">
               <span>输出</span>
               <select id="ouput_select">
@@ -550,12 +344,12 @@
 
             <div class="tool-input-inline-block">
               <span>密码</span>
-              <input tpye="text" id="input_password" class="tool-input-textare-2" spellcheck="false" maxlength="8"></textarea>
+              <input tpye="text" id="input_password" class="tool-input-textare-2" spellcheck="false"></textarea>
             </div>
 
             <div  id="input_iv_block" class="tool-input-inline-block">
               <span>初始向量(iv)</span>
-              <input type="text" id="input_iv" class="tool-input-textare-2" spellcheck="false" maxlength="8"></textarea>
+              <input type="text" id="input_iv" class="tool-input-textare-2" spellcheck="false"></textarea>
             </div>
 
             
@@ -564,19 +358,23 @@
           <div>
 
           <ul class="tab-list clearfloat">
-              <li class="tab-itom">
-                <input type="radio" id="tadRadio1" class="tab-radio" name="tab" onchange="onTabChange();" value="des" checked="true"/>
-                <label class="tab-label unselectable" for="tadRadio1">DES</label>
+              <li class="tab-item">
+                <input type="radio" id="tadRadio1" class="tab-radio" name="tab" onchange="onTabChange();" value="TEA" checked="true"/>
+                <label class="tab-label unselectable" for="tadRadio1">TEA</label>
               </li>
-               <li class="tab-itom">
-                <input type="radio" id="tadRadio2" class="tab-radio" name="tab" onchange="onTabChange();" value="3des"/>
-                <label class="tab-label unselectable" for="tadRadio2">3DES</label>
+              <li class="tab-item">
+                <input type="radio" id="tadRadio2" class="tab-radio" name="tab" onchange="onTabChange();" value="XTEA" />
+                <label class="tab-label unselectable" for="tadRadio2">XTEA</label>
+              </li>
+               <li class="tab-item">
+                <input type="radio" id="tadRadio3" class="tab-radio" name="tab" onchange="onTabChange();" value="XXTEA"/>
+                <label class="tab-label unselectable" for="tadRadio3">XXTEA</label>
               </li>
           </ul>
           <div class="tab-box">
               <textarea id="input_textarea" placeholder="请输入待解码或编码的字符串" class="tool-input-textarea" spellcheck="false"></textarea>
               <div class="tool-button-group">
-                <button id="decode" class="tool-button" onClick="onEncrypt()">加密</button>
+                <button id="decode" class="tool-button" onClick="onEecrypt()">加密</button>
                 <button id="encode" class="tool-button" onClick="onDecrypt()">解密</button>
               </div>
               <textarea id="output_textarea"class="tool-output-textarea" readonly="readonly" spellcheck="false"></textarea>
@@ -587,6 +385,15 @@
   </div>
  
 
-    
+    {% if site.google_analytics %}
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+      ga('create', '{{ site.google_analytics }}', 'auto');
+      ga('send', 'pageview');
+    </script>
+    {% endif %}
   </body>
 </html>
