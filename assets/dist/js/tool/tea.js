@@ -128,8 +128,8 @@ var XOR_ARR_3 = function(a, b, c)
 	return ret;
 }
 
-var tea_add_padding = function(data, padding){
-	var padding_count = 8 - (data.length % 8);
+var tea_add_padding = function(data, padding, blockLength){
+	var padding_count = blockLength - (data.length % blockLength);
 
 	switch(padding){
 		case "zeropadding":
@@ -330,6 +330,133 @@ var tea_block_decrypt = function(rounds, data, keys)
 	return [v0, v1];
 }
 
+
+var xtea_block_encrypt = function(rounds, data, keys)
+{
+	var v0 = data[0];
+	var v1 = data[1];
+	var k0 = keys[0];
+	var k1 = keys[1];
+	var k2 = keys[2];
+	var k3 = keys[3];
+	var sum = 0;
+	var p0, p1;
+	for(var i = 0; i < rounds; i++){
+		p0 = uint32(uint32(v1 << 4) ^ uint32(v1 >>> 5) + v1);
+		p1 = uint32(sum + keys[uint32(sum & 3)]);
+		v0 += uint32(p0 ^ p1);
+		v0 = uint32(v0);
+
+		sum += DELTA;
+		sum = uint32(sum);
+
+		p0 = uint32(uint32(v0 << 4) ^ uint32(v0 >>> 5) + v0);
+		p1 = uint32(sum + keys[uint32(uint32(sum >>> 11) & 3)]);
+		v1 += uint32(p0 ^ p1);
+		v1 = uint32(v1);
+	}
+
+	return [v0, v1];
+}
+
+var xtea_block_decrypt = function(rounds, data, keys)
+{
+	var v0 = data[0];
+	var v1 = data[1];
+	var k0 = keys[0];
+	var k1 = keys[1];
+	var k2 = keys[2];
+	var k3 = keys[3];
+	var sum = tea_count_sum(rounds);
+	var p0, p1;
+	for(var i = 0; i < rounds; i++){
+		p0 = uint32(uint32(v0 << 4) ^ uint32(v0 >>> 5) + v0);
+		p1 = uint32(sum + keys[uint32(uint32(sum >>> 11) & 3)]);
+		v1 -= uint32(p0 ^ p1);
+		v1 = uint32(v1);
+
+		sum -= DELTA;
+		sum = uint32(sum);
+
+		p0 = uint32(uint32(v1 << 4) ^ uint32(v1 >>> 5) + v1);
+		p1 = uint32(sum + keys[uint32(sum & 3)]);
+		v0 -= uint32(p0 ^ p1);
+		v0 = uint32(v0);
+	}
+
+	return [v0, v1];
+}
+
+var MX = function(y, z, p, e, sum, keys){
+	var p0 = uint32(uint32(z >>> 5) ^ uint32(y << 2));
+	var p1 = uint32(uint32(y >>> 3) ^ uint32(z << 4));
+	var p2 = uint32(sum ^ y);
+	var p3 = uint32(keys[uint32(uint32(p & 3) ^ e)] ^ z);
+	return uint32(uint32(p0 +  p1) ^ uint32(p2 + p3));
+}
+
+var xxtea_block_encrypt = function(data, keys)
+{
+	if(data == null | data.length == 0){
+		return [];
+	}
+	var output = data.slice();
+	var n = output.length;
+	var rounds = 6 + Math.floor(52 / n);
+	var y = 0;
+	var p = 0;
+	var sum = 0;
+	var e = 0;
+	var z = output[n - 1];
+	do{
+		sum = uint32(sum + DELTA);
+		e = uint32(uint32(sum >>> 2) & 3);
+		for(p = 0; p < n - 1; p++){
+			y = output[p + 1];
+			output[p] = uint32(output[p] + MX(y, z, p, e, sum, keys));
+			z = output[p];
+		}
+		y = output[0];
+		output[n - 1] = uint32(output[n - 1] + MX(y, z, p, e, sum, keys));
+		z = output[n - 1];
+		rounds -= 1;
+	}while(rounds > 0)
+
+	return output;
+}
+
+
+var xxtea_block_decrypt = function(data, keys)
+{
+	if(data == null | data.length == 0){
+		return [];
+	}
+	var output = data.slice();
+	var n = output.length;
+	var rounds = 6 + Math.floor(52 / n);
+	var y = output[0];
+	var p = 0;
+	var sum = tea_count_sum(rounds);
+	var e = 0;
+	var z = 0;
+	do{
+		e = uint32(uint32(sum >>> 2) & 3);
+		for(p = n - 1; p > 0; p--){
+			z = output[p - 1];
+			output[p] = uint32(output[p] - MX(y, z, p, e, sum, keys));
+			y = output[p];
+		}
+		z = output[n - 1];
+		output[0] = uint32(output[0] - MX(y, z, p, e, sum, keys));
+		y = output[0];
+		
+		sum = uint32(sum - DELTA);
+		rounds -= 1;
+	}while(rounds > 0)
+
+	return output;
+}
+
 var convertCipherKey = function(cipherKeysText)
 {
 	var keys = stringToByte(cipherKeysText);
@@ -374,18 +501,28 @@ tea_encrypt = function(plainText, cipherKeysText, rounds, mode, padding, ivText,
 	if(flag == null){flag = "TEA"}
 
 	var data = stringToByte(plainText);
-	tea_add_padding(data, padding);
-
 	var cipherKeys = convertCipherKey(cipherKeysText);
 	var keys = toUInt32Arr(cipherKeys);
 	var iv = convertIV(ivText);
 
 	if(flag == "XXTEA"){
+		if(Math.floor(data.length / 4) < 2){
+			tea_add_padding(data, padding, 8);
+		}
+		else{
+			tea_add_padding(data, padding, 4);
+		}
+		
 		//调用 XXTEA 块加密函数
-		return;
+		var uint32Arr = xxtea_block_encrypt(toUInt32Arr(data), keys);
+		var output = toUInt8Arr(uint32Arr);
+		return output;
+	}
+	else{
+		tea_add_padding(data, padding, 8);
 	}
 
-	var encrypt_block = (flag == "TEA") ? tea_block_encrypt : null;
+	var encrypt_block = (flag == "TEA") ? tea_block_encrypt : xtea_block_encrypt;
 
 	var output = [];
 	if(mode == "ECB"){
@@ -465,12 +602,15 @@ tea_decrypt = function(data, cipherKeysText, rounds, mode, padding, ivText, flag
 	var iv = convertIV(ivText);
 
 	if(flag == "XXTEA"){
-		//调用 XXTEA 块加密函数
-		return;
+		//调用 XXTEA 块解密函数
+		var uint32Arr = xxtea_block_decrypt(toUInt32Arr(data), keys);
+		var output = toUInt8Arr(uint32Arr);
+		tea_remove_padding(output, padding);
+		return output;
 	}
 
-	var encrypt_block = (flag == "TEA") ? tea_block_encrypt : null;
-	var decrypt_block = (flag == "TEA") ? tea_block_decrypt : null;
+	var encrypt_block = (flag == "TEA") ? tea_block_encrypt : xtea_block_encrypt;
+	var decrypt_block = (flag == "TEA") ? tea_block_decrypt : xtea_block_decrypt;
 
 	var output = [];
 	if(mode == "ECB"){

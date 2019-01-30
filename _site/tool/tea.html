@@ -143,6 +143,7 @@
       var curTabValue = "";
       function onTabChange()
       {
+        var roundSelectBlock = document.getElementById("round_select_block");
         var modeSelectBlock = document.getElementById("mode_select_block");
         var paddingSelectBlock = document.getElementById("padding_select_block");
         var inputIVBlock = document.getElementById("input_iv_block");
@@ -157,6 +158,7 @@
             var mode = modeSelect.options[modeSelect.options.selectedIndex].value;
 
             var flag = !(radio.value == "XXTEA");
+            roundSelectBlock.style.display   = flag ? 'inline-block' : 'none';
             modeSelectBlock.style.display    = flag ? 'inline-block' : 'none';
             paddingSelectBlock.style.display = flag ? 'inline-block' : 'none';
             inputIVBlock.style.display       = (flag && mode != "ECB") ? 'inline-block' : 'none';
