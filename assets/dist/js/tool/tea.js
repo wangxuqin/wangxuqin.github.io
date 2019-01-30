@@ -233,21 +233,42 @@ var toUInt32Arr = function(arr)
 			uint32Arr.push(val);
 		}
 	}
+	return uint32Arr;
 }
 
-var toUint8Arr = function(uint32Arr)
+var toUInt8Arr = function(uint32Arr)
 {
 	var arr = new Array();
 	if(uint32Arr && uint32Arr.length > 0){
 		for(var i = 0; i < uint32Arr.length; i++){
 			var val = uint32Arr[i];
 			var d0  = (val >>> 24 & 0xff) >>> 0;
+			var d1  = (val >>> 16 & 0xff) >>> 0;
+			var d2  = (val >>> 8  & 0xff) >>> 0;
+			var d3  = (val & 0xff) >>> 0;
+			arr.push(d0);
+			arr.push(d1);
+			arr.push(d2);
+			arr.push(d3);
 		}
 	}
+	return arr;
 }
 
 var DELTA = 0x9e3779b9;
 var BLOCK_LENGTH = 8;
+
+var tea_count_sum = function(rounds)
+{
+	var sum = 0;
+	for(var i = 0; i < rounds; i++){
+		sum += DELTA;
+		sum = uint32(sum);
+	}
+	return sum;
+}
+
+
 var tea_block_encrypt = function(rounds, data, keys)
 {
 	var v0 = data[0];
@@ -286,7 +307,7 @@ var tea_block_decrypt = function(rounds, data, keys)
 	var k1 = keys[1];
 	var k2 = keys[2];
 	var k3 = keys[3];
-	var sum = 0xC6EF3720;
+	var sum = tea_count_sum(rounds);
 	var p0, p1, p2;
 	for(var i = 0; i < rounds; i++){
 		
@@ -323,7 +344,7 @@ var convertIV = function(viText)
 {
 	var iv = stringToByte(viText)
 	iv = iv.slice(0, BLOCK_LENGTH);
-	for(var i = vi.length; i < BLOCK_LENGTH; i++){
+	for(var i = iv.length; i < BLOCK_LENGTH; i++){
 		iv.push(0x00);
 	}
 	return iv;
@@ -356,6 +377,7 @@ tea_encrypt = function(plainText, cipherKeysText, rounds, mode, padding, ivText,
 	tea_add_padding(data, padding);
 
 	var cipherKeys = convertCipherKey(cipherKeysText);
+	var keys = toUInt32Arr(cipherKeys);
 	var iv = convertIV(ivText);
 
 	if(flag == "XXTEA"){
@@ -375,7 +397,7 @@ tea_encrypt = function(plainText, cipherKeysText, rounds, mode, padding, ivText,
 			// copyToArray(output, block);
 
 			var block = toUInt32Arr(arr);
-			block = encrypt_block(block);
+			block = encrypt_block(rounds, block, keys);
 			arr = toUInt8Arr(block);
 			copyToArray(output, arr);
 		}
@@ -425,78 +447,83 @@ tea_encrypt = function(plainText, cipherKeysText, rounds, mode, padding, ivText,
 	return output;
 }
 
+//rounds   轮数
 //mode    分组模式,分别有ECB, CBC, CFB, OFB, CTR
 //padding 填充模式,分别有zeropadding, pkcs5padding(默认), pkcs7padding, ISO10126, ansix923, ISO/IEC7816-4
 //iv      偏移量
-// aes_decrypt = function(data, cipherKeysText, keyLength, mode, padding, ivText)
-// {
-// 	console.log("aes_decrypt 1", dump_arr(data));
-// 	if(keyLength == null){keyLength = ASEKEY128;}
-// 	if(mode == null){mode = "ECB";}
-// 	if(padding == null){padding = "pkcs5padding";}
+//flag    加密方法,分别由TEA、XTEA、XXTEA
+tea_decrypt = function(data, cipherKeysText, rounds, mode, padding, ivText, flag)
+{
+	if(rounds == null){rounds = 32}
+	if(mode == null){mode = "ECB";}
+	if(padding == null){padding = "pkcs5padding";}
+	if(ivText == null){ivText = "";}
+	if(flag == null){flag = "TEA"}
 
-// 	var round = 10;
-// 	switch(keyLength){
-// 		case ASEKEY128: round = 10; break;
-// 		case ASEKEY192: round = 12; break;
-// 		case ASEKEY256: round = 14; break;
-// 	}
+	var cipherKeys = convertCipherKey(cipherKeysText);
+	var keys = toUInt32Arr(cipherKeys);
+	var iv = convertIV(ivText);
 
-// 	var cipherKeys = convertCipherKey(cipherKeysText, keyLength);
-// 	var keys = keyExpansion(cipherKeys, round);
-// 	var iv = convertIV(ivText);
+	if(flag == "XXTEA"){
+		//调用 XXTEA 块加密函数
+		return;
+	}
 
-// 	var output = [];
-// 	if(mode == "ECB"){
-// 		for(var i = 0; i < data.length; i += BLOCK_LENGTH){
-// 			var arr = data.slice(i, i + BLOCK_LENGTH);
-// 			var block = convertBlock(arr);
-// 			blockDecrypt(block, keys, round);
-// 			copyToArray(output, block);
-// 		}
-// 	}
-// 	else if(mode == "CBC"){
-// 		for(var i = 0; i < data.length; i += BLOCK_LENGTH){
-// 			var arr = data.slice(i, i + BLOCK_LENGTH);
-// 			var block = convertBlock(arr);
-// 			blockDecrypt(block, keys, round);
-// 			arr = xor_arr(convertArr(block), iv);
-// 			copyToArray(output, arr, "array");
-// 			iv = data.slice(i, i + BLOCK_LENGTH);
-// 		}
-// 	}
-// 	else if(mode == "CFB"){
-// 		for(var i = 0; i < data.length; i += BLOCK_LENGTH){
-// 			iv = convertBlock(iv);
-// 			blockEncrypt(iv, keys, round);
-// 			var arr = data.slice(i, Math.min(i + BLOCK_LENGTH, data.length));
-// 			arr = xor_arr(arr, convertArr(iv));
-// 			copyToArray(output, arr, "array");
-// 			iv = arr;
-// 		}
-// 	}
-// 	else if(mode == "OFB"){
-// 		iv = convertBlock(iv);
-// 		for(var i = 0; i < data.length; i += BLOCK_LENGTH){
-// 			blockEncrypt(iv, keys, round);
-// 			var arr = data.slice(i, Math.min(i + BLOCK_LENGTH, data.length));
-// 			arr = xor_arr(arr, convertArr(iv));
-// 			copyToArray(output, arr, "array");
-// 		}
-// 	}
-// 	else if(mode == "CTR"){
-// 		var timer = iv.slice(0, BLOCK_LENGTH);
-// 		for(var i = 0; i < data.length; i += BLOCK_LENGTH){
-// 			var iv = timer.slice(0, BLOCK_LENGTH);
-// 			iv = convertBlock(iv);
-// 			blockEncrypt(iv, keys, round);
-// 			var arr = data.slice(i, Math.min(i + BLOCK_LENGTH, data.length));
-// 			arr = xor_arr(arr, convertArr(iv));
-// 			copyToArray(output, arr, "array");
-// 			inc_arr(timer);
-// 		}
-// 	}
+	var encrypt_block = (flag == "TEA") ? tea_block_encrypt : null;
+	var decrypt_block = (flag == "TEA") ? tea_block_decrypt : null;
 
-// 	aes_remove_padding(output, mode, padding);
-// 	return output;
-// }
+	var output = [];
+	if(mode == "ECB"){
+		for(var i = 0; i < data.length; i += BLOCK_LENGTH){
+			var arr = data.slice(i, i + BLOCK_LENGTH);
+			var block = toUInt32Arr(arr);
+			block = decrypt_block(rounds, block, keys);
+			arr = toUInt8Arr(block);
+			copyToArray(output, arr);
+		}
+	}
+	else if(mode == "CBC"){
+		for(var i = 0; i < data.length; i += BLOCK_LENGTH){
+			// var arr = data.slice(i, i + BLOCK_LENGTH);
+			// var block = convertBlock(arr);
+			// blockDecrypt(block, keys, round);
+			// arr = xor_arr(convertArr(block), iv);
+			// copyToArray(output, arr, "array");
+			// iv = data.slice(i, i + BLOCK_LENGTH);
+		}
+	}
+	else if(mode == "CFB"){
+		for(var i = 0; i < data.length; i += BLOCK_LENGTH){
+			// iv = convertBlock(iv);
+			// blockEncrypt(iv, keys, round);
+			// var arr = data.slice(i, Math.min(i + BLOCK_LENGTH, data.length));
+			// arr = xor_arr(arr, convertArr(iv));
+			// copyToArray(output, arr, "array");
+			// iv = arr;
+		}
+	}
+	else if(mode == "OFB"){
+		// iv = convertBlock(iv);
+		for(var i = 0; i < data.length; i += BLOCK_LENGTH){
+			// blockEncrypt(iv, keys, round);
+			// var arr = data.slice(i, Math.min(i + BLOCK_LENGTH, data.length));
+			// arr = xor_arr(arr, convertArr(iv));
+			// copyToArray(output, arr, "array");
+		}
+	}
+	else if(mode == "CTR"){
+		var timer = iv.slice(0, BLOCK_LENGTH);
+		for(var i = 0; i < data.length; i += BLOCK_LENGTH){
+			// var iv = timer.slice(0, BLOCK_LENGTH);
+			// iv = convertBlock(iv);
+			// blockEncrypt(iv, keys, round);
+			// var arr = data.slice(i, Math.min(i + BLOCK_LENGTH, data.length));
+			// arr = xor_arr(arr, convertArr(iv));
+			// copyToArray(output, arr, "array");
+			// inc_arr(timer);
+		}
+	}
+
+	tea_remove_padding(output, padding);
+	return output;
+}

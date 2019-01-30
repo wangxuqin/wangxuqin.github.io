@@ -102,7 +102,7 @@
       var curTabValue = "";
       function onTabChange()
       {
-        var modeSelectBlock = document.getElementById("mode_select_block");    
+        var modeSelectBlock = document.getElementById("mode_select_block");
         var paddingSelectBlock = document.getElementById("padding_select_block");
         var inputIVBlock = document.getElementById("input_iv_block");
         var inputPassword = document.getElementById("input_password");
@@ -111,10 +111,14 @@
         for(var i = 0; i < radioArr.length; i++){
           var radio = radioArr[i];
           if(radio.checked == true){
+
+            var modeSelect = document.getElementById("mode_select");
+            var mode = modeSelect.options[modeSelect.options.selectedIndex].value;
+
             var flag = !(radio.value == "XXTEA");
             modeSelectBlock.style.display    = flag ? 'inline-block' : 'none';
             paddingSelectBlock.style.display = flag ? 'inline-block' : 'none';
-            inputIVBlock.style.display       = flag ? 'inline-block' : 'none';
+            inputIVBlock.style.display       = (flag && mode != "ECB") ? 'inline-block' : 'none';
             curTabValue = radio.value;
 
             switch(radio.value){
@@ -184,6 +188,10 @@
           return;
         }
 
+        var roundSelect = document.getElementById("round_select");
+        var rounds = roundSelect.options[roundSelect.options.selectedIndex].value;
+        rounds = parseInt(rounds);
+
         var modeSelect = document.getElementById("mode_select");
         var mode = modeSelect.options[modeSelect.options.selectedIndex].value;
         
@@ -193,12 +201,7 @@
         var password = document.getElementById("input_password").value;
         var iv = document.getElementById("input_iv").value;
 
-        var encryptBytes = [];
-        switch(curTabValue){
-          case "TEA": break;
-          case "XTEA": break;
-          case "XXTEA": break;
-        }
+        var encryptBytes = tea_encrypt(input, password, rounds, mode, padding, iv, curTabValue)
 
         var outputSelect = document.getElementById("ouput_select");
         var outputMode = outputSelect.options[outputSelect.options.selectedIndex].value;
@@ -233,13 +236,12 @@
           inputArr = hexDecode(input);
         }
 
+        var roundSelect = document.getElementById("round_select");
+        var rounds = roundSelect.options[roundSelect.options.selectedIndex].value;
+        rounds = parseInt(rounds);
+
         var modeSelect = document.getElementById("mode_select");
         var mode = modeSelect.options[modeSelect.options.selectedIndex].value;
-
-        //  if((inputArr.length == 0) || ((inputArr.length % 8 != 0) && (mode == "ECB" || mode == "CBC"))){
-        //   alert("输入数据有误，请检查");
-        //   return;
-        // }
         
         var paddingSelect = document.getElementById("padding_select");
         var padding = paddingSelect.options[paddingSelect.options.selectedIndex].value;
@@ -247,12 +249,7 @@
         var password = document.getElementById("input_password").value;
         var iv = document.getElementById("input_iv").value;
 
-        var decryptBytes = [];
-        switch(curTabValue){
-          case "TEA": break;
-          case "XTEA": break;
-          case "XXTEA": break;
-        }
+        var decryptBytes = tea_decrypt(inputArr, password, rounds, mode, padding, iv, curTabValue)
 
         var output = document.getElementById("output_textarea");
         output.value = byteToString(decryptBytes);
@@ -274,6 +271,7 @@
       window.onload = function(){
         initInput();
         onTabChange();
+        onModeSelectChange("ECB")
         var sel = document.getElementById("mode_select");
         if(sel&&sel.addEventListener){
             sel.addEventListener('change',function(e){
@@ -374,7 +372,7 @@
           <div class="tab-box">
               <textarea id="input_textarea" placeholder="请输入待解码或编码的字符串" class="tool-input-textarea" spellcheck="false"></textarea>
               <div class="tool-button-group">
-                <button id="decode" class="tool-button" onClick="onEecrypt()">加密</button>
+                <button id="decode" class="tool-button" onClick="onEncrypt()">加密</button>
                 <button id="encode" class="tool-button" onClick="onDecrypt()">解密</button>
               </div>
               <textarea id="output_textarea"class="tool-output-textarea" readonly="readonly" spellcheck="false"></textarea>
